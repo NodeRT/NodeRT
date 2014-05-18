@@ -1,0 +1,10 @@
+binding.gyp
+*.cc
+*.cpp
+*.h
+*.vcxproj
+*.filters
+*.user
+Debug
+Release
+test

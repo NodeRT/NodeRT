@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RazorTemplates.Core</name>
+    </assembly>
+    <members>
+        <member name="T:RazorTemplates.Core.Infrastructure.AttributeValue">
+            <summary>
+            Html attribute value for support RazorEngine 2.0
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Infrastructure.AttributeValue.#ctor(RazorTemplates.Core.Infrastructure.PositionTagged{System.String},RazorTemplates.Core.Infrastructure.PositionTagged{System.Object},System.Boolean)">
+            <summary>
+            Initializes a new instance of AttributeValue class.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Infrastructure.AttributeValue.op_Implicit(System.Tuple{System.Tuple{System.String,System.Int32},System.Tuple{System.Object,System.Int32},System.Boolean})~RazorTemplates.Core.Infrastructure.AttributeValue">
+            <summary>
+            Converts tuples to AttributeValue object.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Infrastructure.AttributeValue.op_Implicit(System.Tuple{System.Tuple{System.String,System.Int32},System.Tuple{System.String,System.Int32},System.Boolean})~RazorTemplates.Core.Infrastructure.AttributeValue">
+            <summary>
+            Converts tuples to AttributeValue object.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Infrastructure.AttributeValue.Prefix">
+            <summary>
+            Gets a prefix of attribute value.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Infrastructure.AttributeValue.Value">
+            <summary>
+            Gets an attribute value.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Infrastructure.AttributeValue.Literal">
+            <summary>
+            Gets a flag which determines is attribute value is literal.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.Infrastructure.PositionTagged`1">
+            <summary>
+            Position tagged value for support RazorEngine 2.0
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Infrastructure.PositionTagged`1.#ctor(`0,System.Int32)">
+            <summary>
+            Initializes a new instance of PositionTagged class.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Infrastructure.PositionTagged`1.op_Implicit(System.Tuple{`0,System.Int32})~RazorTemplates.Core.Infrastructure.PositionTagged{`0}">
+            <summary>
+            Converts tuple to PositionTagged object.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Infrastructure.PositionTagged`1.Position">
+            <summary>
+            Gets tag position.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Infrastructure.PositionTagged`1.Value">
+            <summary>
+            Gets tag value.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.ITemplate`1">
+            <summary>
+            Describes an interface of template.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.ITemplate`1.Render(`0)">
+            <summary>
+            Renders templates with data from specified model.
+            </summary>
+            <param name="model">A model data.</param>
+            <returns>A rendered content.</returns>
+        </member>
+        <member name="P:RazorTemplates.Core.ITemplate`1.SourceCode">
+            <summary>
+            Returns generated source code for this template.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.TemplateBase`1">
+            <summary>
+            Represents a base class for generated templates.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.TemplateBase">
+            <summary>
+            Represents a base class for generated templates.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase.Render(System.Object)">
+            <summary>
+            Renders specified model.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase.Execute">
+            <summary>
+            A method which implemets by Razor engine.
+            Produces sequance like:
+                WriteLiteral("Hello ");
+                Write(Model.Name);
+                WriteLiteral("!");
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase.Write(System.String)">
+            <summary>
+            Writes a string.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase.Write(System.Object)">
+            <summary>
+            Writes a string representation of specified object.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase.WriteLiteral(System.String)">
+            <summary>
+            Writes specified string.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase.WriteAttribute(System.String,RazorTemplates.Core.Infrastructure.PositionTagged{System.String},RazorTemplates.Core.Infrastructure.PositionTagged{System.String},RazorTemplates.Core.Infrastructure.AttributeValue[])">
+            <summary>
+            Razor 2.0
+            Writes attribute in situations like &lt;img src="@Model"&gt;.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateBase.Model">
+            <summary>
+            Gets or sets dynamic model which data should be rendered.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateBase`1.Render(`0)">
+            <summary>
+            Renders specified model.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateBase`1.Model">
+            <summary>
+            Gets or sets dynamic model which data should be rendered.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.TemplateCompilationResult">
+            <summary>
+            Represents result of template compilation.
+            </summary>
+        </member>
+        <member name="F:RazorTemplates.Core.TemplateCompilationResult.Type">
+            <summary>
+            A type of compiled temlate (inherit from TemplateBase).
+            </summary>
+        </member>
+        <member name="F:RazorTemplates.Core.TemplateCompilationResult.SourceCode">
+            <summary>
+            A source code of compiled template.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.TemplateDescription`1">
+            <summary>
+            Represents a description of new Razor template type.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateDescription`1.#ctor(System.Action{`0})">
+            <summary>
+            Initializes a new instance of TemplateDescription class.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateDescription`1.AddNamespace(System.String)">
+            <summary>
+            Specifies that Razor template should uses specified namespace.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateDescription`1.CompileTo(System.String)">
+            <summary>
+            Specifies that Razor compiler should use specified directory to store temp files.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateDescription`1.Compile(System.String)">
+            <summary>
+            Creates template from specified source.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateDescription`1.Compile``1(System.String)">
+            <summary>
+            Creates template from specified source.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateDescription`1.CompilationDirectory">
+            <summary>
+            Gets a directory which Razor compiler should use to store temp files
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.Template">
+            <summary>
+            Represents an entry point for create templates.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Template.Compile(System.String)">
+            <summary>
+            Returns template created from specified source.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Template.Compile``1(System.String)">
+            <summary>
+            Returns strong typed template created from specified source.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.Template.WithBaseType``1(System.Action{``0})">
+            <summary>
+            Creates template with specified base type.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Template.Debug">
+            <summary>
+            Gets or sets flag which determines is templates debugging info will
+            included in output results.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.Template.Language">
+            <summary>
+            Gets or sets the language that will be used to compile templates.
+            </summary>
+        </member>
+        <member name="T:RazorTemplates.Core.TemplateCompilationException">
+            <summary>
+            Represents an exception which raises when template contains compilation errors.
+            </summary>
+        </member>
+        <member name="M:RazorTemplates.Core.TemplateCompilationException.#ctor(System.CodeDom.Compiler.CompilerErrorCollection,System.String,System.String)">
+            <summary>
+            Initializes a new instance of TemplateCompilationException class.
+            </summary>
+            <param name="errors">A collection of occured errors.</param>
+            <param name="sourceCode">A generated source code (available if debug mode is on).</param>
+            <param name="template">A template code.</param>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateCompilationException.Message">
+            <summary>
+            Gets a message that describes the current exception.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateCompilationException.Errors">
+            <summary>
+            Gets a collection of occured errors.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateCompilationException.SourceCode">
+            <summary>
+            Gets a generated source code.
+            </summary>
+        </member>
+        <member name="P:RazorTemplates.Core.TemplateCompilationException.Template">
+            <summary>
+            Gets a template code.
+            </summary>
+        </member>
+    </members>
+</doc>

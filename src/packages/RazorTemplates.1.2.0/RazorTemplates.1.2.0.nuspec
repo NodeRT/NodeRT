@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>RazorTemplates</id>
+    <version>1.2.0</version>
+    <authors>RazorTemplates Project</authors>
+    <owners>RazorTemplates Project</owners>
+    <licenseUrl>https://github.com/volkovku/RazorTemplates/blob/master/license.txt</licenseUrl>
+    <projectUrl>https://github.com/volkovku/RazorTemplates</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Open source templating engine based on Microsoft's Razor parsing engine. Thread safe. Allows run Razor templates outside ASP.Net MVC Projects.</description>
+    <releaseNotes>Visual Basic support was added.</releaseNotes>
+    <copyright>Copyright © RazorTemplates Project 2012</copyright>
+    <tags>razor razorengine templating razortemplates</tags>
+  </metadata>
+</package>

@@ -1,0 +1,18 @@
+{
+  "name": "nodert-streams",
+  "version": "0.0.1",
+  "description": "Turn WinRT streams to node.js streams",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "NodeRT",
+    "WinRT",
+    "Streams"
+  ],
+  "dependencies": {
+    "windows.storage.streams": "0.x.x"
+  },
+  "license": "Apache 2.0"
+}

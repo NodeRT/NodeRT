@@ -1,0 +1,22 @@
+{
+  "name": "nodert-promisize",
+  "version": "0.0.1",
+  "description": "Wrap async functions so they will return promises",
+  "main": "promisize.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "rsvp": "~2.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test\\testPromisize.js"
+  },
+  "keywords": [
+    "promise",
+    "async",
+    "callback"
+  ],
+  "license": "Apache 2.0"
+}
