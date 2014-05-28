@@ -1,5 +1,5 @@
-NodeRT sample - using the device camera
-=========================================
+NodeRT sample - showing a notification on the desktop
+=====================================================
 
 A sample script for showing a notification on the desktop.
 
