@@ -22,7 +22,7 @@ var win_shortcut = require('node-win-shortcut');
 win_shortcut.createShortcut(process.execPath, 'node', 'node_app_id');
 ```
 
-After you've created the shortcut, replace 'node_app_id' in the following line in the script with your shortcut's app-id (if necessary):
+After you've created the shortcut, replace 'node_app_id' in the following line in the notification.js script with your shortcut's app-id (if necessary):
 
 ```javascript
 var appId = 'node_app_id';
