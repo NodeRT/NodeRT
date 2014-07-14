@@ -13,6 +13,12 @@ node-gyp rebuild
 * Exposes an **InputStream** object which can be initiated by passing a WinRT input stream, this object behaves like a readable nodejs stream.
 * Exposes an **OutputStream** object which can be initiated by passing a WinRT input stream, this object behaves like a writeable nodejs stream.
 
+
+<h3>Prerequisites:</h3>
+
+In order to use nodert-streams, please make sure first to generate and compile the following NodeRT module and place it in a node_modules directory near by:
+* windows.storage.streams
+
 Here is an example of using nodert-streams for piping contents of a file to stdout:
 
 ```javascript
