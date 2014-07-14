@@ -11,7 +11,7 @@ var Readable = require('stream').Readable;
 var Writable = require('stream').Writable;
 var util = require('util');
 var bufferUtils = require('./build/Release/NodeRT_Buffer_Utils.node');
-
+var streams = require('windows.storage.streams');
 
 util.inherits(InputStream, Readable);
 util.inherits(OutputStream, Writable);
