@@ -1,12 +1,21 @@
 nodert-streams
 =====
-Turn a WinRT stream into a node.js stream.
+Turns a WinRT stream (Wrapped using NodeRT) into a node.js stream.
+For more information on NodeRT, take a look at: <a href="https://github.com/NodeRT/NodeRT" target="_blank">https://github.com/NodeRT/NodeRT</a>
 
-In order to build the native bindings of this module, run the following command from inside the directory:
+You can download this module from NPM by running the following cmd:
+
+```
+npm install nodert-streams
+```
+
+If you have cloned the git repo (and not downloaded thm module from NPM) run the following command from inside the directory:
 
 ```
 node-gyp rebuild
 ```
+
+(For both of the above commands, make sure that <a href="https://github.com/TooTallNate/node-gyp" target="_blank">node-gyp</a> and all of its perquisites are installed)
 
 <h3>API:</h3>
 
