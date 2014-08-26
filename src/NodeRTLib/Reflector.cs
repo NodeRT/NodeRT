@@ -229,7 +229,7 @@ namespace NodeRTLib
         public static string GenerateString(string winmdFile, string winRTNamespace, string baseWinMDDir)
         {
             var mainModel = GenerateModel(winmdFile, winRTNamespace, baseWinMDDir);
-            return TX.Templates.Wrapper(mainModel);
+            return TX.CppTemplates.Wrapper(mainModel);
         }
 
         // Used in order to retreive the namespace with the appropriate casings
@@ -258,14 +258,17 @@ namespace NodeRTLib
     public static class TX
     {
         public static dynamic MainModel;
-        public static dynamic Templates = new DynamicTemplate();
-        public static ITemplate<dynamic> LoadTemplate(string templateName)
+        public static dynamic CppTemplates = new DynamicTemplate("CppTemplates", ".cpp");
+        public static dynamic JsDefinitionTemplates = new DynamicTemplate(@"DefinitonTemplates\Js", ".js");
+        public static dynamic TsDefinitionTemplates = new DynamicTemplate(@"DefinitonTemplates\Ts", ".ts");
+
+        public static ITemplate<dynamic> LoadTemplate(string templateName, string templateLocation, string templateExtension)
         {
             Stream stream;
 
             try
             {
-                stream = File.OpenRead(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Format(@"CppTemplates\{0}.cpp", templateName)));
+                stream = File.OpenRead(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Format(@"{0}\{1}{2}", templateLocation, templateName, templateExtension)));
             }
             catch (Exception)
             {
@@ -292,9 +295,9 @@ namespace NodeRTLib
             return false;
         }
 
-        public static Func<dynamic, String> LazyTemplate(string templateName)
+        public static Func<dynamic, String> LazyTemplate(string templateName, string templateLocation, string templateExtension)
         {
-            ITemplate<dynamic> template = LoadTemplate(templateName);
+            ITemplate<dynamic> template = LoadTemplate(templateName, templateLocation, templateExtension);
             if (template == null)
             {
                 return null;
@@ -341,6 +344,69 @@ namespace NodeRTLib
         private static string GetTypeFullName(Type type)
         {
             return (type.Namespace + "." + type.Name).Replace("`1", "");
+        }
+
+        public static string GetParamsFromJsMethodForDefinitions(dynamic method, bool isAsync = false)
+        {
+            StringBuilder sb = new StringBuilder();
+            string commaString = string.Empty;
+            foreach (var paramInfo in method.GetParameters())
+            {
+                sb.Append(commaString);
+                sb.Append(paramInfo.Name);
+                commaString = ", ";
+            }
+
+            if (isAsync)
+            {
+                sb.Append(commaString);
+                sb.Append("callback");
+            }
+
+            return sb.ToString();
+        }
+
+        public static string GetParamsFromTsMethodForDefinitions(dynamic method, bool isAsync = false)
+        {
+            var sb = new StringBuilder();
+            string commaString = string.Empty;
+            foreach (var paramInfo in method.GetParameters())
+            {
+                string optionalString = string.Empty;
+                if (paramInfo.IsOptional)
+                {
+                    optionalString = "?";
+                }
+                sb.Append(commaString);
+                sb.Append(paramInfo.Name);
+                sb.Append(": ");
+                sb.Append(Converter.ToJsDefinitonType(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)));
+                commaString = ", ";
+            }
+
+            if (isAsync)
+            {
+                System.Reflection.MethodInfo[] returnTypeMethods = method.ReturnType.GetMethods();
+                Type resultType = returnTypeMethods.Where((methodInfo) => { return (methodInfo.Name == "GetResults"); }).First().ReturnType;
+
+                string resultTypeString = Converter.ToJsDefinitonType(resultType, TX.MainModel.Types.ContainsKey(resultType));
+                string errorTypeString = "Error";
+
+                string errorParam = string.Format("error: {0}", errorTypeString);
+                string resultParam = string.Format("result: {0}", resultTypeString);
+
+                string callbackParams = errorParam;
+                if (resultType != typeof(void))
+                {
+                    callbackParams += ", " + resultParam;
+                }
+
+                string callbackSignature = string.Format("callback: ({0}) => void", callbackParams);
+                sb.Append(commaString);
+                sb.Append(callbackSignature);
+            }
+
+            return sb.ToString();
         }
 
         public static string ToWinRT(Type type, bool generateHat = true)
@@ -646,7 +712,33 @@ namespace NodeRTLib
         Dictionary<string, object> dictionary
             = new Dictionary<string, object>();
 
-        // This property returns the number of elements 
+        private string templateLocation;
+
+        public string TemplateLocation
+        {
+            get
+            {
+                return templateLocation;
+            }
+        }
+
+        private string templateExtension;
+
+        public string TemplateExtension
+        {
+            get
+            {
+                return templateExtension;
+            }
+        }
+
+        public DynamicTemplate(string templateLocation, string templateExtension)
+        {
+            this.templateLocation = templateLocation;
+            this.templateExtension = templateExtension;
+        }
+
+        // This property returns the number of elements
         // in the inner dictionary. 
         public int Count
         {
@@ -668,7 +760,7 @@ namespace NodeRTLib
             // Otherwise, try to load the template. 
             if (!dictionary.TryGetValue(name, out result))
             {
-                Func<dynamic, String> template = TX.LazyTemplate(name);
+                Func<dynamic, String> template = TX.LazyTemplate(name, this.templateLocation, this.templateExtension);
                 if (template != null)
                 {
                     dictionary[name] = template;

@@ -38,21 +38,21 @@ using namespace concurrency;
 
 @foreach(var name in Model.Namespaces) @("namespace " + name + " { ")
 
-@TX.Templates.TypeWrapperForwardDecleration(Model)
+@TX.CppTemplates.TypeWrapperForwardDecleration(Model)
 
 @foreach(var en in Model.Enums) {
-  @TX.Templates.Enum(en);
+  @TX.CppTemplates.Enum(en);
 }
 
 @foreach(var vt in Model.ValueTypes) {
-  @TX.Templates.ValueType(vt);
+  @TX.CppTemplates.ValueType(vt);
 }
 @foreach(var vt in Model.ExternalReferencedValueTypes) {
-  @TX.Templates.ValueType(vt);
+  @TX.CppTemplates.ValueType(vt);
 }
   
 @foreach(var t in Model.Types.Values) {
-  @TX.Templates.Type(t);
+  @TX.CppTemplates.Type(t);
 }
 @foreach(var name in Model.Namespaces) @("} ")
 

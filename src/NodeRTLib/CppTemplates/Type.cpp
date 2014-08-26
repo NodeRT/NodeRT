@@ -1,6 +1,6 @@
 ﻿  class @(Model.Name) : public WrapperBase
   {
-  public:@TX.Templates.InitExports(Model)
+  public:@TX.CppTemplates.InitExports(Model)
 
     virtual ::Platform::Object^ GetObjectInstance() const override
     {
@@ -14,48 +14,48 @@
       _instance = instance;
     }
     
-    @TX.Templates.Constructor(Model)
+    @TX.CppTemplates.Constructor(Model)
 
   @foreach(var methodInfo in Model.MemberAsyncMethods) { 
-      @TX.Templates.MemberASyncMethod(methodInfo)
+      @TX.CppTemplates.MemberASyncMethod(methodInfo)
   }
   
   @foreach(var methodInfo in Model.MemberSyncMethods) 
   { 
       if (TX.IsMethodNotImplemented(methodInfo))
       {
-      @TX.Templates.NotImplementedMethod(methodInfo)
+      @TX.CppTemplates.NotImplementedMethod(methodInfo)
       }
       else
       {
         if (TX.IsIClosableClose(methodInfo.Overloads[0]))
         {
-      @TX.Templates.IClosableCloseMethod(methodInfo)
+      @TX.CppTemplates.IClosableCloseMethod(methodInfo)
         }
         else
         {
-      @TX.Templates.MemberSyncMethod(methodInfo)
+      @TX.CppTemplates.MemberSyncMethod(methodInfo)
         }
       }
   }
 
   @foreach(var methodInfo in Model.StaticAsyncMethods) 
   { 
-      @TX.Templates.StaticASyncMethod(methodInfo)
+      @TX.CppTemplates.StaticASyncMethod(methodInfo)
   }
 
   @foreach(var methodInfo in Model.StaticSyncMethods) 
   { 
-      @TX.Templates.StaticSyncMethod(methodInfo)
+      @TX.CppTemplates.StaticSyncMethod(methodInfo)
   }
 
   @foreach(var propertyInfo in Model.MemberProperties) 
   {
-    @TX.Templates.MemberPropertyGetter(propertyInfo)
+    @TX.CppTemplates.MemberPropertyGetter(propertyInfo)
     
     @:
     if (propertyInfo.GetSetMethod() != null) {
-      @TX.Templates.MemberPropertySetter(propertyInfo)
+      @TX.CppTemplates.MemberPropertySetter(propertyInfo)
     @:
     }
   }
@@ -64,11 +64,11 @@
   {
     @foreach(var propertyInfo in Model.StaticProperties) 
     {
-    @TX.Templates.StaticPropertyGetter(propertyInfo)
+    @TX.CppTemplates.StaticPropertyGetter(propertyInfo)
     
     @:
       if (propertyInfo.GetSetMethod() != null) {
-      @TX.Templates.StaticPropertySetter(propertyInfo)
+      @TX.CppTemplates.StaticPropertySetter(propertyInfo)
     @:
       }
     }
@@ -76,7 +76,7 @@
 
   @if(Model.Events.Length > 0) 
   {
-    @TX.Templates.Event(Model)
+    @TX.CppTemplates.Event(Model)
   }
   private:
     @(TX.ToWinRT(Model.Type)) _instance;

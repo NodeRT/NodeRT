@@ -63,6 +63,7 @@ namespace NodeRTUI
             this.label6 = new System.Windows.Forms.Label();
             this.btnOutputDirBrowse = new System.Windows.Forms.Button();
             this.txtOutputDirectory = new System.Windows.Forms.TextBox();
+            this.chkDefGen = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -145,7 +146,7 @@ namespace NodeRTUI
             // 
             this.txtProjectConfigurationRoot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtProjectConfigurationRoot.Location = new System.Drawing.Point(192, 321);
+            this.txtProjectConfigurationRoot.Location = new System.Drawing.Point(192, 331);
             this.txtProjectConfigurationRoot.Name = "txtProjectConfigurationRoot";
             this.txtProjectConfigurationRoot.ReadOnly = true;
             this.txtProjectConfigurationRoot.Size = new System.Drawing.Size(344, 20);
@@ -154,7 +155,7 @@ namespace NodeRTUI
             // btnBrowseProjectConfigurationRoot
             // 
             this.btnBrowseProjectConfigurationRoot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseProjectConfigurationRoot.Location = new System.Drawing.Point(510, 321);
+            this.btnBrowseProjectConfigurationRoot.Location = new System.Drawing.Point(510, 331);
             this.btnBrowseProjectConfigurationRoot.Name = "btnBrowseProjectConfigurationRoot";
             this.btnBrowseProjectConfigurationRoot.Size = new System.Drawing.Size(26, 21);
             this.btnBrowseProjectConfigurationRoot.TabIndex = 14;
@@ -166,7 +167,7 @@ namespace NodeRTUI
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 323);
+            this.label3.Location = new System.Drawing.Point(21, 333);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(78, 13);
             this.label3.TabIndex = 15;
@@ -176,7 +177,7 @@ namespace NodeRTUI
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(21, 352);
+            this.label4.Location = new System.Drawing.Point(21, 356);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(164, 13);
             this.label4.TabIndex = 23;
@@ -185,7 +186,7 @@ namespace NodeRTUI
             // btnCodeGenDirBrowse
             // 
             this.btnCodeGenDirBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCodeGenDirBrowse.Location = new System.Drawing.Point(509, 352);
+            this.btnCodeGenDirBrowse.Location = new System.Drawing.Point(509, 356);
             this.btnCodeGenDirBrowse.Name = "btnCodeGenDirBrowse";
             this.btnCodeGenDirBrowse.Size = new System.Drawing.Size(26, 21);
             this.btnCodeGenDirBrowse.TabIndex = 28;
@@ -197,7 +198,7 @@ namespace NodeRTUI
             // 
             this.txtProjectGenerationDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtProjectGenerationDirectory.Location = new System.Drawing.Point(192, 352);
+            this.txtProjectGenerationDirectory.Location = new System.Drawing.Point(192, 356);
             this.txtProjectGenerationDirectory.Name = "txtProjectGenerationDirectory";
             this.txtProjectGenerationDirectory.ReadOnly = true;
             this.txtProjectGenerationDirectory.Size = new System.Drawing.Size(343, 20);
@@ -206,7 +207,7 @@ namespace NodeRTUI
             // btnNodeFilesRootDefault
             // 
             this.btnNodeFilesRootDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNodeFilesRootDefault.Location = new System.Drawing.Point(463, 321);
+            this.btnNodeFilesRootDefault.Location = new System.Drawing.Point(463, 331);
             this.btnNodeFilesRootDefault.Name = "btnNodeFilesRootDefault";
             this.btnNodeFilesRootDefault.Size = new System.Drawing.Size(49, 21);
             this.btnNodeFilesRootDefault.TabIndex = 25;
@@ -222,7 +223,7 @@ namespace NodeRTUI
             this.cmbTargetVs.Items.AddRange(new object[] {
             "Windows 8 VS 2012 Project",
             "Windows 8.1 VS 2013 Project"});
-            this.cmbTargetVs.Location = new System.Drawing.Point(192, 289);
+            this.cmbTargetVs.Location = new System.Drawing.Point(192, 281);
             this.cmbTargetVs.Name = "cmbTargetVs";
             this.cmbTargetVs.Size = new System.Drawing.Size(343, 21);
             this.cmbTargetVs.TabIndex = 27;
@@ -231,7 +232,7 @@ namespace NodeRTUI
             // 
             this.lblVsWindowsVer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblVsWindowsVer.AutoSize = true;
-            this.lblVsWindowsVer.Location = new System.Drawing.Point(21, 294);
+            this.lblVsWindowsVer.Location = new System.Drawing.Point(21, 286);
             this.lblVsWindowsVer.Name = "lblVsWindowsVer";
             this.lblVsWindowsVer.Size = new System.Drawing.Size(110, 13);
             this.lblVsWindowsVer.TabIndex = 28;
@@ -279,11 +280,22 @@ namespace NodeRTUI
             this.txtOutputDirectory.Size = new System.Drawing.Size(344, 20);
             this.txtOutputDirectory.TabIndex = 30;
             // 
+            // chkDefGen
+            // 
+            this.chkDefGen.AutoSize = true;
+            this.chkDefGen.Location = new System.Drawing.Point(24, 308);
+            this.chkDefGen.Name = "chkDefGen";
+            this.chkDefGen.Size = new System.Drawing.Size(267, 17);
+            this.chkDefGen.TabIndex = 32;
+            this.chkDefGen.Text = "Generate TypeScript and JavaScript definition files.";
+            this.chkDefGen.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 441);
+            this.Controls.Add(this.chkDefGen);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnOutputDirBrowse);
             this.Controls.Add(this.txtOutputDirectory);
@@ -340,6 +352,7 @@ namespace NodeRTUI
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnOutputDirBrowse;
         private System.Windows.Forms.TextBox txtOutputDirectory;
+        private System.Windows.Forms.CheckBox chkDefGen;
     }
 }
 

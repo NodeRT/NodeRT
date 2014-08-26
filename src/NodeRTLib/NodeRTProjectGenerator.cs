@@ -26,11 +26,13 @@ namespace NodeRTLib
     {
         private string _sourceDir;
         private VsVersions _vsVersion;
+        private bool _isGenerateDef;
 
-        public NodeRTProjectGenerator(string sourceDir, VsVersions vsVersion)
+        public NodeRTProjectGenerator(string sourceDir, VsVersions vsVersion, bool isGenerateDef)
         {
             _sourceDir = sourceDir.TrimEnd('\\');
             _vsVersion = vsVersion;
+            _isGenerateDef = isGenerateDef;
         }
 
         public static string DefaultDir
@@ -67,8 +69,22 @@ namespace NodeRTLib
             string outputFileName = "NodeRT." + winRTNamespace + ".cpp";
             using (var writer = new StreamWriter(Path.Combine(destinationFolder, outputFileName)))
             {
-                writer.Write(TX.Templates.Wrapper(mainModel));
+                writer.Write(TX.CppTemplates.Wrapper(mainModel));
             }
+
+            if (_isGenerateDef)
+            {
+                using (var writer = new StreamWriter(Path.Combine(destinationFolder, projectName + ".d.js")))
+                {
+                    writer.Write(TX.JsDefinitionTemplates.Wrapper(mainModel));
+                }
+
+                using (var writer = new StreamWriter(Path.Combine(destinationFolder, projectName + ".d.ts")))
+                {
+                    writer.Write(TX.TsDefinitionTemplates.Wrapper(mainModel));
+                }
+            }
+
 
             StringBuilder slnFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\NodeRTSolutionTemplate.sln")));
             StringBuilder projectFileText;

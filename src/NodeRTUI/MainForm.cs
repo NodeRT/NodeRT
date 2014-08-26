@@ -218,7 +218,7 @@ namespace NodeRTUI
             string codeGenerationFolder = Path.Combine(txtProjectGenerationDirectory.Text, winRTNamespace.ToLower());
             string outputFolder = Path.Combine(txtOutputDirectory.Text, winRTNamespace.ToLower());
 
-            var generator = new NodeRTProjectGenerator(txtProjectConfigurationRoot.Text, vsVersion);
+            var generator = new NodeRTProjectGenerator(txtProjectConfigurationRoot.Text, vsVersion, chkDefGen.Checked);
 
             btnGenerate.Text = "Generating code...";
             bool succeeded = false;
@@ -243,7 +243,7 @@ namespace NodeRTUI
 
                 try
                 {
-                    NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, outputFolder, platforms);
+                    NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, outputFolder, platforms, chkDefGen.Checked);
                     succeeded = true;
                 }
                 catch (IOException ex)
