@@ -17,6 +17,72 @@ namespace NodeRTLib
 {
     public static class Converter
     {
+        /// <summary>
+        /// Convert a C# dataType to its equivlant JavaScript dataType, here used to generate TypeScript and JavaScript definition files
+        /// </summary>
+        /// <param name="type">C# dataType</param>
+        /// <param name="typeIsInNameSpace">A flag indicating if teh Type is in the nameSpace</param>
+        /// <returns>Equivlant JS dataType</returns>
+        public static string ToJsDefinitonType(Type type, bool typeIsInNameSpace = false)
+        {
+            if (type.IsPrimitive)
+            {
+                if (type == typeof(Byte) ||
+                    type == typeof(SByte) ||
+                    type == typeof(Int16) ||
+                    type == typeof(UInt16) ||
+                    type == typeof(Int32) ||
+                    type == typeof(UInt32)
+                    )
+                {
+                    return "Number";
+                }
+            }
+
+            if (type.IsByRef)
+            {
+                return ToJsDefinitonType(type.GetElementType(), typeIsInNameSpace);
+            }
+
+            if (type.IsArray)
+            {
+                return string.Format("Array<{0}>", ToJsDefinitonType(type.GetElementType(), typeIsInNameSpace));
+            }
+
+            if (type.IsEnum)
+            {
+                if (type.Namespace.Equals(TX.MainModel.winrtnamespace))
+                {
+                    return type.Name;
+                }
+                return "Number";
+            }
+
+            if (type == typeof(void))
+            {
+                return "void";
+            }
+
+            if (type.IsGenericType && type.FullName != null && (type.FullName.StartsWith("Windows.Foundation.Collections") ||
+               type.FullName.StartsWith("System.Collections")))
+            {
+                return "Object";
+            }
+
+            string[] jsType = ToJS(type, typeIsInNameSpace);
+
+            if (jsType[0].Equals("Value"))
+            {
+                if (type.IsValueType)
+                {
+                    return type.Name;
+                }
+                return "Object";
+            }
+
+            return jsType[0];
+        }
+
         public static string[] ToJS(Type type, bool typeIsInNameSpace = false)
         {
             // The primitive types are Boolean, Byte, SByte, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Char, Double, and Single.

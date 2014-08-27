@@ -45,6 +45,7 @@ namespace NodeRTCmd
             string winmd = argsDictionary["winmd"];
             string outDir = argsDictionary["outdir"];
             string codeGenDir = argsDictionary["codegendir"];
+            bool isGenerateDef = argsDictionary.ContainsKey("generatedef");
 
             if (!Directory.Exists(codeGenDir))
             {
@@ -83,7 +84,7 @@ namespace NodeRTCmd
             if (!String.IsNullOrEmpty(ns))
             {
                 GenerateAndBuildNamespace(nodeSrcDir, ns,
-                    vsVersion, winmd, outDir, codeGenDir);
+                    vsVersion, winmd, outDir, codeGenDir, isGenerateDef);
             }
             else // try to generate & build all namespaces in winmd file
             {
@@ -93,7 +94,7 @@ namespace NodeRTCmd
                 {
                     if (!GenerateAndBuildNamespace(nodeSrcDir, winRtNamespace,
                           vsVersion, winmd,
-                          outDir, codeGenDir))
+                          outDir, codeGenDir, isGenerateDef))
                     {
                         failedList.Add(winRtNamespace);
                     }
@@ -136,7 +137,7 @@ namespace NodeRTCmd
         }
 
         static bool GenerateAndBuildNamespace(string nodeSrcDir, string ns, 
-            VsVersions vsVersion, string winmd, string outDir, string codeGenDir)
+            VsVersions vsVersion, string winmd, string outDir, string codeGenDir, bool isGenerateDef)
         {
             string moduleCodeGenDir = Path.Combine(codeGenDir, ns.ToLower());
             string moduleOutDir = Path.Combine(outDir, ns.ToLower());
@@ -167,7 +168,7 @@ namespace NodeRTCmd
             if (NodeRTProjectBuildUtils.IsRunningOn64Bit)
                 platforms |=  NodeRTProjectBuildUtils.Platforms.x64;
 
-            var generator = new NodeRTProjectGenerator(nodeSrcDir, vsVersion);
+            var generator = new NodeRTProjectGenerator(nodeSrcDir, vsVersion, isGenerateDef);
             
             Console.WriteLine("Generating code for: {0}...", ns);
 
@@ -186,7 +187,7 @@ namespace NodeRTCmd
 
             try
             {
-                NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, moduleOutDir, platforms);
+                NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, moduleOutDir, platforms, isGenerateDef);
             }
             catch (IOException e)
             {
@@ -242,6 +243,9 @@ namespace NodeRTCmd
             Console.WriteLine("    --nodesrcdir [path]      Optional, path to the node src/lib files root");
             Console.WriteLine();
             Console.WriteLine("    --vs [Vs2012|Vs2013]     Optional, VS version to use, default is Vs2013");
+            Console.WriteLine();
+            Console.WriteLine("    --generatedef            Optional, Will generate TypeScript and JavaScript");
+            Console.WriteLine("                             definition files");
             Console.WriteLine();
             Console.WriteLine("    --help                   Print this help screen");
             Console.WriteLine();

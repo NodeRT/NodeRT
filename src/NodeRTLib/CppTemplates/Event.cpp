@@ -25,7 +25,7 @@
         @:}
         @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(args.This());
         }
-      @TX.Templates.RegisterEventWithWinRT(Model.Events[0])
+      @TX.CppTemplates.RegisterEventWithWinRT(Model.Events[0])
       }
       @for(var i=1; i<Model.Events.Length; i++) {
       @:else if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[i].EventInfo.Name)", str))
@@ -39,7 +39,7 @@
         @:}
         @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(args.This());
         }
-      @:@TX.Templates.RegisterEventWithWinRT(Model.Events[i])
+      @:@TX.CppTemplates.RegisterEventWithWinRT(Model.Events[i])
       @:}
       }
       else 

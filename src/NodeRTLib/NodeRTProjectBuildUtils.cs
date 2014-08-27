@@ -34,7 +34,7 @@ namespace NodeRTLib
         private const string MSBUILD_CMD_TEMPLATE = "\"{0} & msbuild {1} /t:Rebuild /p:Configuration=Release /p:Platform={2}\"";
 
         // Builds the given project/sln for the given platforms and copies the output & package file to the output directory
-        public static void BuildAndCopyToOutputFolder(string slnPath, VsVersions vsVersion, string outDir, Platforms plats)
+        public static void BuildAndCopyToOutputFolder(string slnPath, VsVersions vsVersion, string outDir, Platforms plats, bool isGenerateDef)
         {
             if ((plats & Platforms.x64) != 0)
                 BuildSln(slnPath, vsVersion, Platforms.x64);
@@ -46,7 +46,12 @@ namespace NodeRTLib
                 Directory.CreateDirectory(outDir);
 
             string packageDir = Path.GetDirectoryName(slnPath);
-
+            if (isGenerateDef)
+            {
+                string DefinitionFile = "NodeRT_" + TX.MainModel.winrtnamespace.Replace(".", "_");
+                CopyFile(DefinitionFile + ".d.js", packageDir, outDir);
+                CopyFile(DefinitionFile + ".d.ts", packageDir, outDir);
+            }
             CopyFile("package.json", packageDir, outDir);
             CopyFile("README.md", packageDir, outDir);
             CopyFile(".npmignore", packageDir, outDir);
