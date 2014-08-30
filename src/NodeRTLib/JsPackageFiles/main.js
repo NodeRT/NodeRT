@@ -10,9 +10,9 @@ var path = require('path');
 var fs = require('fs');
 
 try {
-  // this little trick makes node.js Tools for VS load intellisense for the module
+  // this little trick makes node.js Tools for VS load intellisense for the modul
   if (fs.existsSync(path.join(__dirname, '{ProjectName}.d.js)'))) {
-    module.exports = require('/.{ProjectName}.d.js');
+    module.exports = require('./{ProjectName}.d.js');
   }
   module.exports = require('../bin/' + {BinDir} + '/{ProjectName}.node');
 }
