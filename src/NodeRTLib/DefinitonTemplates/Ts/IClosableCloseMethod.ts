@@ -1,1 +1,1 @@
-﻿    @(Model.Name)();
+﻿    @(TX.Uncap(Model.Name))();

@@ -1,5 +1,5 @@
 ﻿@{
   foreach(var overload in Model.Overloads) {
-    @:@(Model.Name)(@(TX.GetParamsFromTsMethodForDefinitions(overload, isAsync: true))): void ;
+    @:@(TX.Uncap(Model.Name))(@(TX.GetParamsFromTsMethodForDefinitions(overload, isAsync: true))): void ;
   }
 }

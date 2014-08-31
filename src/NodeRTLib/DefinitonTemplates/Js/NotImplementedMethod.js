@@ -1,2 +1,2 @@
-﻿cls.prototype.@(Model.Name) = function () {
+﻿cls.prototype.@(TX.Uncap(Model.Name)) = function () {
 }

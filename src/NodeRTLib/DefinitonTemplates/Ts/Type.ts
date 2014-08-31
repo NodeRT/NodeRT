@@ -22,12 +22,12 @@
 @:@TX.TsDefinitionTemplates.StaticSyncMethod(methodInfo)
   }
 
-  foreach(var methodInfo in Model.MemberAsyncMethods) { 
+  foreach(var methodInfo in Model.MemberAsyncMethods) {
 @:@TX.TsDefinitionTemplates.MemberAsyncMethod(methodInfo)
   }
 
-  foreach(var methodInfo in Model.MemberSyncMethods) 
-  { 
+  foreach(var methodInfo in Model.MemberSyncMethods)
+  {
     if (TX.IsMethodNotImplemented(methodInfo))
     {
 @:@TX.TsDefinitionTemplates.NotImplementedMethod(methodInfo)
@@ -44,6 +44,11 @@
       }
     }
   }
-  
+
+  @if (Model.Events.Length > 0)
+  {
+    @TX.TsDefinitionTemplates.Event(Model)
+  }
+
   @:}
 }

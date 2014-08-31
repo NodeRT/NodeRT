@@ -44,6 +44,11 @@ namespace NodeRTLib
                 return ToJsDefinitonType(type.GetElementType(), typeIsInNameSpace);
             }
 
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return ToJsDefinitonType(type.GetGenericArguments()[0]);
+            }
+
             if (type.IsArray)
             {
                 return string.Format("Array<{0}>", ToJsDefinitonType(type.GetElementType(), typeIsInNameSpace));
