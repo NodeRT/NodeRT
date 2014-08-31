@@ -57,6 +57,7 @@ namespace NodeRTUI
 
             try
             {
+                chkDefGen.Checked = Properties.Settings.Default.GenerateDefsChk;
                 txtFilename.Text = Properties.Settings.Default.LastWinMDPath;
                 txtFilter.Text = Properties.Settings.Default.LastFilter;
                 cmbTargetVs.SelectedIndex = Properties.Settings.Default.VSProjectComboSelection;
@@ -106,6 +107,7 @@ namespace NodeRTUI
             Properties.Settings.Default.LastSavedFolder = "";
             Properties.Settings.Default.ProjectGenerationDir = GetDefaultCodeGenerationDir();
             Properties.Settings.Default.OutputDirPath = GetDefaultOutputDir();
+            Properties.Settings.Default.GenerateDefsChk = true;
             Properties.Settings.Default.Save();
 
             winMdBaseFolderBrowserDialog.SelectedPath = null;
@@ -319,6 +321,12 @@ namespace NodeRTUI
                 Properties.Settings.Default.Save();
                 txtProjectGenerationDirectory.Text = outputDirBrowserDialog.SelectedPath;
             }
+        }
+
+        private void chkDefGen_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.GenerateDefsChk = chkDefGen.Checked;
+            Properties.Settings.Default.Save();
         }
     }
 }

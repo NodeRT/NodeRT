@@ -282,13 +282,17 @@ namespace NodeRTUI
             // 
             // chkDefGen
             // 
+            this.chkDefGen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkDefGen.AutoSize = true;
+            this.chkDefGen.Checked = true;
+            this.chkDefGen.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkDefGen.Location = new System.Drawing.Point(24, 308);
             this.chkDefGen.Name = "chkDefGen";
             this.chkDefGen.Size = new System.Drawing.Size(267, 17);
             this.chkDefGen.TabIndex = 32;
             this.chkDefGen.Text = "Generate TypeScript and JavaScript definition files.";
             this.chkDefGen.UseVisualStyleBackColor = true;
+            this.chkDefGen.CheckedChanged += new System.EventHandler(this.chkDefGen_CheckedChanged);
             // 
             // MainForm
             // 
