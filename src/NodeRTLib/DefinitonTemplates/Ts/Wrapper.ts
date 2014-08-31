@@ -1,4 +1,4 @@
-﻿declare module "@(TX.MainModel.winrtnamespace)" {
+﻿declare module "@(TX.MainModel.winrtnamespace.ToLower())" {
   @{
     foreach(var vt in Model.ExternalReferencedValueTypes) {
   @:@TX.TsDefinitionTemplates.ValueType(vt)

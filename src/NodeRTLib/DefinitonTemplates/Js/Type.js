@@ -41,6 +41,11 @@
     }
   }
 
+  @if(Model.Events.Length > 0)
+  {
+    @TX.JsDefinitionTemplates.Event(Model)
+  }
+
   @:return cls;
 @:}) ();
 @:exports.@(Model.Name) = @(Model.Name);

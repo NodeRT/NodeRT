@@ -1,5 +1,5 @@
 ﻿@{
   foreach(var overload in Model.Overloads) {
-@:cls.prototype.@(Model.Name) = function @(Model.Name)(@(TX.GetParamsFromJsMethodForDefinitions(overload))) @TX.JsDefinitionTemplates.SyncMethodBody(overload)
+@:cls.prototype.@(TX.Uncap(Model.Name)) = function @(TX.Uncap(Model.Name))(@(TX.GetParamsFromJsMethodForDefinitions(overload))) @TX.JsDefinitionTemplates.SyncMethodBody(overload)
   }
 }
