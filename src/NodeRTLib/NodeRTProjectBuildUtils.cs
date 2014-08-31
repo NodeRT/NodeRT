@@ -46,12 +46,7 @@ namespace NodeRTLib
                 Directory.CreateDirectory(outDir);
 
             string packageDir = Path.GetDirectoryName(slnPath);
-            if (isGenerateDef)
-            {
-                string DefinitionFile = "NodeRT_" + TX.MainModel.winrtnamespace.Replace(".", "_");
-                CopyFile(DefinitionFile + ".d.js", packageDir, outDir);
-                CopyFile(DefinitionFile + ".d.ts", packageDir, outDir);
-            }
+            
             CopyFile("package.json", packageDir, outDir);
             CopyFile("README.md", packageDir, outDir);
             CopyFile(".npmignore", packageDir, outDir);
