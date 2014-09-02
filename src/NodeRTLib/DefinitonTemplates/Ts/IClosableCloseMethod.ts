@@ -1,1 +1,1 @@
-﻿    close();
+﻿    close(): void;
