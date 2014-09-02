@@ -9,8 +9,7 @@
     foreach(var en in Model.Enums) {
   @:@TX.TsDefinitionTemplates.Enum(en)
     }
-    foreach(var t in Model.Types.Values) 
-    {
+    foreach(var t in Model.Types.Values) {
   @:@TX.TsDefinitionTemplates.Type(t)
     }
 @:}
