@@ -204,7 +204,7 @@ namespace NodeRTLib
                 return ToReadOnlyCollection("Iterator", type.GetGenericArguments()[0]);
             }
 
-            if (type.IsGenericType && type.FullName != null &&  (type.FullName.StartsWith("Windows.Foundation.Collections.IITerable`1") || 
+            if (type.IsGenericType && type.FullName != null &&  (type.FullName.StartsWith("Windows.Foundation.Collections.IIterable`1") || 
                 type.FullName.StartsWith("System.Collections.Generic.IEnumerable`1")))
             {
                 return ToReadOnlyCollection("Iterable", type.GetGenericArguments()[0]);
