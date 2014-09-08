@@ -74,13 +74,19 @@ namespace NodeRTLib
 
             if (_isGenerateDef)
             {
-                string libDirFolder = Path.Combine(destinationFolder, "lib");
-                using (var writer = new StreamWriter(Path.Combine(libDirFolder, projectName + ".d.js")))
+                string libDirPath = Path.Combine(destinationFolder, "lib");
+
+                if (!Directory.Exists(libDirPath))
+                {
+                    Directory.CreateDirectory(libDirPath);
+                }
+
+                using (var writer = new StreamWriter(Path.Combine(libDirPath, projectName + ".d.js")))
                 {
                     writer.Write(TX.JsDefinitionTemplates.Wrapper(mainModel));
                 }
 
-                using (var writer = new StreamWriter(Path.Combine(libDirFolder, projectName + ".d.ts")))
+                using (var writer = new StreamWriter(Path.Combine(libDirPath, projectName + ".d.ts")))
                 {
                     writer.Write(TX.TsDefinitionTemplates.Wrapper(mainModel));
                 }
