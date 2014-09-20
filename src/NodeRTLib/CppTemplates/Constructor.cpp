@@ -2,6 +2,26 @@
     static v8::Handle<v8::Value> New(const v8::Arguments& args)
     {
       HandleScope scope;
+
+      // in case the constructor was called without the new operator
+      if (!s_constructorTemplate->HasInstance(args.This()))
+      {
+        if (args.Length() > 0)
+        {
+          std::unique_ptr<Handle<Value>> constructorArgs(new Handle<Value>[args.Length()]);
+
+          for (int i = 0; i < args.Length(); i++)
+          {
+            constructorArgs.get()[i] = args[i];
+          }
+
+          return s_constructorTemplate->GetFunction()->CallAsConstructor(args.Length(), constructorArgs.get());
+        }
+        else
+        {
+          return s_constructorTemplate->GetFunction()->CallAsConstructor(args.Length(), nullptr);
+        }
+      }
       
       @TX.ToWinRT(Model.Type) winRtInstance;
       @{
