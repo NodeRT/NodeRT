@@ -243,7 +243,7 @@ namespace NodeRTUI
                 MethodInvoker invoker = new MethodInvoker(delegate() { btnGenerate.Text = "Building..."; });
                 btnGenerate.Invoke(invoker);
 
-                try
+                /*try
                 {
                     NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, outputFolder, platforms, chkDefGen.Checked);
                     succeeded = true;
@@ -259,7 +259,7 @@ namespace NodeRTUI
                     MessageBox.Show("Failed to build the project from genreated code.\n" +
                         "Please try to build the project manually.\n" +
                         "You can access the project files at: " + codeGenerationFolder, "Failed to build project", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                }*/
             })
             .ContinueWith((t) =>
             {

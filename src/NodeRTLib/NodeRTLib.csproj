@@ -187,9 +187,6 @@
     <Content Include="ProjectFiles\WrapperBase.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ProjectTemplates\NodeRTSolutionTemplate.sln">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="JsPackageFiles\.npmignore">
@@ -202,12 +199,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
-    <Content Include="ProjectTemplates\ProjectTemplateFilters.vcxproj.filters">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ProjectTemplates\NodeRTProjectTemplate.vcxproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="ProjectTemplates\binding.gyp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ProjectTemplates\common.gypi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="DefinitonTemplates\Ts\Constructor.ts">

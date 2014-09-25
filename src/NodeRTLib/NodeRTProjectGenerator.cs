@@ -93,68 +93,50 @@ namespace NodeRTLib
             }
 
 
-            StringBuilder slnFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\NodeRTSolutionTemplate.sln")));
-            StringBuilder projectFileText;
+            StringBuilder bindingFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\binding.gyp")));
 
-            projectFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\NodeRTProjectTemplate.vcxproj")));
+            bindingFileText.Replace("{ProjectName}", projectName);
+            bindingFileText.Replace("{CppFileName}", outputFileName);
 
-            slnFileText.Replace("{ProjectName}", projectName);
-            var slnPath = Path.Combine(destinationFolder, projectName + ".sln");
-            File.WriteAllText(slnPath, slnFileText.ToString());
+            // TODO: make this work for binding.gyp file..
+            ResolveWinrtDirsAndCompiler(bindingFileText, winRtFile);
 
-            projectFileText.Replace("{ProjectName}", projectName);
-            projectFileText.Replace("{CppFileName}", outputFileName);
-            projectFileText.Replace("{NodeSrcDir}", _sourceDir);
-
-            ResolveWinrtDirsAndCompiler(projectFileText, winRtFile);
-
-            File.WriteAllText(Path.Combine(destinationFolder, projectName + ".vcxproj"), projectFileText.ToString());
-
-            GenerateFiltersFile(outputFileName, projectName, destinationFolder);
+            var bindingPath = Path.Combine(destinationFolder, "binding.gyp");
+            File.WriteAllText(bindingPath, bindingFileText.ToString());
+            File.Copy(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\common.gypi"), Path.Combine(destinationFolder, "common.gypi"), true);
 
             CopyProjectFiles(destinationFolder);
 
             CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, mainModel);
 
-            return slnPath;
+            return destinationFolder;
         }
 
-        private void GenerateFiltersFile(string cppOutputFileName, string projectName, string destinationFolder)
+        protected void ResolveWinrtDirsAndCompiler(StringBuilder bindingFileText, string winrtFile)
         {
-            StringBuilder projectFiltersFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\ProjectTemplateFilters.vcxproj.filters")));
-            projectFiltersFileText.Replace("{CppFileName}", cppOutputFileName);
-            File.WriteAllText(Path.Combine(destinationFolder, projectName + ".vcxproj.filters"), projectFiltersFileText.ToString());
-        }
-
-        protected void ResolveWinrtDirsAndCompiler(StringBuilder projectFileText, string winrtFile)
-        {
-            StringBuilder x64UsingDirs = new StringBuilder();
-
             string directoryName = Path.GetDirectoryName(winrtFile).ToLower();
 
             string programFilesDir = NodeRTProjectBuildUtils.GetProgramFilesX86Dir();
             if (_vsVersion == VsVersions.Vs2012)
             {
-                projectFileText.Replace("{PlatformToolset}", "v110");
-                x64UsingDirs.Append(programFilesDir + @"\Microsoft SDKs\Windows\v8.0\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral;" + 
-                    programFilesDir + @"\Windows Kits\8.0\References\CommonConfiguration\Neutral;");
+                bindingFileText.Replace("{WinVer}", "8.0");
             }
             else if (_vsVersion == VsVersions.Vs2013)
             {
-                projectFileText.Replace("{PlatformToolset}", "v120");
-                x64UsingDirs.Append(programFilesDir + @"\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\References\CommonConfiguration\neutral;" + 
-                    programFilesDir + @"\Windows Kits\8.1\References\CommonConfiguration\Neutral;");
+                bindingFileText.Replace("{WinVer}", "8.1");
             }
 
             // resolve the x64 dirs using the sdk we use:
             if (!directoryName.EndsWith(@"windows kits\8.1\references\commonconfiguration\neutral") && !
                 directoryName.EndsWith(@"windows kits\8.0\references\commonconfiguration\neutral"))
             {
-                // add the directory to the x64 dirs:
-                x64UsingDirs.Append(Path.GetDirectoryName(winrtFile));
+                bindingFileText.Replace("{AdditionalWinmdPath}", Path.GetDirectoryName(winrtFile));
+                bindingFileText.Replace("{UseAdditionalWinmd}", "true");
             }
-
-            projectFileText.Replace("{AdditionalWinRtDirsx64}", x64UsingDirs.ToString());
+            else
+            {
+                bindingFileText.Replace("{UseAdditionalWinmd}", "false");
+            }
         }
 
         private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, dynamic mainModel)
