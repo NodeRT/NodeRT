@@ -60,15 +60,8 @@ namespace NodeRTUI
                 chkDefGen.Checked = Properties.Settings.Default.GenerateDefsChk;
                 txtFilename.Text = Properties.Settings.Default.LastWinMDPath;
                 txtFilter.Text = Properties.Settings.Default.LastFilter;
-                cmbTargetVs.SelectedIndex = Properties.Settings.Default.VSProjectComboSelection;
-                txtProjectGenerationDirectory.Text = Properties.Settings.Default.LastSavedFolder;
-                if (String.IsNullOrEmpty(Properties.Settings.Default.ProjectGenerationDir))
-                {
-                    Properties.Settings.Default.ProjectGenerationDir = GetDefaultCodeGenerationDir();
-                    Properties.Settings.Default.Save();
-                }
-
-                txtProjectGenerationDirectory.Text = Properties.Settings.Default.ProjectGenerationDir;
+                cmbTargetWindows.SelectedIndex = Properties.Settings.Default.VsProjectComboSelection;
+                chkBuildModule.Checked = Properties.Settings.Default.BuildModuleChk;
 
                 if (String.IsNullOrEmpty(Properties.Settings.Default.OutputDirPath))
                 {
@@ -77,14 +70,6 @@ namespace NodeRTUI
                 }
 
                 txtOutputDirectory.Text = Properties.Settings.Default.OutputDirPath;
-
-                if (String.IsNullOrEmpty(Properties.Settings.Default.ProjectConfigurationRoot))
-                {
-                    Properties.Settings.Default.ProjectConfigurationRoot = NodeRTProjectGenerator.DefaultDir;
-                    Properties.Settings.Default.Save();
-                }
-
-                txtProjectConfigurationRoot.Text = Properties.Settings.Default.ProjectConfigurationRoot;
 
                 if (!string.IsNullOrWhiteSpace(txtFilename.Text))
                 {
@@ -102,10 +87,7 @@ namespace NodeRTUI
         {
             Properties.Settings.Default.LastWinMDPath = "";
             Properties.Settings.Default.LastFilter = "";
-            Properties.Settings.Default.ProjectConfigurationRoot = NodeRTProjectGenerator.DefaultDir;
-            Properties.Settings.Default.VSProjectComboSelection = 1;
-            Properties.Settings.Default.LastSavedFolder = "";
-            Properties.Settings.Default.ProjectGenerationDir = GetDefaultCodeGenerationDir();
+            Properties.Settings.Default.VsProjectComboSelection = 1;
             Properties.Settings.Default.OutputDirPath = GetDefaultOutputDir();
             Properties.Settings.Default.GenerateDefsChk = true;
             Properties.Settings.Default.Save();
@@ -113,10 +95,10 @@ namespace NodeRTUI
             winMdBaseFolderBrowserDialog.SelectedPath = null;
             txtFilename.Text = "";
             txtFilter.Text = "";
-            txtProjectGenerationDirectory.Text = Properties.Settings.Default.ProjectGenerationDir;
             txtOutputDirectory.Text = Properties.Settings.Default.OutputDirPath;
-            txtProjectConfigurationRoot.Text = Properties.Settings.Default.ProjectConfigurationRoot;
-            cmbTargetVs.SelectedIndex = 0;
+            cmbTargetWindows.SelectedIndex = 0;
+            chkDefGen.Checked = true;
+            chkBuildModule.Checked = true;
             namespaceList.Items.Clear();
         }
 
@@ -211,26 +193,20 @@ namespace NodeRTUI
 
             var winMdFile = txtFilename.Text;
             var winRTNamespace = namespaceList.SelectedItem.ToString();
-            VsVersions vsVersion = (VsVersions)cmbTargetVs.SelectedIndex;
-            
-            NodeRTProjectBuildUtils.Platforms platforms = NodeRTProjectBuildUtils.Platforms.Win32;
-            if (NodeRTProjectBuildUtils.IsRunningOn64Bit)
-             platforms|= NodeRTProjectBuildUtils.Platforms.x64;
-
-            string codeGenerationFolder = Path.Combine(txtProjectGenerationDirectory.Text, winRTNamespace.ToLower());
+            VsVersions vsVersion = (VsVersions)cmbTargetWindows.SelectedIndex;
             string outputFolder = Path.Combine(txtOutputDirectory.Text, winRTNamespace.ToLower());
-
-            var generator = new NodeRTProjectGenerator(txtProjectConfigurationRoot.Text, vsVersion, chkDefGen.Checked);
+            var generator = new NodeRTProjectGenerator(vsVersion, chkDefGen.Checked);
+            bool buildModule = chkBuildModule.Checked;
 
             btnGenerate.Text = "Generating code...";
             bool succeeded = false;
 
             Task.Run(() =>
             {
-                string slnPath;
+                string modulePath;
                 try
                 {
-                    slnPath = Reflector.GenerateProject(winMdFile, winRTNamespace, codeGenerationFolder,
+                    modulePath = Reflector.GenerateProject(winMdFile, winRTNamespace, outputFolder,
                         generator, null);
                 }
                 catch (Exception ex)
@@ -243,23 +219,26 @@ namespace NodeRTUI
                 MethodInvoker invoker = new MethodInvoker(delegate() { btnGenerate.Text = "Building..."; });
                 btnGenerate.Invoke(invoker);
 
-                /*try
+                if (buildModule)
                 {
-                    NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, outputFolder, platforms, chkDefGen.Checked);
-                    succeeded = true;
+                    try
+                    {
+                        NodeRTProjectBuildUtils.BuildWithNodeGyp(modulePath, vsVersion);
+                        succeeded = true;
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show("IO Error occured after building the project:\n" +
+                            ex.Message + "\n" +
+                            "You can access the project files at: " + outputFolder, "IO Error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Failed to build the project from genreated code.\n" +
+                            "Please try to build the project manually.\n" +
+                            "You can access the project files at: " + outputFolder, "Failed to build project", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                catch (IOException ex)
-                {
-                    MessageBox.Show("IO Error occured after building the project:\n" +
-                        ex.Message + "\n" +
-                        "You can access the project files at: " + codeGenerationFolder, "IO Error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Failed to build the project from genreated code.\n" +
-                        "Please try to build the project manually.\n" +
-                        "You can access the project files at: " + codeGenerationFolder, "Failed to build project", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }*/
             })
             .ContinueWith((t) =>
             {
@@ -278,48 +257,15 @@ namespace NodeRTUI
             Properties.Settings.Default.Save();
         }
 
-        private void btnBrowseProjectConfigurationRoot_Click(object sender, EventArgs e)
-        {
-            projectConfigurationRootBrowserDialog.SelectedPath = Properties.Settings.Default.ProjectConfigurationRoot;
-
-            var result = projectConfigurationRootBrowserDialog.ShowDialog();
-            if (result != System.Windows.Forms.DialogResult.Cancel)
-            {
-                Properties.Settings.Default.ProjectConfigurationRoot = projectConfigurationRootBrowserDialog.SelectedPath;
-                Properties.Settings.Default.Save();
-                txtProjectConfigurationRoot.Text = projectConfigurationRootBrowserDialog.SelectedPath;
-            }
-        }
-
-        private void btnNodeFilesRootDefault_Click(object sender, EventArgs e)
-        {
-            txtProjectConfigurationRoot.Text = NodeRTProjectGenerator.DefaultDir;
-
-            Properties.Settings.Default.ProjectConfigurationRoot = txtProjectConfigurationRoot.Text;
-            Properties.Settings.Default.Save();
-        }
-
-        private void btnProjectGenerationDirBrowse_Click(object sender, EventArgs e)
-        {
-            projectGenerationDirBrowserDialog.SelectedPath = txtProjectGenerationDirectory.Text;
-            var result = projectGenerationDirBrowserDialog.ShowDialog();
-            if (result != System.Windows.Forms.DialogResult.Cancel)
-            {
-                Properties.Settings.Default.ProjectGenerationDir = projectGenerationDirBrowserDialog.SelectedPath;
-                Properties.Settings.Default.Save();
-                txtProjectGenerationDirectory.Text = projectGenerationDirBrowserDialog.SelectedPath;
-            }
-        }
-
         private void btnOutputDirBrowse_Click(object sender, EventArgs e)
         {
-            outputDirBrowserDialog.SelectedPath = txtProjectGenerationDirectory.Text;
+            outputDirBrowserDialog.SelectedPath = txtOutputDirectory.Text;
             var result = outputDirBrowserDialog.ShowDialog();
             if (result != System.Windows.Forms.DialogResult.Cancel)
             {
                 Properties.Settings.Default.OutputDirPath = outputDirBrowserDialog.SelectedPath;
                 Properties.Settings.Default.Save();
-                txtProjectGenerationDirectory.Text = outputDirBrowserDialog.SelectedPath;
+                txtOutputDirectory.Text = outputDirBrowserDialog.SelectedPath;
             }
         }
 
@@ -327,6 +273,18 @@ namespace NodeRTUI
         {
             Properties.Settings.Default.GenerateDefsChk = chkDefGen.Checked;
             Properties.Settings.Default.Save();
+        }
+
+        private void chkBuildModule_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkBuildModule.Checked)
+            {
+                btnGenerate.Text = "Generate and build module";
+            }
+            else
+            {
+                btnGenerate.Text = "Generate module";
+            }
         }
     }
 }

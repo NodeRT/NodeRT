@@ -24,37 +24,13 @@ namespace NodeRTLib
 
     public class NodeRTProjectGenerator
     {
-        private string _sourceDir;
         private VsVersions _vsVersion;
         private bool _isGenerateDef;
 
-        public NodeRTProjectGenerator(string sourceDir, VsVersions vsVersion, bool isGenerateDef)
+        public NodeRTProjectGenerator(VsVersions vsVersion, bool isGenerateDef)
         {
-            _sourceDir = sourceDir.TrimEnd('\\');
             _vsVersion = vsVersion;
             _isGenerateDef = isGenerateDef;
-        }
-
-        public static string DefaultDir
-        {
-            get
-            {
-                string baseDir = @"C:\Users\" + Environment.UserName + @"\.node-gyp";
-
-                if (!Directory.Exists(baseDir))
-                {
-                    return String.Empty;
-                }
-
-                string [] dirs = Directory.GetDirectories(baseDir);
-                if (dirs.Length == 0)
-                {
-                    return String.Empty;
-                }
-
-                // choose the latest version
-                return Path.Combine(baseDir,dirs[dirs.Length-1]);
-            }
         }
 
         public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, dynamic mainModel)
@@ -98,7 +74,6 @@ namespace NodeRTLib
             bindingFileText.Replace("{ProjectName}", projectName);
             bindingFileText.Replace("{CppFileName}", outputFileName);
 
-            // TODO: make this work for binding.gyp file..
             ResolveWinrtDirsAndCompiler(bindingFileText, winRtFile);
 
             var bindingPath = Path.Combine(destinationFolder, "binding.gyp");
@@ -116,7 +91,6 @@ namespace NodeRTLib
         {
             string directoryName = Path.GetDirectoryName(winrtFile).ToLower();
 
-            string programFilesDir = NodeRTProjectBuildUtils.GetProgramFilesX86Dir();
             if (_vsVersion == VsVersions.Vs2012)
             {
                 bindingFileText.Replace("{WinVer}", "8.0");
