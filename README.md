@@ -83,8 +83,7 @@ Then, follow this short list of steps in order to create a NodeRT module:<br>
     ```
 * Choose a namespace to generate from the list of namespaces.<br>
 * Select whether you are generating a Windows 8.1 compatible module, using VS2013 or a Windows 8.0 compatible module using VS2012.<br>
-* Choose the node.js development files root, where the node header files & libs reside. For node.js, you'll probably want the location that gyp uses to compile the native addons. Note that the default value will be c:\users\\[current user]\\.node-gyp\\[latest version]. If you choose other directories, just make sure they have the same directory structures as the .node-gyp folder.<br>
-* Choose code generation & output directories, or just stick with the default ones.
+* Choose the output directory in which the module will be created, or just stick with the default ones.
 * You're good to go, hit the Generate & Build button! A message box with (hopefully) a success message should appear shortly.<br>
 
 -----------
@@ -109,15 +108,17 @@ The following is the list of options that the tool supports:
  --namespace [namespace]  The namespace to generate from the winmd when
                           not specified , all namespaces will be generated
 
- --codegendir [path]      The directory in which the project source code
-                          will be generated
-
  --outdir [path]          The output dir in which the compiled NodeRT module
                           will be created in
 
- --nodesrcdir [path]      Optional, path to the node src/lib files root
-
  --vs [Vs2012|Vs2013]     Optional, VS version to use, default is Vs2013
+ 
+ --nodefgen               Optional, specifying this option will reult in
+                          skipping the generation of TypeScript and
+                          JavaScript definition files
+
+ --nobuild                Optional, specifying this option will result in
+                          skipping the build process for the NodeRT module
 
  --help                   Print this help screen
 
