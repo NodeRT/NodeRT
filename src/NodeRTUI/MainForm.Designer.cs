@@ -183,7 +183,7 @@ namespace NodeRTUI
             // btnOutputDirBrowse
             // 
             this.btnOutputDirBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOutputDirBrowse.Location = new System.Drawing.Point(509, 341);
+            this.btnOutputDirBrowse.Location = new System.Drawing.Point(509, 334);
             this.btnOutputDirBrowse.Name = "btnOutputDirBrowse";
             this.btnOutputDirBrowse.Size = new System.Drawing.Size(26, 21);
             this.btnOutputDirBrowse.TabIndex = 31;
@@ -195,7 +195,7 @@ namespace NodeRTUI
             // 
             this.txtOutputDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOutputDirectory.Location = new System.Drawing.Point(191, 341);
+            this.txtOutputDirectory.Location = new System.Drawing.Point(191, 334);
             this.txtOutputDirectory.Name = "txtOutputDirectory";
             this.txtOutputDirectory.ReadOnly = true;
             this.txtOutputDirectory.Size = new System.Drawing.Size(344, 20);
