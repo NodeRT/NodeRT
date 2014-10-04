@@ -6,6 +6,9 @@
   "keywords": [
     {Keywords}
   ],
+  "dependencies" : [
+    {Dependencies}
+  ] 
   "repository": {
     "type": "git",
     "url": "git://github.com/NodeRT/NodeRT.git"

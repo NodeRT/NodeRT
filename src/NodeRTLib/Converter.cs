@@ -252,6 +252,13 @@ namespace NodeRTLib
                 return new[] {"Value", "CreateOpaqueWrapper({0})"};
             }
 
+            if (type.Namespace == "System" && type.Name == "Uri")
+            {
+                return new[] { "Value", "NodeRT::Utils::CreateExternalWinRTObject(\"Windows.Foundation\", " +
+                "\"" + type.Name + "\", "+
+                "{0})" };
+            }
+
             return new[] { "Value", "NodeRT::Utils::CreateExternalWinRTObject(" +
                 "\"" + type.Namespace + "\", "+
                 "\"" + type.Name + "\", "+

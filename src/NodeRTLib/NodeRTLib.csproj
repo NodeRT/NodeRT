@@ -55,7 +55,7 @@
     <Compile Include="Reflector.cs" />
     <Compile Include="NodeRTProjectBuildUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectorValueTypesHelper.cs" />
+    <Compile Include="ExternalTypesHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CppTemplates\Constructor.cpp">

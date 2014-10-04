@@ -124,7 +124,16 @@ namespace NodeRTLib
             // write the main.js file:
             StringBuilder mainJsFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\main.js")));
             mainJsFileText.Replace("{ProjectName}", projectName);
-            mainJsFileText.Replace("{BinDir}", "process.arch");
+            StringBuilder referencedNamespacesListBuilder = new StringBuilder();
+            foreach (string ns in mainModel.ExternalReferencedNamespaces)
+            {
+                if (referencedNamespacesListBuilder.Length > 0)
+                    referencedNamespacesListBuilder.Append(", ");
+                referencedNamespacesListBuilder.Append("'" + ns + "'");
+            }
+
+            mainJsFileText.Replace("{ExternalReferencedNamespaces}", referencedNamespacesListBuilder.ToString());
+
             File.WriteAllText(Path.Combine(libDirPath, "main.js"), mainJsFileText.ToString());
 
             // write the README.md file
@@ -137,6 +146,7 @@ namespace NodeRTLib
             packageJsonFileText.Replace("{Namespace}", winRTNamespace);
             packageJsonFileText.Replace("{PackageName}", winRTNamespace.ToLower());
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
+            packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces));
             File.WriteAllText(Path.Combine(destinationFolder, "package.json"), packageJsonFileText.ToString());
 
             // copy the .npmignore
@@ -170,6 +180,20 @@ namespace NodeRTLib
             }
 
             return keywordsBuilder.ToString();
+        }
+
+        private string GeneratePackageDependencies(List<String> externalReferencedNamespaces)
+        {
+            StringBuilder depsBuilder = new StringBuilder();
+
+            foreach (string ns in externalReferencedNamespaces)
+            {
+                if (depsBuilder.Length > 0)
+                    depsBuilder.Append(",\r\n    ");
+                depsBuilder.Append("\"" + ns.ToLowerInvariant() + "\" : \"*\"");
+            }
+
+            return depsBuilder.ToString();
         }
 
         private void CopyProjectFiles(string destinationFolder)

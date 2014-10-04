@@ -19,3 +19,36 @@ try {
 catch(e) {
   throw e;
 }
+
+var externalReferencedNamespaces = [{ExternalReferencedNamespaces}];
+
+
+if (externalReferencedNamespaces.length > 0) {
+    var namespaceRegistry = global.__winRtNamespaces__;
+
+    if (!namespaceRegistry) {
+        namespaceRegistry = {};
+        Object.defineProperty(global, '__winRtNamespaces__', {
+            configurable: true,
+            writable: false,
+            enumerable: false,
+            value: namespaceRegistry
+        });
+    }
+
+    function requireNamespace(namespace) {
+        var m = require(namespace.toLowerCase());
+        delete namespaceRegistry[namespace];
+        namespaceRegistry[namespace] = m;
+        return m;
+    }
+
+    for (var i in externalReferencedNamespaces) {
+        var ns = externalReferencedNamespaces[i];
+        Object.defineProperty(namespaceRegistry, ns, {
+            configurable: true,
+            enumerable: true,
+            get: requireNamespace.bind(null, ns)
+        });
+    }
+}
