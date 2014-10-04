@@ -139,6 +139,7 @@ namespace NodeRTLib
             // write the README.md file
             StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md")));
             readmeFileText.Replace("{Namespace}", winRTNamespace);
+            readmeFileText.Replace("{ModuleName}", winRTNamespace.ToLowerInvariant());
             File.WriteAllText(Path.Combine(destinationFolder, "README.md"), readmeFileText.ToString());
 
             // write the package.json file:
