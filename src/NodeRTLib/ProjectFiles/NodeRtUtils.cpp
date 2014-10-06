@@ -7,11 +7,11 @@
 //
 // See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
 
-#pragma once 
 
 #include <v8.h>
 #include <node.h>
 #include <string>
+#include "NodeRtUtils.h"
 #include "OpaqueWrapper.h"
 
 #define WCHART_NOT_BUILTIN_IN_NODE 1
@@ -81,7 +81,7 @@ namespace NodeRT { namespace Utils {
 
   // Calls the callback in the appropriate domwin, expects an object in the following format:
   // {
-  //    "callback" : [callback fuction]
+  //    "callback" : [callback function]
   //    "domain" : [the domain in which the async function/event was called/registered] (this is optional)
   // }
   v8::Handle<v8::Value> CallCallbackInDomain(v8::Handle<v8::Object> callbackObject, int argc, v8::Handle<v8::Value> argv[]) 
@@ -89,8 +89,13 @@ namespace NodeRT { namespace Utils {
     return node::MakeCallback(callbackObject, v8::String::NewSymbol("callback"), argc, argv);
   }
 
-  ::Platform::Object^ GetObjectInstance(v8::Handle<v8::Value>  value)
+  ::Platform::Object^ GetObjectInstance(v8::Handle<v8::Value> value)
   {
+    // nulls are allowed when a WinRT wrapped object is expected 
+    if (value->IsNull()) {
+      return nullptr;
+    }
+
     WrapperBase* wrapper = node::ObjectWrap::Unwrap<WrapperBase>(value.As<v8::Object>());
     return wrapper->GetObjectInstance();
   }
@@ -112,6 +117,19 @@ namespace NodeRT { namespace Utils {
     return *str;
 #endif
   }
+
+// Note: current implementation converts any JS value that has a toString method to a ::Platform::String^
+// Changes to this code might break the Collection Convertor logic
+  ::Platform::String^ V8StringToPlatformString(v8::Handle<v8::Value> value)
+  {
+    v8::String::Value stringVal(value);
+#ifdef WCHART_NOT_BUILTIN_IN_NODE
+    return ref new Platform::String(reinterpret_cast<const wchar_t*>(*stringVal));
+#else
+    return ref new Platform::String(*stringVal);
+#endif
+  }
+
 
 #ifndef min
   size_t min(size_t one, size_t two)
@@ -186,17 +204,48 @@ namespace NodeRT { namespace Utils {
     return scope.Close(objectFunc->NewInstance(_countof(args), args));
   }
 
+  bool IsWinRtWrapper(v8::Handle<v8::Value> value)
+  {
+    if (value.IsEmpty() || (!value->IsObject() && !value->IsNull()))
+    {
+      return false;
+    }
+
+    // allow passing nulls when a WinRT wrapped object is expected
+    if (value->IsNull())
+    {
+      return true;
+    }
+
+    if (NodeRT::OpaqueWrapper::IsOpaqueWrapper(value))
+    {
+      return true;
+    }
+
+    Handle<Value> hiddenVal = value.As<v8::Object>()->GetHiddenValue(v8::String::NewSymbol("__winRtInstance__"));
+
+    return (!hiddenVal.IsEmpty() && hiddenVal->Equals(True()));
+  }
+
+  bool ShouldRunFromUiThread(v8::Handle<Function> func)
+  {
+	  HandleScope scope;
+	  return (func->Get(String::NewSymbol("__runFromUiThread__"))->Equals(True()));
+  }
+
   ::Windows::Foundation::TimeSpan TimeSpanFromMilli(int64_t millis)
   {
     ::Windows::Foundation::TimeSpan timeSpan;
     timeSpan.Duration = millis * 10000;
 
     return timeSpan;
+
   }
 
   ::Windows::Foundation::DateTime DateTimeFromJSDate(v8::Handle<v8::Value> value)
   {
     ::Windows::Foundation::DateTime time;
+    time.UniversalTime = 0;
     if (value->IsDate())
     {
       // 116444736000000000 = The time in 100 nanoseconds between 1/1/1970(UTC) to 1/1/1601(UTC)
@@ -204,6 +253,13 @@ namespace NodeRT { namespace Utils {
       time.UniversalTime = value->IntegerValue()* 10000 + 116444736000000000;
     }
     return time; 
+  }
+
+  v8::Handle<v8::Value> DateTimeToJS(::Windows::Foundation::DateTime value)
+  {
+    // 116444736000000000 = The time 100 nanoseconds between 1/1/1970(UTC) to 1/1/1601(UTC)
+    // ux_time = (Current time since 1601 in 100 nano sec units)/10000 - 11644473600000;
+    return Date::New(value.UniversalTime / 10000.0 - 11644473600000);
   }
 
   bool StrToGuid(v8::Handle<v8::Value> value, LPCLSID guid)
@@ -269,9 +325,10 @@ namespace NodeRT { namespace Utils {
 
   ::Windows::UI::Color ColorFromJs(Handle<Value> value)
   {
-    ::Windows::UI::Color retVal;
+    ::Windows::UI::Color retVal = ::Windows::UI::Colors::Black;
     if (!value->IsObject())
     {
+      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return retVal;
     }
 
@@ -349,10 +406,11 @@ namespace NodeRT { namespace Utils {
 
   ::Windows::Foundation::Rect RectFromJs(v8::Handle<v8::Value> value)
   {
-    ::Windows::Foundation::Rect rect;  
+    ::Windows::Foundation::Rect rect = ::Windows::Foundation::Rect::Empty;
 
     if (!value->IsObject())
     {
+      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return rect;
     }
 
@@ -426,10 +484,11 @@ namespace NodeRT { namespace Utils {
 
   ::Windows::Foundation::Point PointFromJs(v8::Handle<v8::Value> value)
   {
-    ::Windows::Foundation::Point point;  
+    ::Windows::Foundation::Point point(0,0);  
 
     if (!value->IsObject())
     {
+      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return point;
     }
 
@@ -483,10 +542,11 @@ namespace NodeRT { namespace Utils {
 
   ::Windows::Foundation::Size SizeFromJs(v8::Handle<v8::Value> value)
   {
-    ::Windows::Foundation::Size size;  
+    ::Windows::Foundation::Size size(0,0);  
 
     if (!value->IsObject())
     {
+      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return size;
     }
 
@@ -554,6 +614,13 @@ namespace NodeRT { namespace Utils {
     str[1] = L'\0';
 
     return NewString(str);
+  }
+
+  ::Windows::Foundation::HResult HResultFromJsInt32(int32_t value)
+  {
+    ::Windows::Foundation::HResult res;
+    res.Value = value;
+    return res;
   }
 
 } } 

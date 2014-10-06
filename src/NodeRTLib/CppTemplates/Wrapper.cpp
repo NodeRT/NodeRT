@@ -11,15 +11,14 @@
 
 #include <v8.h>
 #include <string>
-
-#include "node_object_wrap.h"
-#include "WrapperBase.h"
-#include "OpaqueWrapper.h"
+#include <node_object_wrap.h>
+#include <ppltasks.h>
+#include "CollectionsConverter.h"
+#include "CollectionsWrap.h"
 #include "node-async.h"
 #include "NodeRtUtils.h"
-#include "CollectionsWrap.h"
-
-#include <ppltasks.h>
+#include "OpaqueWrapper.h"
+#include "WrapperBase.h"
 
 #using <@(Model.Assembly.GetName().Name).WinMD>
 
@@ -29,6 +28,7 @@
 #undef GetObject
 #undef CreateEvent
 #undef FindText
+#undef SendMessage
 
 const char* REGISTRATION_TOKEN_MAP_PROPERTY_NAME = "__registrationTokenMap__";
 

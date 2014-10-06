@@ -8,6 +8,9 @@
     <ClCompile Include=".\NodeRtUtils.cpp">
       <Filter>NodeRT Common</Filter>
     </ClCompile>
+    <ClCompile Include=".\CollectionsConverterUtils.cpp">
+      <Filter>NodeRT Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\CollectionsWrap.h">
@@ -23,6 +26,12 @@
       <Filter>NodeRT Common</Filter>
     </ClInclude>
     <ClInclude Include=".\OpaqueWrapper.h">
+      <Filter>NodeRT Common</Filter>
+    </ClInclude>
+    <ClInclude Include=".\CollectionsConverter.h">
+      <Filter>NodeRT Common</Filter>
+    </ClInclude>
+    <ClInclude Include=".\CollectionsConverterUtils.h">
       <Filter>NodeRT Common</Filter>
     </ClInclude>
   </ItemGroup>

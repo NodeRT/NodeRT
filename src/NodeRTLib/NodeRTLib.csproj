@@ -115,6 +115,15 @@
     <Content Include="CppTemplates\Wrapper.cpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ProjectFiles\CollectionsConverter.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ProjectFiles\CollectionsConverterUtils.cpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ProjectFiles\CollectionsConverterUtils.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="DefinitonTemplates\Js\AsyncMethodBody.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
