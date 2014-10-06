@@ -286,6 +286,7 @@
   <ItemGroup>
     <ClCompile Include=".\NodeRtUtils.cpp" />
     <ClCompile Include=".\OpaqueWrapper.cpp" />
+    <ClCompile Include=".\CollectionsConverterUtils.cpp" />
     <ClCompile Include="{CppFileName}" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +295,8 @@
     <ClInclude Include=".\OpaqueWrapper.h" />
     <ClInclude Include=".\WrapperBase.h" />
     <ClInclude Include=".\CollectionsWrap.h" />
+    <ClInclude Include=".\CollectionsConverter.h" />
+    <ClInclude Include=".\CollectionsConverterUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lib\main.js" />

@@ -24,22 +24,13 @@ v8::Handle<v8::Value> NodeRT::OpaqueWrapper::New(const v8::Arguments& args)
 void  NodeRT::OpaqueWrapper::Init()
 {
   HandleScope scope;
-  
+  // Prepare constructor template
   s_constructorTemplate = Persistent<FunctionTemplate>::New(FunctionTemplate::New(New));
   s_constructorTemplate->SetClassName(String::NewSymbol("OpaqueWrapper"));
   s_constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 }
 
 namespace NodeRT {
-  class OpaqueWrapperInitializer 
-  {
-  public:
-    OpaqueWrapperInitializer() 
-    {
-      NodeRT::OpaqueWrapper::Init();
-    }
-  };
-
   v8::Handle<v8::Object> CreateOpaqueWrapper(::Platform::Object^ winRtInstance)
   {
     HandleScope scope;
@@ -48,8 +39,12 @@ namespace NodeRT {
       return scope.Close(Undefined().As<Object>());
     }
 
-    v8::Handle<Value> args[] = {v8::Undefined()};
-    
+    v8::Handle<v8::Value> args[] = { v8::Undefined() };
+    if (OpaqueWrapper::s_constructorTemplate.IsEmpty())
+    {
+      OpaqueWrapper::Init();
+    }
+
     v8::Handle<v8::Object> objectInstance = OpaqueWrapper::s_constructorTemplate->GetFunction()->NewInstance(0, args);
     if (objectInstance.IsEmpty())
     {
@@ -60,6 +55,4 @@ namespace NodeRT {
     return scope.Close(objectInstance);
   }
 }
-
-static NodeRT::OpaqueWrapperInitializer s_opaqueWrapperInitializer;
 

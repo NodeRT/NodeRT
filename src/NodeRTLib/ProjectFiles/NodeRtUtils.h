@@ -22,7 +22,7 @@ namespace NodeRT {
 
     // creates an object with the following structure:
     // {
-    //    "callback" : [callback fuction]
+    //    "callback" : [callback function]
     //    "domain" : [the domain in which the async function/event was called/registered] (this is optional)
     // }
     v8::Handle<v8::Object> CreateCallbackObjectInDomain(v8::Handle<v8::Function> callback);
@@ -38,6 +38,8 @@ namespace NodeRT {
 
     const wchar_t* StringToWchar(v8::String::Value& str);
 
+    ::Platform::String^ V8StringToPlatformString(v8::Handle<v8::Value> value);
+
 #ifdef WCHART_NOT_BUILTIN_IN_NODE
     // compares 2 strings using a case insensitive comparison
     bool CaseInsenstiveEquals(const wchar_t* str1, const uint16_t* str2);
@@ -51,21 +53,19 @@ namespace NodeRT {
 
     v8::Handle<v8::Value> CreateExternalWinRTObject(const char* ns, const char* objectName, ::Platform::Object ^instance);
 
+    bool IsWinRtWrapper(v8::Handle<v8::Value> value);
+
     template<class T>
-    bool IsWinRtWrapperOf(v8::Handle<v8::Value>  value)
+    bool IsWinRtWrapperOf(v8::Handle<v8::Value> value)
     {
-      if (value.IsEmpty() || !value->IsObject())
+      if (!IsWinRtWrapper(value))
       {
         return false;
       }
 
-      if (!NodeRT::OpaqueWrapper::IsOpaqueWrapper(value))
+      if (value->IsNull())
       {
-        Handle<Value> hiddenVal = value.As<v8::Object>()->GetHiddenValue(v8::String::NewSymbol("__winRtInstance__"));
-        if (hiddenVal.IsEmpty() || !hiddenVal->Equals(True()))
-        {
-          return false;
-        }
+        return true;
       }
 
       WrapperBase* wrapper = node::ObjectWrap::Unwrap<WrapperBase>(value.As<v8::Object>());
@@ -88,6 +88,7 @@ namespace NodeRT {
 
     ::Platform::Object^ GetObjectInstance(v8::Handle<v8::Value>  value);
 
+    v8::Handle<v8::Value> DateTimeToJS(::Windows::Foundation::DateTime value);
     ::Windows::Foundation::TimeSpan TimeSpanFromMilli(int64_t millis);
     ::Windows::Foundation::DateTime DateTimeFromJSDate(v8::Handle<v8::Value> value);
 
@@ -113,5 +114,8 @@ namespace NodeRT {
 
     wchar_t GetFirstChar(v8::Handle<v8::Value> value);
     v8::Handle<v8::Value> JsStringFromChar(wchar_t value);
+
+    ::Windows::Foundation::HResult HResultFromJsInt32(int32_t value);
+
   }
 }
