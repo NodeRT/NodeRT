@@ -227,12 +227,6 @@ namespace NodeRT { namespace Utils {
     return (!hiddenVal.IsEmpty() && hiddenVal->Equals(True()));
   }
 
-  bool ShouldRunFromUiThread(v8::Handle<Function> func)
-  {
-	  HandleScope scope;
-	  return (func->Get(String::NewSymbol("__runFromUiThread__"))->Equals(True()));
-  }
-
   ::Windows::Foundation::TimeSpan TimeSpanFromMilli(int64_t millis)
   {
     ::Windows::Foundation::TimeSpan timeSpan;
