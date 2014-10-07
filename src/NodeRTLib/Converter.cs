@@ -21,7 +21,7 @@ namespace NodeRTLib
         /// Convert a C# dataType to its equivlant JavaScript dataType, here used to generate TypeScript and JavaScript definition files
         /// </summary>
         /// <param name="type">C# dataType</param>
-        /// <param name="typeIsInNameSpace">A flag indicating if teh Type is in the nameSpace</param>
+        /// <param name="typeIsInNameSpace">A flag indicating if the Type is in the nameSpace</param>
         /// <returns>Equivlant JS dataType</returns>
         public static string ToJsDefinitonType(Type type, bool typeIsInNameSpace = false)
         {
@@ -138,9 +138,7 @@ namespace NodeRTLib
 
             if (type == typeof(DateTimeOffset) || type == typeof(DateTime))
             {
-                // 116444736000000000 = The time 100 nanoseconds between 1/1/1970(UTC) to 1/1/1601(UTC)
-                // ux_time = (Current time since 1601 in 100 nano sec units)/10000 - 11644473600000;
-                return new[] { "Date", "Date::New({0}.UniversalTime/10000.0 - 11644473600000)" };
+                return new[] { "Date", "NodeRT::Utils::DateTimeToJS({0})" };
             }
 
             if (type == typeof(Exception))
@@ -389,6 +387,141 @@ namespace NodeRTLib
             return new[] { "NodeRT::Collections::Create" + collectionName + "<" + keyRtType + "," + valueRtType + ">", creatorFunction };
         }
 
+
+        private static string GetTypeCheckerAndConverterLambdas(Type type)
+        {
+            string rtType = TX.ToWinRT(type);
+            string[] jsToElementType = ToWinRT(type, TX.MainModel.Types.ContainsKey(type));
+
+            string checkType;
+
+            if (type == typeof(String))
+            {
+                // if the expected winRT type is String, allow non winrtWrapped object to be passed in and converted to Platform::String^
+                checkType = "(!NodeRT::Utils::IsWinRtWrapper({0}))";
+            }
+            else
+            {
+                checkType = TypeCheck(type, TX.MainModel.Types.ContainsKey(type));
+            }
+
+            return 
+"                 [](Handle<Value> value) -> bool {{\r\n" +
+"                   return " + ReplaceBracketsWithDoubleBrackets(String.Format(checkType, "value")) + ";\r\n" +
+"                 }},\r\n" +
+"                 [](Handle<Value> value) -> " + rtType + " {{\r\n" +
+"                   return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToElementType[1], "value")) + ";\r\n" +
+"                 }}";
+      }
+
+
+
+        private static string[] GetKeyValueTypeAndLambdas(Type keyType, Type valueType)
+        {
+            string keyRtType = TX.ToWinRT(keyType);
+            string valueRtType = TX.ToWinRT(valueType);
+
+            string templateVals = (keyType == typeof(String)) ? "<" + valueRtType + ">" : "<" + keyRtType + ", " + valueRtType + ">";
+
+            return new[] { templateVals, 
+                GetTypeCheckerAndConverterLambdas(keyType) + ",\r\n" + GetTypeCheckerAndConverterLambdas(valueType) + "\r\n"};
+        }
+
+        public static string[] GetValueTypeAndLambdas(Type valueType)
+        {
+            return new[] { "<" + TX.ToWinRT(valueType) + ">", GetTypeCheckerAndConverterLambdas(valueType) + "\r\n"};
+        }
+
+        public static string JsToWinrtCollection(Type type, string jsType, string winrtFullType, bool typeIsInNameSpace)
+        {
+            string methodNameSuffix = null;
+            string[] typeAndLambdas = null;
+            string castingType = null;
+
+            Type keyType = null;
+            Type valueType = null;
+
+            if (type.IsGenericType && (type.FullName != null))
+            {
+                if (type.FullName.StartsWith("Windows.Foundation.Collections.IIterable`1") ||
+                type.FullName.StartsWith("System.Collections.Generic.IEnumerable`1"))
+                {
+                    Type innerTemplateType = type.GetGenericArguments()[0];
+                    if (innerTemplateType.FullName.StartsWith("System.Collections.Generic.KeyValuePair`2"))
+                    {
+                        methodNameSuffix = "ToWinrtMap";
+                        keyType = innerTemplateType.GetGenericArguments()[0];
+                        valueType = innerTemplateType.GetGenericArguments()[1];
+                    }
+                    else
+                    {
+                        methodNameSuffix = "ToWinrtVector";
+                        valueType = innerTemplateType;
+                    }
+                }
+
+                if (type.FullName.StartsWith("System.Collections.Generic.IReadOnlyList`1"))
+                {
+                    methodNameSuffix = "ToWinrtVectorView";
+                    valueType = type.GetGenericArguments()[0];
+                }
+                else if (type.FullName.StartsWith("System.Collections.Generic.IList`1"))
+                {
+                    methodNameSuffix = "ToWinrtVector";
+                    valueType = type.GetGenericArguments()[0];
+                }
+                else if (type.FullName.StartsWith("System.Collections.Generic.IReadOnlyDictionary`2"))
+                {
+                    methodNameSuffix = "ToWinrtMapView";
+                    keyType = type.GetGenericArguments()[0];
+                    valueType = type.GetGenericArguments()[1];
+                }
+                else if (type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
+                {
+                    methodNameSuffix = "ToWinrtMap";
+                    keyType = type.GetGenericArguments()[0];
+                    valueType = type.GetGenericArguments()[1];
+                }
+            }
+            else if (type.IsArray)
+            {
+                methodNameSuffix = "ToWinrtArray";
+                valueType = type.GetElementType();
+            }
+
+            if (string.IsNullOrEmpty(methodNameSuffix) || valueType == null)
+            {
+                throw new Exception("Failed to handle given collection");
+            }
+            if ((keyType == null) || (keyType == typeof(String)))
+            {
+                typeAndLambdas = GetValueTypeAndLambdas(valueType);
+            }
+            else
+            {
+                typeAndLambdas = GetKeyValueTypeAndLambdas(keyType, valueType);
+            }
+
+            castingType = (keyType == typeof(String)) ? "Object" : "Array";
+
+            string funcStr = "\r\n" +
+"            [] (v8::Handle<v8::Value> value) -> " + winrtFullType + "\r\n" +
+"            {{\r\n" +
+"              if (value->Is" + jsType + "())\r\n" +
+"              {{\r\n" +
+"                return NodeRT::Collections::Js" + castingType + methodNameSuffix + typeAndLambdas[0] + "(value.As<" + castingType + ">(), \r\n" + typeAndLambdas[1] +
+"                );\r\n" +
+"              }}\r\n" +
+"              else\r\n" +
+"              {{\r\n" +
+"                return " + (typeIsInNameSpace ? ("Unwrap" + type.Name + "(value)") : ("dynamic_cast<" + winrtFullType + ">(NodeRT::Utils::GetObjectInstance(value))")) + ";\r\n" +
+"              }}\r\n" +
+"            }} ({0})";
+
+            return funcStr;
+        }
+
+
         public static string ReplaceBracketsWithDoubleBrackets(string str)
         {
             return str.Replace("{", "{{").Replace("}", "}}");
@@ -474,12 +607,12 @@ namespace NodeRTLib
 
             if (type == typeof(Exception))
             {
-                return new[] { "::Windows::Foundation::HResult", "NodeRT::Utils::HResultFromJsInteger({0}->IntegerValue())" };
+                return new[] { "::Windows::Foundation::HResult", "NodeRT::Utils::HResultFromJsInt32({0}->Int32Value())" };
             }
 
             if (type == typeof(TimeSpan))
             {
-                return new[] { "::Windows::Foundation::TimeSpan", "NodeRT::Utils::TimeSpanFromMilli(static_cast<int64_t>({0}->NumberValue()))" };
+                return new[] { "::Windows::Foundation::TimeSpan", "NodeRT::Utils::TimeSpanFromMilli({0}->IntegerValue())" };
             }
 
             if (type.FullName == "Windows.UI.Color")
@@ -521,15 +654,20 @@ namespace NodeRTLib
                 return new[] { winrtFullType, type.Name + "FromJsObject({0})" };
             }
 
+
+            string jsType;
+            if (IsWinrtCollection(type, out jsType)) {
+                return new[] { winrtFullType, JsToWinrtCollection(type, jsType, winrtFullType, typeIsInNameSpace) };
+            }
+
             if (typeIsInNameSpace)
             {
                 return new[] { winrtFullType, "Unwrap" + type.Name + "({0})" };
             }
-            else
-            {
-                return new[] { winrtFullType, "dynamic_cast<" + winrtFullType + ">(NodeRT::Utils::GetObjectInstance({0}))" };
-            }
+
+            return new[] { winrtFullType, "dynamic_cast<" + winrtFullType + ">(NodeRT::Utils::GetObjectInstance({0}))" };
         }
+
 
         public static string TypeCheck(Type type, bool typeIsInNameSpace = false)
         {
@@ -627,7 +765,16 @@ namespace NodeRTLib
                 return "Is" + type.Name + "JsObject({0})";
             }
 
-            return "NodeRT::Utils::IsWinRtWrapperOf<" + TX.ToWinRT(type, true) + ">({0})";
+            string wrapperTest = "NodeRT::Utils::IsWinRtWrapperOf<" + TX.ToWinRT(type, true) + ">({0})";
+
+            string jsType;
+            if (IsWinrtCollection(type, out jsType))
+            {
+                // in case the type is a winrt collection, we allow to pass a JS Object/Array instead of a wrapped collection
+                return "(" + wrapperTest + " || " + "{0}->Is" + jsType + "())";
+            }
+
+            return wrapperTest;
         }
 
         public static string ToOutParameterName(Type type)
@@ -664,6 +811,41 @@ namespace NodeRTLib
             }
 
             return TX.Uncap(type.Name);
+        }
+
+        public static bool IsWinrtCollection(Type type, out string jsType)
+        {
+            if (type.IsGenericType && type.FullName != null && (type.FullName.StartsWith("Windows.Foundation.Collections.IIterable")
+                || type.FullName.StartsWith("System.Collections.Generic.IEnumerable`1")))
+            {
+                Type innerTemplateType = type.GetGenericArguments()[0];
+                if (innerTemplateType.FullName.StartsWith("System.Collections.Generic.KeyValuePair`2"))
+                {
+                    jsType = "Object";
+                }
+                else
+                {
+                    jsType = "Array";
+                }
+                return true;
+            }
+
+            if (type.IsGenericType && type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IReadOnlyDictionary`2")
+                || type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
+            {
+                jsType = "Object";
+                return true;
+            }
+
+            if ((type.IsGenericType && type.FullName != null && (type.FullName.StartsWith("System.Collections.Generic.IReadOnlyList`1")
+                || type.FullName.StartsWith("System.Collections.Generic.IList`1"))) || type.IsArray)
+            {
+                jsType = "Array";
+                return true;
+            }
+
+            jsType = null;
+            return false;
         }
     }
 }

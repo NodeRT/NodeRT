@@ -239,6 +239,10 @@ namespace NodeRTUI
                             "You can access the project files at: " + outputFolder, "Failed to build project", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+                else
+                {
+                    succeeded = true;
+                }
             })
             .ContinueWith((t) =>
             {

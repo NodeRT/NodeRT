@@ -40,9 +40,9 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateArrayWrapper(::Platform::Array<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc = nullptr,
-				std::function<bool(Handle<Value>)> checkTypeFunc = nullptr,
-				std::function<T(Handle<Value>)> convertToTypeFunc = nullptr)
+				const std::function<Handle<Value>(T)>& getterFunc = nullptr,
+				const std::function<bool(Handle<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Handle<Value>)>& convertToTypeFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -76,9 +76,9 @@ namespace NodeRT {
 		private:
 
 			ArrayWrapper(::Platform::Array<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc,
-				std::function<bool(Handle<Value>)> checkTypeFunc = nullptr,
-				std::function<T(Handle<Value>)> convertToTypeFunc = nullptr) :
+				const std::function<Handle<Value>(T)>& getterFunc,
+				const std::function<bool(Handle<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Handle<Value>)>& convertToTypeFunc = nullptr) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc),
 				_checkTypeFunc(checkTypeFunc),
@@ -159,7 +159,7 @@ namespace NodeRT {
 
 				if (wrapper->_instance->Length <= index)
 				{
-					ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Given index exeeded array length")));
+					ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Given index exceeded array length")));
 					return scope.Close(Undefined());
 				}
 
@@ -212,7 +212,7 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateIteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc = nullptr)
+				const std::function<Handle<Value>(T)>& getterFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -245,7 +245,7 @@ namespace NodeRT {
 
 		private:
 
-			IteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance, std::function<Handle<Value>(T)> getterFunc) :
+			IteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance, const std::function<Handle<Value>(T)>& getterFunc) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc)
 			{
@@ -379,7 +379,7 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateIterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc = nullptr)
+				const std::function<Handle<Value>(T)>& getterFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -412,7 +412,7 @@ namespace NodeRT {
 
 		private:
 
-			IterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance, std::function<Handle<Value>(T)> getterFunc) :
+			IterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance, const std::function<Handle<Value>(T)>& getterFunc) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc)
 			{
@@ -499,9 +499,9 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateVectorViewWrapper(::Windows::Foundation::Collections::IVectorView<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc,
-				std::function<bool(Handle<Value>)> checkTypeFunc = nullptr,
-				std::function<T(Handle<Value>)> convertToTypeFunc = nullptr)
+				const std::function<Handle<Value>(T)>& getterFunc,
+				const std::function<bool(Handle<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Handle<Value>)>& convertToTypeFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -535,9 +535,9 @@ namespace NodeRT {
 		private:
 
 			VectorViewWrapper(::Windows::Foundation::Collections::IVectorView<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc,
-				std::function<bool(Handle<Value>)> checkTypeFunc = nullptr,
-				std::function<T(Handle<Value>)> convertToTypeFunc = nullptr) :
+				const std::function<Handle<Value>(T)>& getterFunc,
+				const std::function<bool(Handle<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Handle<Value>)>& convertToTypeFunc = nullptr) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc),
 				_checkTypeFunc(checkTypeFunc),
@@ -775,9 +775,9 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateVectorWrapper(::Windows::Foundation::Collections::IVector<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc,
-				std::function<bool(Handle<Value>)> checkTypeFunc = nullptr,
-				std::function<T(Handle<Value>)> convertToTypeFunc = nullptr)
+				const std::function<Handle<Value>(T)>& getterFunc,
+				const std::function<bool(Handle<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Handle<Value>)>& convertToTypeFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -811,9 +811,9 @@ namespace NodeRT {
 		private:
 
 			VectorWrapper(::Windows::Foundation::Collections::IVector<T>^ winRtInstance,
-				std::function<Handle<Value>(T)> getterFunc,
-				std::function<bool(Handle<Value>)> checkTypeFunc = nullptr,
-				std::function<T(Handle<Value>)> convertToTypeFunc = nullptr) :
+				const std::function<Handle<Value>(T)>& getterFunc,
+				const std::function<bool(Handle<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Handle<Value>)>& convertToTypeFunc = nullptr) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc),
 				_checkTypeFunc(checkTypeFunc),
@@ -1346,8 +1346,8 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateKeyValuePairWrapper(::Windows::Foundation::Collections::IKeyValuePair<K, V>^ winRtInstance,
-				std::function<Handle<Value>(K)> keyGetterFunc,
-				std::function<Handle<Value>(V)> valueGetterFunc)
+				const std::function<Handle<Value>(K)>& keyGetterFunc,
+				const std::function<Handle<Value>(V)>& valueGetterFunc)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -1381,8 +1381,8 @@ namespace NodeRT {
 		private:
 
 			KeyValuePairWrapper(::Windows::Foundation::Collections::IKeyValuePair<K, V>^ winRtInstance,
-				std::function<Handle<Value>(K)> keyGetterFunc,
-				std::function<Handle<Value>(V)> valueGetterFunc) :
+				const std::function<Handle<Value>(K)>& keyGetterFunc,
+				const std::function<Handle<Value>(V)>& valueGetterFunc) :
 				_instance(winRtInstance),
 				_keyGetterFunc(keyGetterFunc),
 				_valueGetterFunc(valueGetterFunc)
@@ -1474,10 +1474,10 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateMapViewWrapper(::Windows::Foundation::Collections::IMapView<K, V>^ winRtInstance,
-				std::function<Handle<Value>(K)> keyGetterFunc,
-				std::function<bool(Handle<Value>)> checkKeyTypeFunc,
-				std::function<K(Handle<Value>)> convertToKeyTypeFunc,
-				std::function<Handle<Value>(V)> valueGetterFunc)
+				const std::function<Handle<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Handle<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Handle<Value>)>& convertToKeyTypeFunc,
+				const std::function<Handle<Value>(V)>& valueGetterFunc)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -1511,10 +1511,10 @@ namespace NodeRT {
 		private:
 
 			MapViewWrapper(::Windows::Foundation::Collections::IMapView<K, V>^ winRtInstance,
-				std::function<Handle<Value>(K)> keyGetterFunc,
-				std::function<bool(Handle<Value>)> checkKeyTypeFunc,
-				std::function<K(Handle<Value>)> convertToKeyTypeFunc,
-				std::function<Handle<Value>(V)> valueGetterFunc) :
+				const std::function<Handle<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Handle<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Handle<Value>)>& convertToKeyTypeFunc,
+				const std::function<Handle<Value>(V)> &valueGetterFunc) :
 				_instance(winRtInstance),
 				_keyGetterFunc(keyGetterFunc),
 				_checkKeyTypeFunc(checkKeyTypeFunc),
@@ -1584,8 +1584,8 @@ namespace NodeRT {
 				{
 					try
 					{
-						std::function<Handle<Value>(K)> keyGetter = wrapper->_keyGetterFunc;
-						std::function<Handle<Value>(V)> valueGetter = wrapper->_valueGetterFunc;
+						const std::function<Handle<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
+						const std::function<Handle<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
 						return scope.Close(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
 							[keyGetter, valueGetter](::Windows::Foundation::Collections::IKeyValuePair<K, V>^ value) {
 							return KeyValuePairWrapper<K, V>::CreateKeyValuePairWrapper(value,
@@ -1749,12 +1749,12 @@ namespace NodeRT {
 			}
 
 			static Handle<Value> CreateMapWrapper(::Windows::Foundation::Collections::IMap<K, V>^ winRtInstance,
-				std::function<Handle<Value>(K)> keyGetterFunc,
-				std::function<bool(Handle<Value>)> checkKeyTypeFunc,
-				std::function<K(Handle<Value>)> convertToKeyTypeFunc,
-				std::function<Handle<Value>(V)> valueGetterFunc,
-				std::function<bool(Handle<Value>)> checkValueTypeFunc,
-				std::function<V(Handle<Value>)> convertToValueTypeFunc)
+				const std::function<Handle<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Handle<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Handle<Value>)>& convertToKeyTypeFunc,
+				const std::function<Handle<Value>(V)>& valueGetterFunc,
+				const std::function<bool(Handle<Value>)>& checkValueTypeFunc,
+				const std::function<V(Handle<Value>)>& convertToValueTypeFunc)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -1794,12 +1794,12 @@ namespace NodeRT {
 		private:
 
 			MapWrapper(::Windows::Foundation::Collections::IMap<K, V>^ winRtInstance,
-				std::function<Handle<Value>(K)> keyGetterFunc,
-				std::function<bool(Handle<Value>)> checkKeyTypeFunc,
-				std::function<K(Handle<Value>)> convertToKeyTypeFunc,
-				std::function<Handle<Value>(V)> valueGetterFunc,
-				std::function<bool(Handle<Value>)> checkValueTypeFunc,
-				std::function<V(Handle<Value>)> convertToValueTypeFunc) :
+				const std::function<Handle<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Handle<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Handle<Value>)>& convertToKeyTypeFunc,
+				const std::function<Handle<Value>(V)>& valueGetterFunc,
+				const std::function<bool(Handle<Value>)>& checkValueTypeFunc,
+				const std::function<V(Handle<Value>)>& convertToValueTypeFunc) :
 				_instance(winRtInstance),
 				_keyGetterFunc(keyGetterFunc),
 				_checkKeyTypeFunc(checkKeyTypeFunc),
@@ -1938,8 +1938,8 @@ namespace NodeRT {
 				{
 					try
 					{
-						std::function<Handle<Value>(K)> keyGetter = wrapper->_keyGetterFunc;
-						std::function<Handle<Value>(V)> valueGetter = wrapper->_valueGetterFunc;
+						const std::function<Handle<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
+						const std::function<Handle<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
 						return scope.Close(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
 							[keyGetter, valueGetter](::Windows::Foundation::Collections::IKeyValuePair<K, V>^ value) {
 							return KeyValuePairWrapper<K, V>::CreateKeyValuePairWrapper(value,

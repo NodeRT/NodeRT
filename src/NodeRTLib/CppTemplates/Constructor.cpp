@@ -8,11 +8,12 @@
       {
         if (args.Length() > 0)
         {
-          std::unique_ptr<Handle<Value>> constructorArgs(new Handle<Value>[args.Length()]);
+          std::unique_ptr<Handle<Value> []> constructorArgs(new Handle<Value>[args.Length()]);
 
+          Handle<Value> *argsPtr = constructorArgs.get();
           for (int i = 0; i < args.Length(); i++)
           {
-            constructorArgs.get()[i] = args[i];
+            argsPtr[i] = args[i];
           }
 
           return s_constructorTemplate->GetFunction()->CallAsConstructor(args.Length(), constructorArgs.get());
