@@ -44,13 +44,8 @@ namespace NodeRTCmd
 
             string winmd = argsDictionary["winmd"];
             string outDir = argsDictionary["outdir"];
-            string codeGenDir = argsDictionary["codegendir"];
-            bool isGenerateDef = argsDictionary.ContainsKey("generatedef");
-
-            if (!Directory.Exists(codeGenDir))
-            {
-                Directory.CreateDirectory(codeGenDir);
-            }
+            bool noDefGen = argsDictionary.ContainsKey("nodefgen");
+            bool noBuild = argsDictionary.ContainsKey("nobuild");
 
             if (!Directory.Exists(outDir))
             {
@@ -69,22 +64,10 @@ namespace NodeRTCmd
                 Enum.TryParse<VsVersions>(argsDictionary["vs"], true, out vsVersion);
             }
 
-            if (String.IsNullOrEmpty(nodeSrcDir))
-            {
-                nodeSrcDir = NodeRTProjectGenerator.DefaultDir;
-            }
-
-            if (String.IsNullOrEmpty(nodeSrcDir))
-            {
-                Console.WriteLine("Could not resolve node src dir, please specify a --nodesrcdir argument, as described below");
-                PrintHelpAndExitWithError();
-            }
-
             // generate specific namespace
             if (!String.IsNullOrEmpty(ns))
             {
-                GenerateAndBuildNamespace(nodeSrcDir, ns,
-                    vsVersion, winmd, outDir, codeGenDir, isGenerateDef);
+                GenerateAndBuildNamespace(ns,vsVersion, winmd, outDir, noDefGen, noBuild);
             }
             else // try to generate & build all namespaces in winmd file
             {
@@ -92,9 +75,9 @@ namespace NodeRTCmd
                 Console.WriteLine("Started to generate and build all namespaces in given WinMD...\n");
                 foreach (string winRtNamespace in Reflector.GetNamespaces(winmd, customWinMdDir))
                 {
-                    if (!GenerateAndBuildNamespace(nodeSrcDir, winRtNamespace,
+                    if (!GenerateAndBuildNamespace(winRtNamespace,
                           vsVersion, winmd,
-                          outDir, codeGenDir, isGenerateDef))
+                          outDir, noDefGen, noBuild))
                     {
                         failedList.Add(winRtNamespace);
                     }
@@ -136,46 +119,23 @@ namespace NodeRTCmd
             return args[key];
         }
 
-        static bool GenerateAndBuildNamespace(string nodeSrcDir, string ns, 
-            VsVersions vsVersion, string winmd, string outDir, string codeGenDir, bool isGenerateDef)
+        static bool GenerateAndBuildNamespace(string ns, 
+            VsVersions vsVersion, string winmd, string outDir, bool noDefGen, bool noBuild)
         {
-            string moduleCodeGenDir = Path.Combine(codeGenDir, ns.ToLower());
             string moduleOutDir = Path.Combine(outDir, ns.ToLower());
-
-            if (!Directory.Exists(moduleCodeGenDir))
-            {
-                Directory.CreateDirectory(moduleCodeGenDir);
-            }
 
             if (!Directory.Exists(moduleOutDir))
             {
                 Directory.CreateDirectory(moduleOutDir);
             }
 
-            if (String.IsNullOrEmpty(nodeSrcDir))
-            {
-                nodeSrcDir = NodeRTProjectGenerator.DefaultDir;
-            }
-
-            if (String.IsNullOrEmpty(nodeSrcDir))
-            {
-                Console.WriteLine("Could not resolve node src dir, please specify a --nodesrcdir argument, as described below");
-                PrintHelpAndExitWithError();
-            }
-
-            NodeRTProjectBuildUtils.Platforms platforms = NodeRTProjectBuildUtils.Platforms.Win32;
-
-            if (NodeRTProjectBuildUtils.IsRunningOn64Bit)
-                platforms |=  NodeRTProjectBuildUtils.Platforms.x64;
-
-            var generator = new NodeRTProjectGenerator(nodeSrcDir, vsVersion, isGenerateDef);
+            var generator = new NodeRTProjectGenerator(vsVersion, !noDefGen);
             
             Console.WriteLine("Generating code for: {0}...", ns);
 
-            string slnPath;
             try
             {
-                slnPath = Reflector.GenerateProject(winmd, ns, moduleCodeGenDir, generator, null);
+                Reflector.GenerateProject(winmd, ns, moduleOutDir, generator, null);
             }
             catch (Exception e)
             {
@@ -183,25 +143,28 @@ namespace NodeRTCmd
                 return false;
             }
 
-            Console.WriteLine("Building {0}...", ns);
+            if (!noBuild)
+            {
+                Console.WriteLine("Building {0}...", ns);
 
-            try
-            {
-                NodeRTProjectBuildUtils.BuildAndCopyToOutputFolder(slnPath, vsVersion, moduleOutDir, platforms, isGenerateDef);
+                try
+                {
+                    NodeRTProjectBuildUtils.BuildWithNodeGyp(moduleOutDir, vsVersion);
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("IO Error occured after building the project, error: {0}", e.Message);
+                    Console.WriteLine("Generated project files are located at: {0}", moduleOutDir);
+                    return false;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Failed to build the generated project, please try to build the project manually");
+                    Console.WriteLine("Generated project files are located at: {0}", moduleOutDir);
+                    return false;
+                }
+                Console.WriteLine("NodeRT module generated and built successfully at: {0}", moduleOutDir);
             }
-            catch (IOException e)
-            {
-                Console.WriteLine("IO Error occured after building the project, error: {0}", e.Message);
-                Console.WriteLine("Generated project files are located at: {0}", moduleCodeGenDir);
-                return false;
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Failed to build the generated project, please try to build the project manually");
-                Console.WriteLine("Generated project files are located at: {0}", moduleCodeGenDir);
-                return false;
-            }
-            Console.WriteLine("NodeRT module generated and built successfully at: {0}", moduleOutDir);
             return true;
         }
 
@@ -212,9 +175,6 @@ namespace NodeRTCmd
 
             if (args.ContainsKey("namespaces"))
                 return true;
-
-            if (!args.ContainsKey("codegendir") || String.IsNullOrEmpty(args["codegendir"]))
-                return false;
 
             if (!args.ContainsKey("outdir") || String.IsNullOrEmpty(args["outdir"]))
                 return false;
@@ -234,18 +194,18 @@ namespace NodeRTCmd
             Console.WriteLine("    --namespace [namespace]  The namespace to generate from the winmd when");
             Console.WriteLine("                             not specified , all namespaces will be generated");
             Console.WriteLine();
-            Console.WriteLine("    --codegendir [path]      The directory in which the project source code");
-            Console.WriteLine("                             will be generated");
             Console.WriteLine();
-            Console.WriteLine("    --outdir [path]          The output dir in which the compiled NodeRT module");
+            Console.WriteLine("    --outdir [path]          The output dir in which the NodeRT module");
             Console.WriteLine("                             will be created in");
-            Console.WriteLine();
-            Console.WriteLine("    --nodesrcdir [path]      Optional, path to the node src/lib files root");
             Console.WriteLine();
             Console.WriteLine("    --vs [Vs2012|Vs2013]     Optional, VS version to use, default is Vs2013");
             Console.WriteLine();
-            Console.WriteLine("    --generatedef            Optional, Will generate TypeScript and JavaScript");
-            Console.WriteLine("                             definition files");
+            Console.WriteLine("    --nodefgen               Optional, specifying this option will reult in");
+            Console.WriteLine("                             skipping the generation of TypeScript and");
+            Console.WriteLine("                             JavaScript definition files");
+            Console.WriteLine();
+            Console.WriteLine("    --nobuild                Optional, specifying this option will result in");
+            Console.WriteLine("                             skipping the build process for the NodeRT module");
             Console.WriteLine();
             Console.WriteLine("    --help                   Print this help screen");
             Console.WriteLine();

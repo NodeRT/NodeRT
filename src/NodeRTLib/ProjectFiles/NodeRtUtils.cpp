@@ -165,7 +165,7 @@ namespace NodeRT { namespace Utils {
     Handle<Object> global = Context::GetCurrent()->Global();
     if (!global->Has(String::NewSymbol("__winRtNamespaces__")))
     {
-      global->Set(String::NewSymbol("__winRtNamespaces__"), Object::New(), PropertyAttribute::DontEnum) ;
+		global->Set(String::NewSymbol("__winRtNamespaces__"), Object::New(), (PropertyAttribute) (PropertyAttribute::DontEnum & PropertyAttribute::DontDelete));
     }
 
     Handle<Object> nsObject = global->Get(String::NewSymbol("__winRtNamespaces__")).As<Object>();

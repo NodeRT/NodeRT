@@ -126,9 +126,13 @@ namespace NodeRTLib
             mainModel.Enums = (from t in assembly.ExportedTypes where t.Namespace.Equals(winRTNamespace, StringComparison.InvariantCultureIgnoreCase) && t.IsEnum select t).ToArray();
             mainModel.ValueTypes = (from t in assembly.ExportedTypes where t.Namespace.Equals(winRTNamespace, StringComparison.InvariantCultureIgnoreCase) && t.IsValueType && !t.IsEnum select t).ToArray();
             
-            // use this variable to aggregate value types which are not in the namespace
+            // use this container to aggregate value types which are not in the namespace
             // we will need to generate converter methods for those types
             mainModel.ExternalReferencedValueTypes = new List<Type>();
+
+            // use this container to aggreate other namesapces which are references from this namespaces
+            // we will need to create a dependancy list from these namespaces
+            mainModel.ExternalReferencedNamespaces = new List<String>();
 
             foreach (var t in filteredTypes)
             {
@@ -220,7 +224,7 @@ namespace NodeRTLib
                     return !TX.IsAsync(methodInfo.Overloads[0]);
                 }).ToArray();
 
-                ReflectorValueTypesHelper.GetExternalReferencedValueTypesForType(typeDefinition, mainModel.ExternalReferencedValueTypes);
+                ExternalTypesHelper.GetExternalReferencedDataForType(typeDefinition, mainModel.ExternalReferencedValueTypes, mainModel.ExternalReferencedNamespaces);
             }
 
             return mainModel;

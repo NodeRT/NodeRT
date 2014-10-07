@@ -26,18 +26,6 @@ namespace NodeRTUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProjectGenerationDir {
-            get {
-                return ((string)(this["ProjectGenerationDir"]));
-            }
-            set {
-                this["ProjectGenerationDir"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string LastWinMDPath {
             get {
                 return ((string)(this["LastWinMDPath"]));
@@ -61,25 +49,13 @@ namespace NodeRTUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProjectConfigurationRoot {
-            get {
-                return ((string)(this["ProjectConfigurationRoot"]));
-            }
-            set {
-                this["ProjectConfigurationRoot"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int VSProjectComboSelection {
+        public int VsProjectComboSelection {
             get {
-                return ((int)(this["VSProjectComboSelection"]));
+                return ((int)(this["VsProjectComboSelection"]));
             }
             set {
-                this["VSProjectComboSelection"] = value;
+                this["VsProjectComboSelection"] = value;
             }
         }
         
@@ -97,18 +73,6 @@ namespace NodeRTUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastSavedFolder {
-            get {
-                return ((string)(this["LastSavedFolder"]));
-            }
-            set {
-                this["LastSavedFolder"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool GenerateDefsChk {
             get {
@@ -116,6 +80,18 @@ namespace NodeRTUI.Properties {
             }
             set {
                 this["GenerateDefsChk"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool BuildModuleChk {
+            get {
+                return ((bool)(this["BuildModuleChk"]));
+            }
+            set {
+                this["BuildModuleChk"] = value;
             }
         }
     }
