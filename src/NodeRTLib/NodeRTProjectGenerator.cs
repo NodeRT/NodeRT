@@ -148,11 +148,19 @@ namespace NodeRTLib
             packageJsonFileText.Replace("{PackageName}", winRTNamespace.ToLower());
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
             packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces));
+            
+            if (_vsVersion == VsVersions.Vs2012)
+                packageJsonFileText.Replace("{VSVersion}", "2012");
+            else
+                packageJsonFileText.Replace("{VSVersion}", "2013");
+
             File.WriteAllText(Path.Combine(destinationFolder, "package.json"), packageJsonFileText.ToString());
 
-            // copy the .npmignore
+            // copy the .npmignore and license files
             File.Copy(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\.npmignore"),
                 Path.Combine(destinationFolder, ".npmignore"), true);
+            File.Copy(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\LICENSE"),
+                Path.Combine(destinationFolder, "LICENSE"), true);
         }
 
         private string GeneratePackageKeywords(dynamic mainModel, string winRtNamespace)

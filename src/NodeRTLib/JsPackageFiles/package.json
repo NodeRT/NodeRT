@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "description": "NodeRT Wrapper for {Namespace}",
   "main": "lib/main.js",
+  "scripts" : {
+    "install" : "node-gyp rebuild --msvs_version={VSVersion}"
+  },
   "keywords": [
     {Keywords}
   ],
   "dependencies" : [
     {Dependencies}
-  ] 
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/NodeRT/NodeRT.git"

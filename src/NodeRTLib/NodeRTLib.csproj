@@ -207,6 +207,9 @@
     <Content Include="JsPackageFiles\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="JsPackageFiles\LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="ProjectTemplates\binding.gyp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

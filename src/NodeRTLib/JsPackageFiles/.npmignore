@@ -1,7 +1,3 @@
-binding.gyp
-*.cc
-*.cpp
-*.h
 *.vcxproj
 *.filters
 *.user

@@ -247,7 +247,10 @@ namespace NodeRTUI
             .ContinueWith((t) =>
             {
                 btnGenerate.Enabled = true;
-                btnGenerate.Text = "Generate and Build";
+                if (chkBuildModule.Checked)
+                    btnGenerate.Text = "Generate and build module";
+                else
+                    btnGenerate.Text = "Generate module";
 
                 if (succeeded)
                     MessageBox.Show("Yay! The generated NodeRT module is located at:\n" + outputFolder, "Success");

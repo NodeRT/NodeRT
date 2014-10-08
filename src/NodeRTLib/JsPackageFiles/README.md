@@ -8,6 +8,8 @@ The API exposed by this module is (almost) the same as the API that is listed in
 
 The only difference in the API is in the way that asynchronous methods and events are used. (See <a href="https://github.com/NodeRT/NodeRT#ConsumingNodeRT" target="_blank">https://github.com/NodeRT/NodeRT#ConsumingNodeRT</a> for more details)
 
+This module also contains TypeScript definition files for the API exposed by the module, as well as JavaScript intellisense support for Visual Studio tools for Node.js.
+
 Prequisites:
 ============
 * Visual Studio 2013, or <a href="http://www.microsoft.com/en-gb/download/details.aspx?id=40787" target="_blank">VS 2013 Express for Windows Desktop</a>.
@@ -15,8 +17,15 @@ Prequisites:
 
 Installation:
 =============
-In order to install this module, run npm install with the <b>--msvs_version=2013</b> flag:
+In order to install this module, run npm install:
 
 ```
-npm install {ModuleName} --msvs_version=2013
+npm install {ModuleName}
+```
+
+If you wish to rebuild this module using node-gyp, make sure to use the --msvs_version=2013 flag:
+
+```
+cd [module folder path]
+node-gyp rebuild --msvs_version=2013
 ```
