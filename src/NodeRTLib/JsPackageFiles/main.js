@@ -14,7 +14,7 @@ try {
   if (fs.existsSync(path.join(__dirname, '{ProjectName}.d.js)'))) {
     module.exports = require('./{ProjectName}.d.js');
   }
-  module.exports = require('../build/release/{ProjectName}.node');
+  module.exports = require('../build/release/binding.node');
 }
 catch(e) {
   throw e;

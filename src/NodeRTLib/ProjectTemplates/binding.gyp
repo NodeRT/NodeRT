@@ -6,10 +6,11 @@
   'includes': [ 'common.gypi' ],
   "targets": [
     {
-      "target_name": "{ProjectName}",
+      "target_name": "binding",
       "sources": [ "{CppFileName}",
                   "NodeRtUtils.cpp",
-                  "OpaqueWrapper.cpp"],
+                  "OpaqueWrapper.cpp",
+                  "CollectionsConverterUtils.cpp"],
       'libraries': [ '-lruntimeobject.lib'],
       'conditions': [ [
         'WIN_VER=="8.0"', {

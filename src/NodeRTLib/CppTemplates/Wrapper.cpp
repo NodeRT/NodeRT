@@ -94,4 +94,4 @@ void init(Handle<Object> exports)
   }
 }
 
-NODE_MODULE(@(moduleName), init)
+NODE_MODULE(binding, init)
