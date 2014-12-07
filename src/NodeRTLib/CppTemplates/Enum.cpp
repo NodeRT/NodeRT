@@ -8,7 +8,7 @@
     @foreach(var field in Model.DeclaredFields) {
       if (counter != 0)
       {
-    @:enumObject->Set(String::NewSymbol("@(TX.Uncap(field.Name))"), Integer::New(@(counter-1)));
+    @:enumObject->Set(String::NewSymbol("@(TX.Uncap(field.Name))"), Integer::New(static_cast<int>(@TX.ToWinRT(Model)::@(field.Name))));
       }
       counter++;
     }
