@@ -4,13 +4,8 @@
     
     Handle<Object> enumObject = Object::New();
     exports->Set(String::NewSymbol("@(Model.Name)"), enumObject);
-    @{var counter = 0;}
-    @foreach(var field in Model.DeclaredFields) {
-      if (counter != 0)
-      {
-    @:enumObject->Set(String::NewSymbol("@(TX.Uncap(field.Name))"), Integer::New(static_cast<int>(@TX.ToWinRT(Model)::@(field.Name))));
-      }
-      counter++;
+    @foreach(var name in Enum.GetNames(Model)) {
+    @:enumObject->Set(String::NewSymbol("@(TX.Uncap(name))"), Integer::New(static_cast<int>(@TX.ToWinRT(Model)::@(name))));
     }
 
     return scope.Close(Undefined());
