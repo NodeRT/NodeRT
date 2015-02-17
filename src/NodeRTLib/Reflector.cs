@@ -85,7 +85,7 @@ namespace NodeRTLib
             // Windows.Foundation.Uri is exposed in c++ while in c# System.Uri is used. Retreive the definition of Windows.Foundation.Uri specifically.
             if (winRTNamespace.Equals("Windows.Foundation"))
             {
-                return (from t in assembly.DefinedTypes where t.Namespace.Equals(winRTNamespace, StringComparison.InvariantCultureIgnoreCase) && t.Name.Equals("Uri") select t).ToList();
+                return (from t in assembly.DefinedTypes where t.Namespace.Equals(winRTNamespace, StringComparison.InvariantCultureIgnoreCase) && (t.Name.Equals("Uri") ||  t.Name.Equals("IPropertyValue")) select t).ToList();
             }
 
             return new List<TypeInfo>();
