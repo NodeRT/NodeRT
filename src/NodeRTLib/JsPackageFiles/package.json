@@ -11,7 +11,7 @@
     "NodeRT",
     "WinRT",
     "Microsoft"
-  ],
+  ], 
   "optionalDependencies" : {
     {Dependencies}
   },

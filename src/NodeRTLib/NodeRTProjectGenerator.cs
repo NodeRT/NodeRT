@@ -208,13 +208,34 @@ namespace NodeRTLib
         private void CopyProjectFiles(string destinationFolder)
         {
             string dirPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "ProjectFiles");
-            string[] files = Directory.GetFiles(dirPath);
+            CopyDirRecurse(dirPath, destinationFolder);
+
+        }
+
+        private void CopyDirRecurse(string srcDir, string destDir)
+        {
+            string[] files = Directory.GetFiles(srcDir);
 
             foreach (string file in files)
             {
                 try
                 {
-                    File.Copy(file, Path.Combine(destinationFolder, Path.GetFileName(file)), true);
+                    File.Copy(file, Path.Combine(destDir, Path.GetFileName(file)), true);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+
+            string[] dirs = Directory.GetDirectories(srcDir);
+            foreach (string dir in dirs)
+            {
+                string newDirPath = Path.Combine(destDir, Path.GetFileName(dir));
+                try
+                {
+                    Directory.CreateDirectory(newDirPath);
+                    CopyDirRecurse(srcDir, newDirPath);
                 }
                 catch (Exception e)
                 {
