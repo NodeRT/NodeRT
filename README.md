@@ -51,7 +51,7 @@ First, in order to use WinRT you must be running on a Windows environment that s
 
 In order to use NodeRT, make sure you have the following installed:<br>
 * Visual Studio 2013, or <a href="http://www.microsoft.com/en-gb/download/details.aspx?id=40787">VS 2013 Express for Windows Desktop</a>, for generating Windows 8.1 compatible modules, or Visual Studio 2012 for generating Windows 8 compatible modules.<br>
-* node.js (version > 10.*) - from <a href="www.nodejs.org">www.nodejs.org</a><br>
+* node.js (version > 10.*) - from <a href="http://www.nodejs.org">www.nodejs.org</a><br>
 * node.js native development files - these files can be installed using the following cmd-line:
 ```
 node-gyp install
