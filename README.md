@@ -1,5 +1,10 @@
 NodeRT
 ======
+
+**Please Note**: For now, this project only supports node.js versions <= 0.10.*, if you wish to use more up-to-date node.js distributions, you can try using <a href="https://github.com/Microsoft/node-uwp" target="_blank">node-uwp</a> which runs on top of <a href="https://github.com/Microsoft/node" target="_blank">node.js with Chakra</a>.
+
+(Also - will be more than happy to accept any contributions that will help to bring NodeRT forward! :))
+
 <H3>WinRT modules generator for node.js</H3>
 
 NodeRT is a tool that automatically generates node.js Native add-on wrappers for <a href="http://en.wikipedia.org/wiki/Windows_Runtime">WinRT APIs</a>.
