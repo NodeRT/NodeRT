@@ -19,7 +19,8 @@ namespace NodeRTLib
     public enum VsVersions
     {
         Vs2012,
-        Vs2013
+        Vs2013,
+        Vs2015
     }
 
     public class NodeRTProjectGenerator
@@ -42,7 +43,7 @@ namespace NodeRTLib
                 Directory.CreateDirectory(destinationFolder);
             }
 
-            string outputFileName = "NodeRT." + winRTNamespace + ".cpp";
+            string outputFileName = "_nodert_generated.cpp";
             using (var writer = new StreamWriter(Path.Combine(destinationFolder, outputFileName)))
             {
                 writer.Write(TX.CppTemplates.Wrapper(mainModel));
@@ -72,7 +73,6 @@ namespace NodeRTLib
             StringBuilder bindingFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"ProjectTemplates\binding.gyp")));
 
             bindingFileText.Replace("{ProjectName}", projectName);
-            bindingFileText.Replace("{CppFileName}", outputFileName);
 
             ResolveWinrtDirsAndCompiler(bindingFileText, winRtFile);
 
@@ -98,6 +98,10 @@ namespace NodeRTLib
             else if (_vsVersion == VsVersions.Vs2013)
             {
                 bindingFileText.Replace("{WinVer}", "8.1");
+            }
+            else if (_vsVersion == VsVersions.Vs2015)
+            {
+                bindingFileText.Replace("{WinVer}", "10");
             }
 
             // resolve the x64 dirs using the sdk we use:

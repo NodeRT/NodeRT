@@ -9,50 +9,54 @@
 
 #include "OpaqueWrapper.h"
 #include "NodeRtUtils.h"
-using namespace v8;
 
-v8::Persistent<v8::FunctionTemplate> NodeRT::OpaqueWrapper::s_constructorTemplate;
+using v8::String;
+using v8::FunctionTemplate;
 
-v8::Handle<v8::Value> NodeRT::OpaqueWrapper::New(const v8::Arguments& args)
+Nan::Persistent<v8::FunctionTemplate> NodeRT::OpaqueWrapper::s_constructorTemplate;
+
+void NodeRT::OpaqueWrapper::New(Nan::NAN_METHOD_ARGS_TYPE info)
 {
-  args.This()->SetHiddenValue(String::NewSymbol("__winrtOpaqueWrapper__"), True());
+  info.This()->SetHiddenValue(Nan::New<String>("__winrtOpaqueWrapper__").ToLocalChecked(), Nan::True());
 
-  return args.This();
+  info.GetReturnValue().Set(info.This());
 }
 
 
 void  NodeRT::OpaqueWrapper::Init()
 {
-  HandleScope scope;
+  Nan::HandleScope scope;
   // Prepare constructor template
-  s_constructorTemplate = Persistent<FunctionTemplate>::New(FunctionTemplate::New(New));
-  s_constructorTemplate->SetClassName(String::NewSymbol("OpaqueWrapper"));
-  s_constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
+  s_constructorTemplate = Nan::New<FunctionTemplate>(New);
+  Nan::MaybeLocal<v8::FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+  localRef.ToLocalChecked()->SetClassName(Nan::New<String>("OpaqueWrapper").ToLocalChecked());
+  localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 }
 
 namespace NodeRT {
   v8::Handle<v8::Object> CreateOpaqueWrapper(::Platform::Object^ winRtInstance)
   {
-    HandleScope scope;
+    Nan::EscapableHandleScope scope;
     if (winRtInstance == nullptr)
     {
-      return scope.Close(Undefined().As<Object>());
+      return scope.Escape(Nan::Undefined());
     }
 
-    v8::Handle<v8::Value> args[] = { v8::Undefined() };
+    v8::Handle<v8::Value> args[] = { Nan::Undefined() };
     if (OpaqueWrapper::s_constructorTemplate.IsEmpty())
     {
       OpaqueWrapper::Init();
     }
 
-    v8::Handle<v8::Object> objectInstance = OpaqueWrapper::s_constructorTemplate->GetFunction()->NewInstance(0, args);
+	  Nan::MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(OpaqueWrapper::s_constructorTemplate);
+    v8::Handle<v8::Object> objectInstance = localRef.ToLocalChecked()->GetFunction()->NewInstance(0, args);
     if (objectInstance.IsEmpty())
     {
-      return scope.Close(Undefined().As<Object>());
+      return scope.Escape(Nan::Undefined());
     }
     OpaqueWrapper* wrapperInstance = new OpaqueWrapper(winRtInstance);
-    wrapperInstance->Wrap(objectInstance.As<Object>());
-    return scope.Close(objectInstance);
+    wrapperInstance->Wrap(objectInstance);
+    return scope.Escape(objectInstance);
   }
 }
 

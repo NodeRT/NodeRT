@@ -9,6 +9,7 @@
 
 #pragma once
 #include <v8.h>
+#include "nan.h"
 #include <collection.h>
 #include "CollectionsConverterUtils.h"
 #include "NodeRtUtils.h"
@@ -17,15 +18,15 @@
 namespace NodeRT {
   namespace Collections {
 
-    v8::Persistent<v8::String> g_keyProp;
-    v8::Persistent<v8::String> g_valueProp;
+    Nan::Persistent<v8::String> g_keyProp;
+    Nan::Persistent<v8::String> g_valueProp;
 
     static void initProps() {
       if (g_keyProp.IsEmpty())
-        g_keyProp = v8::Persistent<v8::String>::New(v8::String::NewSymbol("key"));
+        g_keyProp = Nan::New<v8::String>("key").ToLocalChecked();
 
       if (g_valueProp.IsEmpty())
-        g_valueProp = v8::Persistent<v8::String>::New(v8::String::NewSymbol("value"));
+        g_valueProp = Nan::New<v8::String>("value").ToLocalChecked();
     }
 
 
@@ -106,7 +107,7 @@ namespace NodeRT {
       const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
       const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
     {
-      std::vector<V> vec(arr->Length());
+      std::vector<V> vec(arr.ToLocalChecked()->Length());
       if (!FillVector<std::vector<V>&, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
       {
         return nullptr;
@@ -120,7 +121,7 @@ namespace NodeRT {
       const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
       const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
     {
-      std::vector<V> vec(arr->Length());
+      std::vector<V> vec(arr.ToLocalChecked()->Length());
       if (!FillVector<std::vector<V>&, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
       {
         return nullptr;
@@ -134,7 +135,7 @@ namespace NodeRT {
       const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
       const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
     {
-      auto vec = ref new ::Platform::Array<V>(arr->Length());
+      auto vec = ref new ::Platform::Array<V>(arr.ToLocalChecked()->Length());
       if (!FillVector<::Platform::Array<V>^, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
       {
         return nullptr;
@@ -172,11 +173,11 @@ namespace NodeRT {
 
     for (uint32_t i = 0; i < arr->Length(); i++)
     {
-      Local<Value> value = arr->Get(i);
+      Local<Value> value = Nan::Get(arr, i).ToLocalChecked();
 
       if (!checkValueTypeFunc(value))
       {
-        ThrowException(NodeRT::Utils::NewString(L"Received array with unexpected value type"));
+        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Received array with unexpected value type")));
         return false;
       }
 
@@ -201,11 +202,11 @@ namespace NodeRT {
     // expect that each element in the array will be an object with 2 properties: key and value (with types that match K and V respectively)
     for (uint32_t i = 0; i < arr->Length(); i++)
     {
-      Local<Value> curr = arr->Get(i);
+      Local<Value> curr = Nan::Get(arr, i).ToLocalChecked();
 
       if (!curr->IsObject())
       {
-        ThrowException(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects"));
+        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects")));
         return false;
       }
 
@@ -213,22 +214,22 @@ namespace NodeRT {
 
       if (!obj->Has(g_keyProp) || !obj->Has(g_valueProp))
       {
-        ThrowException(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects with \'key\' and \'value\' properties"));
+		Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects with \'key\' and \'value\' properties")));
         return false;
       }
 
-      Local<Value> key = obj->Get(g_keyProp);
-      Local<Value> value = obj->Get(g_valueProp);
+      Local<Value> key = Nan::Get(obj, g_keyProp).ToLocalChecked();
+      Local<Value> value = Nan::Get(obj, g_valueProp).ToLocalChecked();
 
       if (!checkKeyTypeFunc(key))
       {
-        ThrowException(NodeRT::Utils::NewString(L"Array element has invalid key type"));
+        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid key type")));
         return false;
       }
 
       if (!checkValueTypeFunc(value))
       {
-        ThrowException(NodeRT::Utils::NewString(L"Array element has invalid value type"));
+		Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid value type")));
         return false;
       }
 
@@ -250,11 +251,11 @@ namespace NodeRT {
     Local<Array> objProps = obj->GetPropertyNames();
     for (uint32_t i = 0; i < objProps->Length(); i++)
     {
-      Local<Value> key = objProps->Get(i);
-      Local<Value> value = obj->Get(key);
+      Local<Value> key = Nan::Get(objProps, i).ToLocalChecked();
+      Local<Value> value = Nan::Get(obj, key).ToLocalChecked();
       if (!checkValueTypeFunc(value))
       {
-        ThrowException(NodeRT::Utils::NewString(L"Received object with unexpected value type"));
+		    Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Received object with unexpected value type")));
         return false;
       }
       stdMap.insert(std::pair<::Platform::String^, V>(convertToKeyTypeFunc(key), convertToValueTypeFunc(value)));

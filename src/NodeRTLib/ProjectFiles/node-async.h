@@ -10,7 +10,7 @@
 #pragma once
 
 #include <v8.h>
-#include "nan/nan.h"
+#include "nan.h"
 #include <TlHelp32.h>
 
 #include <functional>
@@ -31,7 +31,22 @@
 
 namespace NodeUtils
 {
-  using namespace v8;
+  using v8::Integer;
+  using v8::String;
+  using v8::Function;
+  using v8::Exception;
+  using v8::Object;
+  using v8::Local;
+  using v8::Handle;
+  using v8::Value;
+  using Nan::New;
+  using Nan::HandleScope;
+  using Nan::GetCurrentContext;
+  using Nan::EscapableHandleScope;
+  using Nan::MakeCallback;
+  using Nan::Null;
+  using Nan::Persistent;
+  using Nan::Undefined;
   
   typedef std::function<void (int, Handle<Value>*)> InvokeCallbackDelegate;
   
@@ -57,7 +72,7 @@ namespace NodeUtils
 
       void setCallbackArgs(Handle<Value>* argv, int argc)
       {
-        NanScope();
+        HandleScope scope;
 
         callback_args.reset(new Persistent<Value>[argc], [](Persistent<Value> * ptr) {
           delete [] ptr;
@@ -67,7 +82,8 @@ namespace NodeUtils
 
         for (int i=0; i<argc; i++)
         {
-          NanAssignPersistent(callback_args.get()[i],  argv[i]);
+          //callback_args.get()[i] = argv[i];
+          callback_args.get()[i].Reset(argv[i]);
         }
       }
       
@@ -75,7 +91,7 @@ namespace NodeUtils
       {
         for (int i = 0; i < callback_args_size; i++)
         {
-          NanDisposePersistent(callback_args.get()[i]);
+          callback_args.get()[i].Reset();
         }
       }
 
@@ -83,7 +99,7 @@ namespace NodeUtils
       uv_work_t request;
       std::function<void (Baton*)> doWork;
       std::function<void (Baton*)> afterWork;
-      Persistent<Object> callbackData;
+      Nan::Persistent<Object> callbackData;
 
       friend Async;
     };
@@ -132,7 +148,7 @@ namespace NodeUtils
 
       virtual ~TokenData()
       {
-        NanDisposePersistent(callbackData);
+        callbackData.Reset();
       }
 
     private:
@@ -147,7 +163,7 @@ namespace NodeUtils
         Handle<Value> receiver)
       {
         TokenData* Token = static_cast<TokenData*>(handleData);
-        NanAssignPersistent(Token->callbackData, CreateCallbackData(callback, receiver));
+        Token->callbackData.Reset(CreateCallbackData(callback, receiver));
       }
 
       TokenData() {}
@@ -167,12 +183,12 @@ namespace NodeUtils
       Handle<Function> callback,
       Handle<Value> receiver = Handle<Value>())
     {
-      NanScope();
-      Handle<Object> callbackData = CreateCallbackData(callback, receiver);
+      HandleScope scope;
+      Local<Object> callbackData = CreateCallbackData(callback, receiver);
       
       Baton<TInput, TResult>* baton = new Baton<TInput, TResult>();
       baton->request.data = baton;
-      NanAssignPersistent(baton->callbackData, callbackData);
+      baton->callbackData.Reset(callbackData);
       baton->error_code = 0;
       baton->data = input;
       baton->doWork = doWork;
@@ -237,13 +253,13 @@ namespace NodeUtils
       {
         if (!Token->callbackData.IsEmpty())
         {
-          NanMakeCallback(NanNew(Token->callbackData), NanNew<String>("callback"), argc, argv);
+          MakeCallback(New(Token->callbackData), New<String>("callback").ToLocalChecked(), argc, argv);
         }
       };
 
       std::function<void ()> wrapper = [func, invokeCallback]()
       {
-        NanScope();
+        HandleScope scope;
         func(invokeCallback);
       };
 
@@ -277,13 +293,13 @@ namespace NodeUtils
       {
         if (!Token->callbackData.IsEmpty())
         {
-          NanMakeCallback(NanNew(Token->callbackData), NanNew<String>("callback"), argc, argv);
+          MakeCallback(New(Token->callbackData), New<String>("callback").ToLocalChecked(), argc, argv);
         }
       };
 
       std::function<void ()> wrapper = [func, invokeCallback]()
       {
-        NanScope();
+        HandleScope scope;
         func(invokeCallback);
       };
 
@@ -293,33 +309,33 @@ namespace NodeUtils
   private:
     static Handle<Object> CreateCallbackData(Handle<Function> callback, Handle<Value> receiver)
     {
-      NanEscapableScope();
+      EscapableHandleScope scope;
 
-      Handle<Object> callbackData;
-      if (!callback.IsEmpty() && !callback->Equals(NanUndefined()))
+      Local<Object> callbackData;
+      if (!callback.IsEmpty() && !callback->Equals(Undefined()))
       {
-        callbackData = NanNew<Object>();
+        callbackData = New<Object>();
         
         if (!receiver.IsEmpty())
         {
           callbackData->SetPrototype(receiver);
         }
-
-        callbackData->Set(NanNew<String>("callback"), callback);
+        
+        callbackData->Set(New<String>("callback").ToLocalChecked(), callback);
       
         // get the current domain:
-        Handle<Value> currentDomain = NanUndefined();
+        Handle<Value> currentDomain = Undefined();
 
-        Handle<Object> process = NanGetCurrentContext()->Global()->Get(NanNew<String>("process")).As<Object>();
-        if (!process->Equals(NanUndefined()))
+        Handle<Object> process = GetCurrentContext()->Global()->Get(New<String>("process").ToLocalChecked()).As<Object>();
+        if (!process->Equals(Undefined()))
         {
-          currentDomain = process->Get(NanNew<String>("domain")) ;
+          currentDomain = process->Get(New<String>("domain").ToLocalChecked()) ;
         }
 
-        callbackData->Set(NanNew<String>("domain"), currentDomain);
+        callbackData->Set(New<String>("domain").ToLocalChecked(), currentDomain);
       }
 
-      return NanEscapeScope(callbackData);
+      return scope.Escape(callbackData);
     };
 
     template<typename TInput, typename TResult> 
@@ -339,7 +355,7 @@ namespace NodeUtils
     template<typename TInput, typename TResult> 
     static void __cdecl AsyncAfter(uv_work_t* req, int status) 
     {
-      NanScope();
+      HandleScope scope;;
       Baton<TInput, TResult>* baton = static_cast<Baton<TInput, TResult>*>(req->data);
 
       // typical AfterWorkFunc implementation
@@ -361,16 +377,16 @@ namespace NodeUtils
       {
         // call the callback, using domains and all
         int argc = static_cast<int>(baton->callback_args_size);
-        std::unique_ptr<Handle<Value>> handlesArr(new Handle<Value>[argc]);
+        std::unique_ptr<Local<Value>> handlesArr(new Local<Value>[argc]);
         for (int i=0; i < argc; i++)
         {
-          handlesArr.get()[i] = NanNew(baton->callback_args.get()[i]);
+          handlesArr.get()[i] = New(baton->callback_args.get()[i]);
         }
 
-        NanMakeCallback(NanNew(baton->callbackData), NanNew<String>("callback"), argc, handlesArr.get());
+        MakeCallback(New(baton->callbackData), New<String>("callback").ToLocalChecked(), argc, handlesArr.get());
       }
-
-      NanDisposePersistent(baton->callbackData);
+      
+      baton->callbackData.Reset();
       delete baton;
     }
     

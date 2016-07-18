@@ -11,9 +11,10 @@
 
 #include <node.h>
 #include <v8.h>
+#include "nan.h"
 #include <string>
 #include "WrapperBase.h"
-#include "node_object_wrap.h"
+#include "nan_object_wrap.h"
 
 namespace NodeRT {
   class OpaqueWrapperInitializer;
@@ -35,14 +36,14 @@ namespace NodeRT {
       {
         return false;
       }
-
-	  v8::Handle<v8::Value> hiddenVal = value.As<v8::Object>()->GetHiddenValue(v8::String::NewSymbol("__winrtOpaqueWrapper__"));
+	  
+	  v8::Handle<v8::Value> hiddenVal = value.As<v8::Object>()->GetHiddenValue(Nan::New<v8::String>("__winrtOpaqueWrapper__").ToLocalChecked());
 	  if (hiddenVal.IsEmpty() || !hiddenVal->IsBoolean())
 	  {
 		  return false;
 	  }
 
-	  return hiddenVal->Equals(v8::True());
+	  return hiddenVal->Equals(Nan::True());
     }
 
   private:
@@ -52,12 +53,12 @@ namespace NodeRT {
 
     }
 
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
+	  static void New(Nan::NAN_METHOD_ARGS_TYPE info);
     static void  Init();
 
   private:
     ::Platform::Object^ _instance;
-    static v8::Persistent<v8::FunctionTemplate> s_constructorTemplate;
+    static Nan::Persistent<v8::FunctionTemplate> s_constructorTemplate;
 
     friend OpaqueWrapperInitializer;
     friend v8::Handle<v8::Object> CreateOpaqueWrapper(::Platform::Object^ wintRtInstance);

@@ -7,10 +7,13 @@
   "targets": [
     {
       "target_name": "binding",
-      "sources": [ "{CppFileName}",
+      "sources": [ "_nodert_generated.cpp",
                   "NodeRtUtils.cpp",
                   "OpaqueWrapper.cpp",
                   "CollectionsConverterUtils.cpp"],
+	  "include_dirs": [
+        "<!(node -e \"require('nan')\")"
+      ],
       'libraries': [ '-lruntimeobject.lib'],
       'conditions': [ [
         'WIN_VER=="8.0"', {

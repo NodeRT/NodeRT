@@ -10,8 +10,8 @@
 #define NTDDI_VERSION 0x06010000
 
 #include <v8.h>
+#include "nan.h"
 #include <string>
-#include <node_object_wrap.h>
 #include <ppltasks.h>
 #include "CollectionsConverter.h"
 #include "CollectionsWrap.h"
@@ -32,8 +32,24 @@
 
 const char* REGISTRATION_TOKEN_MAP_PROPERTY_NAME = "__registrationTokenMap__";
 
-using namespace v8;
-using namespace node;
+using v8::Integer;
+using v8::String;
+using v8::Function;
+using v8::Exception;
+using v8::Object;
+using v8::Local;
+using v8::Handle;
+using v8::Value;
+using Nan::New;
+using Nan::HandleScope;
+using Nan::GetCurrentContext;
+using Nan::EscapableHandleScope;
+using Nan::MakeCallback;
+using Nan::Null;
+using Nan::Persistent;
+using Nan::Undefined;
+using Nan::ThrowError;
+using Nan::Error;
 using namespace concurrency;
 
 @foreach(var name in Model.Namespaces) @("namespace " + name + " { ")
@@ -57,11 +73,11 @@ using namespace concurrency;
 @foreach(var name in Model.Namespaces) @("} ")
 
 
-void init(Handle<Object> exports)
+void NAN_MODULE_INIT(init)
 {
   if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
   {
-    ThrowException(v8::Exception::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
+    ThrowError(Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
     return;
   }
   
@@ -74,16 +90,16 @@ void init(Handle<Object> exports)
   
     foreach(var en in Model.Enums) 
     {
-  @:@(namespacePrefix)Init@(en.Name)Enum(exports);
+  @:@(namespacePrefix)Init@(en.Name)Enum(target);
     }
   
     foreach(var t in Model.Types.Values)
     {
-  @:@(namespacePrefix)Init@(t.Name)(exports);
+  @:@(namespacePrefix)Init@(t.Name)(target);
     }
 
   }
-  NodeRT::Utils::RegisterNameSpace("@(Model.WinRTNamespace)", exports);
+  NodeRT::Utils::RegisterNameSpace("@(Model.WinRTNamespace)", target);
 }
 @{
   var moduleName = Model.Namespaces[0];
