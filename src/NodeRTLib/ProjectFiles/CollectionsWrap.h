@@ -20,18 +20,19 @@ namespace NodeRT {
 	namespace Collections {
 
 		using v8::String;
-    using v8::Handle;
-    using v8::Value;
-    using v8::Boolean;
-    using v8::Integer;
-    using v8::FunctionTemplate;
+		using v8::Handle;
+		using v8::Value;
+		using v8::Boolean;
+		using v8::Integer;
+		using v8::FunctionTemplate;
+		using v8::Local;
 		using Nan::HandleScope;
 		using Nan::Persistent;
 		using Nan::Undefined;
-    using Nan::True;
-    using Nan::False;
-    using Nan::Null;
-    using Nan::MaybeLocal;
+		using Nan::True;
+		using Nan::False;
+		using Nan::Null;
+		using Nan::MaybeLocal;
 
 		template <class T>
 		class ArrayWrapper : NodeRT::WrapperBase
@@ -47,8 +48,8 @@ namespace NodeRT {
 
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Array").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
-        Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
-				
+				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
+
 				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), LengthGetter);
 
 				return;
@@ -70,8 +71,8 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
@@ -106,9 +107,9 @@ namespace NodeRT {
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
-        info.GetReturnValue().Set(info.This());
+				info.GetReturnValue().Set(info.This());
 			}
-        
+
 			void LengthGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
@@ -122,7 +123,7 @@ namespace NodeRT {
 				try
 				{
 					unsigned int result = wrapper->_instance->Length;
-          info.GetReturnValue().Set(Nan::New<Integer>(result));
+					info.GetReturnValue().Set(Nan::New<Integer>(result));
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -136,23 +137,23 @@ namespace NodeRT {
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Platform::Array<T>^>(info.This()))
 				{
-          return;
+					return;
 				}
 
 				ArrayWrapper<T>* wrapper = ArrayWrapper<T>::Unwrap<ArrayWrapper<T>>(info.This());
 
 				if (wrapper->_instance->Length <= index)
 				{
-          return;
+					return;
 				}
 
 				if (wrapper->_getterFunc == nullptr)
 				{
-          info.GetReturnValue().Set(CreateOpaqueWrapper(wrapper->_instance[index]));
+					info.GetReturnValue().Set(CreateOpaqueWrapper(wrapper->_instance[index]));
 				}
 				else
 				{
-          info.GetReturnValue().Set(wrapper->_getterFunc(wrapper->_instance[index]));
+					info.GetReturnValue().Set(wrapper->_getterFunc(wrapper->_instance[index]));
 				}
 			}
 
@@ -168,13 +169,13 @@ namespace NodeRT {
 
 				if (wrapper->_checkTypeFunc && !wrapper->_checkTypeFunc(value))
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"The argument to set isn't of the expected type or internal WinRt object was disposed")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The argument to set isn't of the expected type or internal WinRt object was disposed")));
 					return;
 				}
 
 				if (wrapper->_instance->Length <= index)
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Given index exceeded array length")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Given index exceeded array length")));
 					return;
 				}
 
@@ -213,7 +214,7 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterator").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
@@ -221,8 +222,8 @@ namespace NodeRT {
 				Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
 				Nan::SetPrototypeMethod(localRef, "moveNext", MoveNext);
 
-        Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("current").ToLocalChecked(), CurrentGetter);
-        Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("hasCurrent").ToLocalChecked(), HasCurrentGetter);
+				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("current").ToLocalChecked(), CurrentGetter);
+				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("hasCurrent").ToLocalChecked(), HasCurrentGetter);
 
 				return;
 			}
@@ -241,8 +242,8 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
@@ -251,7 +252,7 @@ namespace NodeRT {
 
 				IteratorWrapper<T> *wrapperInstance = new IteratorWrapper<T>(winRtInstance, getterFunc);
 				wrapperInstance->Wrap(objectInstance);
-        info.GetReturnValue().Set(objectInstance);
+				info.GetReturnValue().Set(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -293,8 +294,8 @@ namespace NodeRT {
 					{
 						bool result;
 						result = wrapper->_instance->MoveNext();
-            info.GetReturnValue().Set(Nan::New<Boolean>(result));
-            return;
+						info.GetReturnValue().Set(Nan::New<Boolean>(result));
+						return;
 					}
 					catch (Platform::Exception ^exception)
 					{
@@ -304,7 +305,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -312,9 +313,9 @@ namespace NodeRT {
 			// Not supporting this for now since we need to initialize the array ourselves and don't know which size to use
 			void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-			  HandleScope scope;
-        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
-        return;
+				HandleScope scope;
+				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
+				return;
 			}
 
 			void CurrentGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
@@ -333,11 +334,11 @@ namespace NodeRT {
 
 					if (wrapper->_getterFunc != nullptr)
 					{
-            info.GetReturnValue().Set(wrapper->_getterFunc(current));
+						info.GetReturnValue().Set(wrapper->_getterFunc(current));
 					}
 					else
 					{
-            info.GetReturnValue().Set(CreateOpaqueWrapper(current));
+						info.GetReturnValue().Set(CreateOpaqueWrapper(current));
 					}
 				}
 				catch (Platform::Exception ^exception)
@@ -375,7 +376,7 @@ namespace NodeRT {
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
-    template <class T>
+		template <class T>
 		class IterableWrapper : NodeRT::WrapperBase
 		{
 		public:
@@ -384,7 +385,7 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterable").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
@@ -408,10 +409,10 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-        MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
-				
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -459,9 +460,9 @@ namespace NodeRT {
 				{
 					try
 					{
-            ::Windows::Foundation::Collections::IIterator<T>^ result = wrapper->_instance->First();
+						::Windows::Foundation::Collections::IIterator<T>^ result = wrapper->_instance->First();
 
-            info.GetReturnValue().Set(IteratorWrapper<T>::CreateIteratorWrapper(result, wrapper->_getterFunc));
+						info.GetReturnValue().Set(IteratorWrapper<T>::CreateIteratorWrapper(result, wrapper->_getterFunc));
 					}
 					catch (Platform::Exception ^exception)
 					{
@@ -471,7 +472,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -499,17 +500,17 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVectorView").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
-        Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get);
+				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get);
 
-        Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
+				Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
 				Nan::SetPrototypeMethod(localRef, "getAt", GetAt);
 				Nan::SetPrototypeMethod(localRef, "indexOf", IndexOf);
 				Nan::SetPrototypeMethod(localRef, "first", First);
-        
+
 				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
 				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
 
@@ -532,9 +533,9 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-        MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -634,18 +635,18 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
 				return;
 			}
 
-      void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
+			void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-			  HandleScope scope;
-        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
-        return;
+				HandleScope scope;
+				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
+				return;
 			}
 
 			void First(Nan::NAN_METHOD_ARGS_TYPE info)
@@ -673,7 +674,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -694,7 +695,7 @@ namespace NodeRT {
 
 				if (wrapper->_convertToTypeFunc == nullptr || wrapper->_checkTypeFunc == nullptr)
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Method isn't supported")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Method isn't supported")));
 					return;
 				}
 
@@ -720,7 +721,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -768,11 +769,11 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVector").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
-        Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
+				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
 
 				Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
 				Nan::SetPrototypeMethod(localRef, "getAt", GetAt);
@@ -809,8 +810,8 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
@@ -886,7 +887,7 @@ namespace NodeRT {
 
 				if (!wrapper->_checkTypeFunc(value))
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"The value to set isn't of the expected type")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The value to set isn't of the expected type")));
 					return;
 				}
 
@@ -933,7 +934,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -966,18 +967,18 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
 				return;
 			}
 
-      void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
+			void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-			  HandleScope scope;
-        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
-        return;
+				HandleScope scope;
+				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
+				return;
 			}
 
 			void GetView(Nan::NAN_METHOD_ARGS_TYPE info)
@@ -996,7 +997,7 @@ namespace NodeRT {
 					try
 					{
 						::Windows::Foundation::Collections::IVectorView<T>^ result = wrapper->_instance->GetView();
-            info.GetReturnValue().Set(VectorViewWrapper<T>::CreateVectorViewWrapper(result,
+						info.GetReturnValue().Set(VectorViewWrapper<T>::CreateVectorViewWrapper(result,
 							wrapper->_getterFunc,
 							wrapper->_checkTypeFunc,
 							wrapper->_convertToTypeFunc));
@@ -1010,7 +1011,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1046,7 +1047,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1079,7 +1080,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1110,7 +1111,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1143,7 +1144,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1185,7 +1186,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1226,7 +1227,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1249,7 +1250,7 @@ namespace NodeRT {
 				{
 					try
 					{
-            info.GetReturnValue().Set(IteratorWrapper<T>::CreateIteratorWrapper(wrapper->_instance->First(), wrapper->_getterFunc));
+						info.GetReturnValue().Set(IteratorWrapper<T>::CreateIteratorWrapper(wrapper->_instance->First(), wrapper->_getterFunc));
 					}
 					catch (Platform::Exception ^exception)
 					{
@@ -1259,7 +1260,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1280,7 +1281,7 @@ namespace NodeRT {
 
 				if (wrapper->_convertToTypeFunc == nullptr || wrapper->_checkTypeFunc == nullptr)
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Method isn't supported")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Method isn't supported")));
 					return;
 				}
 
@@ -1294,8 +1295,8 @@ namespace NodeRT {
 						bool result = wrapper->_instance->IndexOf(item, &index);
 
 						MaybeLocal<Object> resObj = Nan::New<Object>();
-						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("boolean").ToLocalChecked(), Nan::New<Boolean>(result).ToLocaclChecked());
-						Nen::Set(resObj.ToLocalChecked(), Nan::New<String>("index").ToLocaclChecked(), Nan::New<Integer>(index).ToLocalChecked());
+						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("boolean").ToLocalChecked(), Nan::New<Boolean>(result));
+						Nen::Set(resObj.ToLocalChecked(), Nan::New<String>("index").ToLocaclChecked(), Nan::New<Integer>(index));
 						info.GetReturnValue().Set(resObj);
 					}
 					catch (Platform::Exception ^exception)
@@ -1306,7 +1307,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1354,7 +1355,7 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IKeyValuePair").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1380,8 +1381,8 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
@@ -1413,8 +1414,8 @@ namespace NodeRT {
 			void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
-        info.GetReturnValue.Set(info.This());
-				
+				info.GetReturnValue.Set(info.This());
+
 			}
 
 			void KeyGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
@@ -1429,7 +1430,7 @@ namespace NodeRT {
 
 				try
 				{
-          info.GetReturnValue().Set(wrapper->_keyGetterFunc(wrapper->_instance->Key));
+					info.GetReturnValue().Set(wrapper->_keyGetterFunc(wrapper->_instance->Key));
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -1450,7 +1451,7 @@ namespace NodeRT {
 
 				try
 				{
-          info.GetReturnValue().Set(wrapper->_valueGetterFunc(wrapper->_instance->Value));
+					info.GetReturnValue().Set(wrapper->_valueGetterFunc(wrapper->_instance->Value));
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -1478,7 +1479,7 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMapView").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1511,8 +1512,8 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
@@ -1582,7 +1583,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1607,7 +1608,7 @@ namespace NodeRT {
 					{
 						const std::function<MaybeLocal<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
 						const std::function<MaybeLocal<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
-            info.GetReturnValue().Set(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
+						info.GetReturnValue().Set(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
 							[keyGetter, valueGetter](::Windows::Foundation::Collections::IKeyValuePair<K, V>^ value) {
 							return KeyValuePairWrapper<K, V>::CreateKeyValuePairWrapper(value,
 								keyGetter,
@@ -1622,7 +1623,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1649,7 +1650,7 @@ namespace NodeRT {
 
 						V result = wrapper->_instance->Lookup(key);
 
-            info.GetReturnValue().Set(wrapper->_valueGetterFunc(result));
+						info.GetReturnValue().Set(wrapper->_valueGetterFunc(result));
 					}
 					catch (Platform::Exception ^exception)
 					{
@@ -1659,7 +1660,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1701,7 +1702,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1751,7 +1752,7 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate = localRef;
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap"));
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1789,8 +1790,8 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args [] = { Undefined() };
-        MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+				v8::Local<Value> args[] = { Undefined() };
+				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
 				{
@@ -1869,7 +1870,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1905,7 +1906,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1940,7 +1941,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1962,7 +1963,7 @@ namespace NodeRT {
 					{
 						const std::function<MaybeLocal<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
 						const std::function<MaybeLocal<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
-            info.GetReturnValue().Set(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
+						info.GetReturnValue().Set(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
 							[keyGetter, valueGetter](::Windows::Foundation::Collections::IKeyValuePair<K, V>^ value) {
 							return KeyValuePairWrapper<K, V>::CreateKeyValuePairWrapper(value,
 								keyGetter,
@@ -1977,7 +1978,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -2003,7 +2004,7 @@ namespace NodeRT {
 
 						V result = wrapper->_instance->Lookup(key);
 
-            info.GetReturnValue().Set(wrapper->_valueGetterFunc(result));
+						info.GetReturnValue().Set(wrapper->_valueGetterFunc(result));
 					}
 					catch (Platform::Exception ^exception)
 					{
@@ -2013,7 +2014,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -2037,7 +2038,7 @@ namespace NodeRT {
 					{
 						::Windows::Foundation::Collections::IMapView<K, V>^ result = wrapper->_instance->GetView();
 
-            info.GetReturnValue().Set(MapViewWrapper<K, V>::CreateMapViewWrapper(result,
+						info.GetReturnValue().Set(MapViewWrapper<K, V>::CreateMapViewWrapper(result,
 							wrapper->_keyGetterFunc,
 							wrapper->_checkKeyTypeFunc,
 							wrapper->_convertToKeyTypeFunc,
@@ -2051,7 +2052,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -2082,7 +2083,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
 					return;
 				}
 			}

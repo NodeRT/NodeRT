@@ -23,10 +23,10 @@ namespace NodeRT {
 
     static void initProps() {
       if (g_keyProp.IsEmpty())
-        g_keyProp = Nan::New<v8::String>("key").ToLocalChecked();
+        g_keyProp.Reset(Nan::New<v8::String>("key").ToLocalChecked());
 
       if (g_valueProp.IsEmpty())
-        g_valueProp = Nan::New<v8::String>("value").ToLocalChecked();
+        g_valueProp.Reset(Nan::New<v8::String>("value").ToLocalChecked());
     }
 
 

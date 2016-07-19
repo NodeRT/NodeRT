@@ -19,7 +19,7 @@
 namespace NodeRT {
   class OpaqueWrapperInitializer;
 
-  v8::Handle<v8::Object> CreateOpaqueWrapper(::Platform::Object^ wintRtHandle);
+  v8::Local<v8::Value> CreateOpaqueWrapper(::Platform::Object^ wintRtHandle);
 
   class OpaqueWrapper : public WrapperBase
   {
@@ -61,6 +61,6 @@ namespace NodeRT {
     static Nan::Persistent<v8::FunctionTemplate> s_constructorTemplate;
 
     friend OpaqueWrapperInitializer;
-    friend v8::Handle<v8::Object> CreateOpaqueWrapper(::Platform::Object^ wintRtInstance);
+    friend v8::Local<v8::Value> CreateOpaqueWrapper(::Platform::Object^ wintRtInstance);
   };
 }
