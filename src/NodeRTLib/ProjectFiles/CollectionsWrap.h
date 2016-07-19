@@ -44,7 +44,7 @@ namespace NodeRT {
 				EscapableHandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Array").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
@@ -157,7 +157,7 @@ namespace NodeRT {
 				}
 			}
 
-			static void Set(uint32_t index, Local<Value> value, const AccessorInfo& info)
+			static void Set(uint32_t index, Local<Value> value, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Platform::Array<T>^>(info.This()))
@@ -215,7 +215,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterator").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -386,7 +386,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterable").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -501,7 +501,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVectorView").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get);
@@ -770,7 +770,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVector").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
@@ -1356,7 +1356,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IKeyValuePair").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -1480,7 +1480,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMapView").ToLocalChecked());
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -1753,7 +1753,7 @@ namespace NodeRT {
 				HandleScope scope;
 
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
-				s_constructorTemplate = localRef;
+				s_constructorTemplate.Reset(localRef);
 				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap"));
 				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
 
