@@ -96,7 +96,7 @@ namespace NodeRTUI
             txtFilename.Text = "";
             txtFilter.Text = "";
             txtOutputDirectory.Text = Properties.Settings.Default.OutputDirPath;
-            cmbTargetWindows.SelectedIndex = 0;
+            cmbTargetWindows.SelectedIndex = 2;
             chkDefGen.Checked = true;
             chkBuildModule.Checked = true;
             namespaceList.Items.Clear();

@@ -105,8 +105,9 @@ namespace NodeRTLib
             }
 
             // resolve the x64 dirs using the sdk we use:
-            if (!directoryName.EndsWith(@"windows kits\8.1\references\commonconfiguration\neutral") && !
-                directoryName.EndsWith(@"windows kits\8.0\references\commonconfiguration\neutral"))
+            if (!directoryName.EndsWith(@"windows kits\8.1\references\commonconfiguration\neutral") &&
+                !directoryName.EndsWith(@"windows kits\8.0\references\commonconfiguration\neutral") &&
+                !directoryName.EndsWith(@"Windows Kits\10\UnionMetadata"))
             {
                 bindingFileText.Replace("{AdditionalWinmdPath}", Path.GetDirectoryName(winrtFile));
                 bindingFileText.Replace("{UseAdditionalWinmd}", "true");

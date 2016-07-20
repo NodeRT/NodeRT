@@ -40,6 +40,17 @@
               }
             }
           }],
+		  ['WIN_VER=="10"', {
+          'msvs_settings': {
+            'VCCLCompilerTool': {
+              'AdditionalUsingDirectories' : [
+                '%ProgramFiles(x86)%/Microsoft Visual Studio 14.0\VC\lib\store\references',
+				'%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata',
+				'%ProgramFiles%/Microsoft Visual Studio 14.0\VC\lib\store\references',
+				'%ProgramFiles%/Windows Kits/10/UnionMetadata']
+              }
+            }
+          }],
           ['USE_ADDITIONAL_WINMD=="true"', {
           'msvs_settings': {
             'VCCLCompilerTool': {

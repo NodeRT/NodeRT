@@ -143,7 +143,8 @@ namespace NodeRTUI
             this.cmbTargetWindows.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTargetWindows.Items.AddRange(new object[] {
             "Windows 8 VS 2012 Project",
-            "Windows 8.1 VS 2013 Project"});
+            "Windows 8.1 VS 2013 Project",
+            "Windows 10 VS 2015 Project"});
             this.cmbTargetWindows.Location = new System.Drawing.Point(192, 261);
             this.cmbTargetWindows.Name = "cmbTargetWindows";
             this.cmbTargetWindows.Size = new System.Drawing.Size(343, 21);
