@@ -1,16 +1,16 @@
-﻿    static Handle<Value> @(Model.Name)(Nan::NAN_METHOD_ARGS_TYPE info)
+﻿    static void @(Model.Name)(Nan::NAN_METHOD_ARGS_TYPE info)
     {
       HandleScope scope;
 
       if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(info.This()))
       {
-        return scope.Close(Undefined());
+        return;
       }
 
       if (info.Length() == 0 || !info[info.Length() -1]->IsFunction())
       {
           Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: No callback was given")));
-          return scope.Close(Undefined());
+          return;
       }
 
       @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(info.This());
@@ -54,7 +54,7 @@
         @:catch (Platform::Exception ^exception)
         @:{
           @:NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
-          @:return scope.Close(Undefined());
+          @:return;
         @:}
       @:}
         c++;
@@ -62,7 +62,7 @@
       else 
       {
         Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
-        return scope.Close(Undefined());
+        return;
       }
     
       auto opTask = create_task(op);
@@ -92,18 +92,18 @@
             @{
               if (taskReturnType == typeof(void))
               {
-            @:Handle<Value> info[] = {Undefined()};
+            @:Local<Value> info[] = {Undefined()};
               }
               else
               {
                   var jsConversionInfo = Converter.ToJS(taskReturnType, TX.MainModel.Types.ContainsKey(taskReturnType)); 
             @:TryCatch tryCatch;
-            @:Handle<Value> error; 
-            @:Handle<Value> arg1 = @string.Format(jsConversionInfo[1], "result");
+            @:Local<Value> error; 
+            @:Local<Value> arg1 = @string.Format(jsConversionInfo[1], "result");
 
             @:if (tryCatch.HasCaught())
             @:{
-            @:  error = tryCatch.Exception()->ToObject();
+            @:  error = Nan::To<Object>(tryCatch.Exception()).ToLocalChecked();
             @:}
             @:else 
             @:{
@@ -112,7 +112,7 @@
 
             @:if (arg1.IsEmpty()) arg1 = Undefined();
 
-            @:Handle<Value> info[] = {error, arg1};
+            @:Local<Value> info[] = {error, arg1};
               }
             }
             invokeCallback(_countof(args), args);
@@ -122,13 +122,11 @@
         {
           NodeUtils::Async::RunCallbackOnMain(asyncToken, [exception](NodeUtils::InvokeCallbackDelegate invokeCallback) {
              
-            Handle<Value> error = NodeRT::Utils::WinRtExceptionToJsError(exception);
+            Local<Value> error = NodeRT::Utils::WinRtExceptionToJsError(exception);
         
-            Handle<Value> info[] = {error};
+            Local<Value> info[] = {error};
             invokeCallback(_countof(args), args);
           });
         }  		
       });
-
-      return scope.Close(Undefined());
     }

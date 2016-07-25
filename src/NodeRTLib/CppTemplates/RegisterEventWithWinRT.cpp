@@ -8,10 +8,12 @@
 }
         try
         {
-          std::shared_ptr<Persistent<Object>> callbackObjPtr(new Persistent<Object>(Persistent<Object>::New(NodeRT::Utils::CreateCallbackObjectInDomain(callback))), 
+          Persistent<Object>* perstPtr = new Persistent<Object>();
+          perstPtr->Reset(NodeRT::Utils::CreateCallbackObjectInDomain(callback));
+          std::shared_ptr<Persistent<Object>> callbackObjPtr(perstPtr), 
             [] (Persistent<Object> *ptr ) {
               NodeUtils::Async::RunOnMain([ptr]() {
-                ptr->Dispose();
+                ptr->Reset();
                 delete ptr;
             });
           });
@@ -29,18 +31,18 @@
               NodeUtils::Async::RunOnMain([callbackObjPtr @foreachArg(", arg{2}", 0)]() {
                 TryCatch tryCatch;
               
-                Handle<Value> error;
+                Local<Value> error;
                 @{var j = 0;}
                 @foreach (var type in eventArgs)
                 {
                  var jsConversionInfo = Converter.ToJS(type, TX.MainModel.Types.ContainsKey(type)); 
-                @:Handle<Value> wrappedArg@(j) = @(string.Format(jsConversionInfo[1], String.Format("arg{0}",j )));
+                @:Local<Value> wrappedArg@(j) = @(string.Format(jsConversionInfo[1], String.Format("arg{0}",j )));
                   j++;
                 }
 
                 if (tryCatch.HasCaught())
                 {
-                  error = tryCatch.Exception()->ToObject();
+                  error = Nan::To<Object>(tryCatch.Exception()).ToLocalChecked();
                 }
                 else 
                 {
@@ -56,7 +58,7 @@
 
                 @if (eventinfo.Length > 0)
                 {
-                @:Handle<Value> info[] = { @foreachArg("wrappedArg{2}, ", 2) };
+                @:Local<Value> info[] = { @foreachArg("wrappedArg{2}, ", 2) };
                 @:NodeRT::Utils::CallCallbackInDomain(*callbackObjPtr, _countof(args), args);
                 }
                 else
@@ -70,5 +72,5 @@
         catch (Platform::Exception ^exception)
         {
           NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
-          return scope.Close(Undefined());
+          return;
         }

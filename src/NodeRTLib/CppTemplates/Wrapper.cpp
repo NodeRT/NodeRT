@@ -51,8 +51,8 @@ using Nan::False;
 using Nan::Null;
 using Nan::MaybeLocal;
 using Nan::EscapableHandleScope;
-using Nan::Error;
-using Nan::ThrowError;
+using Nan::HandleScope;
+using Nan::TryCatch;
 using namespace concurrency;
 
 @foreach(var name in Model.Namespaces) @("namespace " + name + " { ")

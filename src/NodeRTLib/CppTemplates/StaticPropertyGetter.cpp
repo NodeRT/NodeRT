@@ -1,4 +1,4 @@
-﻿    static Handle<Value> @(Model.Name)Getter(Local<String> property, const AccessorInfo &info)
+﻿    static Handle<Value> @(Model.Name)Getter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value> &info)
     {
       HandleScope scope;
 
