@@ -1,19 +1,19 @@
-﻿    static Handle<Value> @(Model.Name)(const v8::Arguments& args)
+﻿    static Handle<Value> @(Model.Name)(Nan::NAN_METHOD_ARGS_TYPE info)
     {
       HandleScope scope;
 
-      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(args.This()))
+      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(info.This()))
       {
         return scope.Close(Undefined());
       }
 
-      if (args.Length() == 0 || !args[args.Length() -1]->IsFunction())
+      if (info.Length() == 0 || !info[info.Length() -1]->IsFunction())
       {
-          ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Bad arguments: No callback was given")));
+          Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: No callback was given")));
           return scope.Close(Undefined());
       }
 
-      @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(args.This());
+      @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(info.This());
 
       @TX.ToWinRT(Model.Overloads[0].ReturnType) op;
     
@@ -25,12 +25,12 @@
         if (c > 0) {
         elseString = "else ";
         }
-      @:@(elseString)if (args.Length() == @(overload.GetParameters().Length+1)@{if (overload.GetParameters().Length==0)@(")")}
+      @:@(elseString)if (info.Length() == @(overload.GetParameters().Length+1)@{if (overload.GetParameters().Length==0)@(")")}
 
         foreach (var paramInfo in overload.GetParameters())
         {
         
-        @:&& @(String.Format(Converter.TypeCheck(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)), "args[" + i.ToString() + "]"))@{if (overload.GetParameters().Length==(i+1)) @(")")}
+        @:&& @(String.Format(Converter.TypeCheck(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)), "info[" + i.ToString() + "]"))@{if (overload.GetParameters().Length==(i+1)) @(")")}
           i++;
         }
       @:{
@@ -41,7 +41,7 @@
           {
           var winrtConversionInfo = Converter.ToWinRT(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType));   
           
-          @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "args[" +parameterCounter + "]" ));
+          @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "info[" +parameterCounter + "]" ));
           parameterCounter++;
           }
           
@@ -61,12 +61,12 @@
       }
       else 
       {
-        ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
         return scope.Close(Undefined());
       }
     
       auto opTask = create_task(op);
-      uv_async_t* asyncToken = NodeUtils::Async::GetAsyncToken(args[args.Length() -1].As<Function>());
+      uv_async_t* asyncToken = NodeUtils::Async::GetAsyncToken(info[info.Length() -1].As<Function>());
       @{
         System.Reflection.MethodInfo[] returnTypeMethods = Model.Overloads[0].ReturnType.GetMethods();
         Type taskReturnType = returnTypeMethods.Where((methodInfo) => { return (methodInfo.Name == "GetResults"); }).First().ReturnType;
@@ -92,7 +92,7 @@
             @{
               if (taskReturnType == typeof(void))
               {
-            @:Handle<Value> args[] = {Undefined()};
+            @:Handle<Value> info[] = {Undefined()};
               }
               else
               {
@@ -112,7 +112,7 @@
 
             @:if (arg1.IsEmpty()) arg1 = Undefined();
 
-            @:Handle<Value> args[] = {error, arg1};
+            @:Handle<Value> info[] = {error, arg1};
               }
             }
             invokeCallback(_countof(args), args);
@@ -124,7 +124,7 @@
              
             Handle<Value> error = NodeRT::Utils::WinRtExceptionToJsError(exception);
         
-            Handle<Value> args[] = {error};
+            Handle<Value> info[] = {error};
             invokeCallback(_countof(args), args);
           });
         }  		

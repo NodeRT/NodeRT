@@ -54,9 +54,9 @@
                   i++;
                 }
 
-                @if (eventArgs.Length > 0)
+                @if (eventinfo.Length > 0)
                 {
-                @:Handle<Value> args[] = { @foreachArg("wrappedArg{2}, ", 2) };
+                @:Handle<Value> info[] = { @foreachArg("wrappedArg{2}, ", 2) };
                 @:NodeRT::Utils::CallCallbackInDomain(*callbackObjPtr, _countof(args), args);
                 }
                 else

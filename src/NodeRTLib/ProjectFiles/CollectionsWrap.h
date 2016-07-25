@@ -71,7 +71,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
@@ -242,7 +242,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
@@ -409,7 +409,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 
@@ -533,7 +533,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
@@ -810,7 +810,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
@@ -1381,7 +1381,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
@@ -1512,7 +1512,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())
@@ -1790,7 +1790,7 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> args[] = { Undefined() };
+				v8::Local<Value> info[] = { Undefined() };
 				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
 				if (objectInstance.IsEmpty())

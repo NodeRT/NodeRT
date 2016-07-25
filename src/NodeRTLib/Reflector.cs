@@ -31,12 +31,12 @@ namespace NodeRTLib
         static string BaseWindMDDir = null;
         static Reflector()
         {
-            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, eventArgs) => Assembly.ReflectionOnlyLoad(eventArgs.Name);
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, eventArgs) => Assembly.ReflectionOnlyLoad(eventinfo.Name);
             WindowsRuntimeMetadata.ReflectionOnlyNamespaceResolve += (sender, eventArgs) =>
             {
                 
                 string path =
-                    WindowsRuntimeMetadata.ResolveNamespace(eventArgs.NamespaceName, Enumerable.Empty<string>())
+                    WindowsRuntimeMetadata.ResolveNamespace(eventinfo.NamespaceName, Enumerable.Empty<string>())
                         .FirstOrDefault();
 
                 if (path == null) return;
@@ -44,11 +44,11 @@ namespace NodeRTLib
                 if (!String.IsNullOrEmpty(BaseWindMDDir))
                 {
                     var newPath = Path.Combine(BaseWindMDDir, System.IO.Path.GetFileName(path));
-                    eventArgs.ResolvedAssemblies.Add(Assembly.ReflectionOnlyLoadFrom(newPath));
+                    eventinfo.ResolvedAssemblies.Add(Assembly.ReflectionOnlyLoadFrom(newPath));
                 }
                 else
                 {
-                    eventArgs.ResolvedAssemblies.Add(Assembly.ReflectionOnlyLoadFrom(path));
+                    eventinfo.ResolvedAssemblies.Add(Assembly.ReflectionOnlyLoadFrom(path));
                 }
             };
         }

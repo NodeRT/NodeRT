@@ -98,7 +98,7 @@
     }
 
     Handle<Object> opaqueWrapper = CreateOpaqueWrapper(winRtInstance);
-    Handle<Value> args[] = {opaqueWrapper};
+    Handle<Value> info[] = {opaqueWrapper};
     return scope.Close(@(Model.Name)::s_constructorTemplate->GetFunction()->NewInstance(_countof(args), args));
   }
 

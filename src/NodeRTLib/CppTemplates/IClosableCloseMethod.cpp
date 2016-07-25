@@ -1,15 +1,15 @@
-﻿    static Handle<Value> @(TX.CSharpMethodToCppMethod(Model.Name))(const v8::Arguments& args)
+﻿    static Handle<Value> @(TX.CSharpMethodToCppMethod(Model.Name))(Nan::NAN_METHOD_ARGS_TYPE info)
     {
       HandleScope scope;
 
-      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(args.This()))
+      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(info.This()))
       {
         return scope.Close(Undefined());
       }
 
-      @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(args.This());
+      @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(info.This());
 
-      if (args.Length() == 0)
+      if (info.Length() == 0)
       {
         try
         {
@@ -25,7 +25,7 @@
       }
       else 
       {
-        ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
         return scope.Close(Undefined());
       }
 

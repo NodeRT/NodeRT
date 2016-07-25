@@ -42,7 +42,7 @@ namespace NodeRT {
       return scope.Escape(Nan::Undefined());
     }
 
-    v8::Local<v8::Value> args[] = { Nan::Undefined() };
+    v8::Local<v8::Value> info[] = { Nan::Undefined() };
     if (OpaqueWrapper::s_constructorTemplate.IsEmpty())
     {
       OpaqueWrapper::Init();

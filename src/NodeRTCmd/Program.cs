@@ -103,7 +103,7 @@ namespace NodeRTCmd
         {
             string customWinMdDir = ValueOrNull(args, "customwinmddir");
 
-            foreach (string str in Reflector.GetNamespaces(args["winmd"], customWinMdDir))
+            foreach (string str in Reflector.GetNamespaces(info["winmd"], customWinMdDir))
             {
                 Console.WriteLine(str);
             }
@@ -111,12 +111,12 @@ namespace NodeRTCmd
 
         static string ValueOrNull(Dictionary<String, String> args, string key)
         {
-            if (!args.ContainsKey(key))
+            if (!info.ContainsKey(key))
             {
                 return null;
             }
 
-            return args[key];
+            return info[key];
         }
 
         static bool GenerateAndBuildNamespace(string ns, 
@@ -170,13 +170,13 @@ namespace NodeRTCmd
 
         static bool ValidateArguments(Dictionary<String, String> args)
         {
-            if (!args.ContainsKey("winmd") || String.IsNullOrEmpty(args["winmd"]))
+            if (!info.ContainsKey("winmd") || String.IsNullOrEmpty(info["winmd"]))
                 return false;
 
-            if (args.ContainsKey("namespaces"))
+            if (info.ContainsKey("namespaces"))
                 return true;
 
-            if (!args.ContainsKey("outdir") || String.IsNullOrEmpty(args["outdir"]))
+            if (!info.ContainsKey("outdir") || String.IsNullOrEmpty(info["outdir"]))
                 return false;
 
             return true;
@@ -221,15 +221,15 @@ namespace NodeRTCmd
         static Dictionary<String, String> ParseCommandLineArgs(string[] args)
         {
             Dictionary<string, string> argsDic = new Dictionary<string, string>();
-            for (int i = 0; i < args.Length; i++)
+            for (int i = 0; i < info.Length; i++)
             {
-                if (args[i].StartsWith("--"))
+                if (info[i].StartsWith("--"))
                 {
-                    string argName = args[i].Substring(2);
+                    string argName = info[i].Substring(2);
                     string value = "";
-                    if (args.Length > (i + 1) && !args[i + 1].StartsWith("--"))
+                    if (info.Length > (i + 1) && !info[i + 1].StartsWith("--"))
                     {
-                        value = args[i + 1];
+                        value = info[i + 1];
                     }
                     argsDic[argName] = value;
                 }

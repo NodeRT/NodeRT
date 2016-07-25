@@ -1,4 +1,4 @@
-﻿    static Handle<Value> @(TX.CSharpMethodToCppMethod(Model.Name))(const v8::Arguments& args)
+﻿    static Handle<Value> @(TX.CSharpMethodToCppMethod(Model.Name))(Nan::NAN_METHOD_ARGS_TYPE info)
     {
       HandleScope scope;
       @{int c = 0;}
@@ -18,13 +18,13 @@
           else
             methodHasOutParams = true;
         }
-      @:@(elseString)if (args.Length() == @(inParamsCount)@{if (inParamsCount==0)@(")")}
+      @:@(elseString)if (info.Length() == @(inParamsCount)@{if (inParamsCount==0)@(")")}
 
         foreach (var paramInfo in overload.GetParameters())
         {
           if (paramInfo.IsOut)
             continue;
-        @:&& @(String.Format(Converter.TypeCheck(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)), "args[" + i.ToString() + "]"))@{if (inParamsCount==(i+1)) @(")")}
+        @:&& @(String.Format(Converter.TypeCheck(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)), "info[" + i.ToString() + "]"))@{if (inParamsCount==(i+1)) @(")")}
           i++;
         }
       @:{
@@ -50,7 +50,7 @@
           }
           else
           {
-          @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "args[" +parameterCounter + "]" ));
+          @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "info[" +parameterCounter + "]" ));
           }
           parameterCounter++;
           }
@@ -118,7 +118,7 @@
       }
       else 
       {
-        ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
         return scope.Close(Undefined());
       }
 

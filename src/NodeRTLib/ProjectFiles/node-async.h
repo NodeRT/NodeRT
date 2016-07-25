@@ -74,7 +74,7 @@ namespace NodeUtils
       {
         HandleScope scope;
 
-        callback_args.reset(new Persistent<Value>[argc], [](Persistent<Value> * ptr) {
+        callback_info.reset(new Persistent<Value>[argc], [](Persistent<Value> * ptr) {
           delete [] ptr;
         });
 
@@ -82,8 +82,8 @@ namespace NodeUtils
 
         for (int i=0; i<argc; i++)
         {
-          //callback_args.get()[i] = argv[i];
-          callback_args.get()[i].Reset(argv[i]);
+          //callback_info.get()[i] = argv[i];
+          callback_info.get()[i].Reset(argv[i]);
         }
       }
       
@@ -91,7 +91,7 @@ namespace NodeUtils
       {
         for (int i = 0; i < callback_args_size; i++)
         {
-          callback_args.get()[i].Reset();
+          callback_info.get()[i].Reset();
         }
       }
 
@@ -380,7 +380,7 @@ namespace NodeUtils
         std::unique_ptr<Local<Value>> handlesArr(new Local<Value>[argc]);
         for (int i=0; i < argc; i++)
         {
-          handlesArr.get()[i] = New(baton->callback_args.get()[i]);
+          handlesArr.get()[i] = New(baton->callback_info.get()[i]);
         }
 
         MakeCallback(New(baton->callbackData), New<String>("callback").ToLocalChecked(), argc, handlesArr.get());

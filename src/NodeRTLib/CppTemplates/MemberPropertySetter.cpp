@@ -4,7 +4,7 @@
       
       if (!@(String.Format(Converter.TypeCheck(Model.PropertyType, TX.MainModel.Types.ContainsKey(Model.PropertyType)),"value")))
       {
-        ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
         return;
       }
 
