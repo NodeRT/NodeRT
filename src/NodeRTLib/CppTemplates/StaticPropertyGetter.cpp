@@ -1,4 +1,4 @@
-﻿    static Handle<Value> @(Model.Name)Getter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value> &info)
+﻿    static void @(Model.Name)Getter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value> &info)
     {
       HandleScope scope;
 
@@ -8,11 +8,12 @@
           var winrtConversionInfo = Converter.ToWinRT(Model.PropertyType);
         }
         @winrtConversionInfo[0] result = @(TX.ToWinRT(Model.DeclaringType, false))::@(Model.Name);
-        return scope.Close(@string.Format(jsConversionInfo[1], "result"));
+        info.GetReturnValue().Set(@string.Format(jsConversionInfo[1], "result"));
+        return;
       }
       catch (Platform::Exception ^exception)
       {
         NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
-        return scope.Close(Undefined());
+        return;
       }
     }
