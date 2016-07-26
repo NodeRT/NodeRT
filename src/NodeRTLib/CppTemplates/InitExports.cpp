@@ -4,7 +4,6 @@
       HandleScope scope;
       
 	    Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New)
-      //localRef = Persistent<FunctionTemplate>::New(FunctionTemplate::New(New));
       s_constructorTemplate.Reset(localRef);
       localRef->SetClassName(Nan::New<String>("@(Model.Name)").ToLocalChecked());
       localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -97,11 +96,10 @@
           if (!Model.HasMemberEvents)
           {
       @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener).ToLocalChecked()).ToLocalChecked();
-          }
-          
+          }         
       @:Nan::Set(constructor, Nan::New<String>("removeListener").ToLocalChecked(), removeListenerFunc);
       @:Nan::Set(constructor, Nan::New<String>("off").ToLocalChecked(), removeListenerFunc);
         }
       }
-      @Nan::Set(exports, Nan::New<String>("@(Model.Name)").ToLocalChecked(), constructor);
+      Nan::Set(exports, Nan::New<String>("@(Model.Name)").ToLocalChecked(), constructor);
     }

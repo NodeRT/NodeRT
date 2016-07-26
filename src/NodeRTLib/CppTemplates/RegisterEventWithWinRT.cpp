@@ -56,7 +56,7 @@
                   i++;
                 }
 
-                @if (eventinfo.Length > 0)
+                @if (eventArgs.Length > 0)
                 {
                 @:Local<Value> info[] = { @foreachArg("wrappedArg{2}, ", 2) };
                 @:NodeRT::Utils::CallCallbackInDomain(*callbackObjPtr, _countof(args), args);
