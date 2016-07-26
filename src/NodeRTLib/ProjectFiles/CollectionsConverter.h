@@ -30,14 +30,14 @@ namespace NodeRT {
     }
 
 
-    static std::function<bool(v8::Handle<v8::Value>)> checkStringFunc = [](v8::Handle<v8::Value> value) -> bool { return value->IsString(); };
+    static std::function<bool(v8::Local<v8::Value>)> checkStringFunc = [](v8::Local<v8::Value> value) -> bool { return value->IsString(); };
 
     template <class K, class V>
-    static ::Platform::Collections::Map<K, V>^ JsArrayToWinrtMap(v8::Handle<v8::Array> arr,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkKeyTypeFunc,
-      const std::function<K(v8::Handle<v8::Value>)>& convertToKeyTypeFunc,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Collections::Map<K, V>^ JsArrayToWinrtMap(v8::Local<v8::Array> arr,
+      const std::function<bool(v8::Local<v8::Value>)>& checkKeyTypeFunc,
+      const std::function<K(v8::Local<v8::Value>)>& convertToKeyTypeFunc,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       std::map<K, V> stdMap;
       if (!FillMapFromJsArray(arr, checkKeyTypeFunc, convertToKeyTypeFunc, checkValueTypeFunc, convertToValueTypeFunc, stdMap))
@@ -52,11 +52,11 @@ namespace NodeRT {
 
 
     template <class K, class V>
-    static ::Platform::Collections::MapView<K, V>^ JsArrayToWinrtMapView(v8::Handle<v8::Array> arr,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkKeyTypeFunc,
-      const std::function<K(v8::Handle<v8::Value>)>& convertToKeyTypeFunc,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Collections::MapView<K, V>^ JsArrayToWinrtMapView(v8::Local<v8::Array> arr,
+      const std::function<bool(v8::Local<v8::Value>)>& checkKeyTypeFunc,
+      const std::function<K(v8::Local<v8::Value>)>& convertToKeyTypeFunc,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       std::map<K, V> stdMap;
       if (!FillMapFromJsArray(arr, checkKeyTypeFunc, convertToKeyTypeFunc, checkValueTypeFunc, convertToValueTypeFunc, stdMap))
@@ -72,9 +72,9 @@ namespace NodeRT {
     // A special implementation for the case were the map's keys are strings
     // In this case we expect a non-array JS object.
     template <class V>
-    static ::Platform::Collections::Map<Platform::String^, V>^ JsObjectToWinrtMap(v8::Handle<v8::Object> obj,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Collections::Map<Platform::String^, V>^ JsObjectToWinrtMap(v8::Local<v8::Object> obj,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       std::map<::Platform::String^, V> stdMap;
 
@@ -88,9 +88,9 @@ namespace NodeRT {
 
 
     template <class V>
-    static ::Platform::Collections::MapView<Platform::String^, V>^ JsObjectToWinrtMapView(v8::Handle<v8::Object> obj,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Collections::MapView<Platform::String^, V>^ JsObjectToWinrtMapView(v8::Local<v8::Object> obj,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       std::map<::Platform::String^, V> stdMap;
       if (!FillMapFromJsObject(obj, checkStringFunc, NodeRT::Utils::V8StringToPlatformString, checkValueTypeFunc, convertToValueTypeFunc, stdMap))
@@ -103,9 +103,9 @@ namespace NodeRT {
 
 
     template <class V>
-    static ::Platform::Collections::Vector<V>^ JsArrayToWinrtVector(v8::Handle<v8::Array> arr,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Collections::Vector<V>^ JsArrayToWinrtVector(v8::Local<v8::Array> arr,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       std::vector<V> vec(arr.ToLocalChecked()->Length());
       if (!FillVector<std::vector<V>&, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
@@ -117,9 +117,9 @@ namespace NodeRT {
     }
 
     template <class V>
-    static ::Platform::Collections::VectorView<V>^ JsArrayToWinrtVectorView(v8::Handle<v8::Array> arr,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Collections::VectorView<V>^ JsArrayToWinrtVectorView(v8::Local<v8::Array> arr,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       std::vector<V> vec(arr.ToLocalChecked()->Length());
       if (!FillVector<std::vector<V>&, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
@@ -131,9 +131,9 @@ namespace NodeRT {
     }
 
     template <class V>
-    static ::Platform::Array<V>^ JsArrayToWinrtArray(v8::Handle<v8::Array> arr,
-      const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-      const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc)
+    static ::Platform::Array<V>^ JsArrayToWinrtArray(v8::Local<v8::Array> arr,
+      const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+      const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
       auto vec = ref new ::Platform::Array<V>(arr.ToLocalChecked()->Length());
       if (!FillVector<::Platform::Array<V>^, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
@@ -147,8 +147,8 @@ namespace NodeRT {
 
   template <class V>
   static void InsertToVector(uint32_t index,
-    v8::Handle<v8::Value> value,
-    const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc,
+    v8::Local<v8::Value> value,
+    const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc,
     std::vector<V>& vec)
   {
     vec[index] = convertToValueTypeFunc(value);
@@ -156,8 +156,8 @@ namespace NodeRT {
 
   template <class V>
   static void InsertToVector(uint32_t index,
-    v8::Handle<v8::Value> value,
-    const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc,
+    v8::Local<v8::Value> value,
+    const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc,
     ::Platform::Array<V>^ vec)
   {
     vec->set(index, convertToValueTypeFunc(value));
@@ -165,9 +165,9 @@ namespace NodeRT {
 
   // assumption: vec length >= arr length
   template <class T, class V>
-  static bool FillVector(v8::Handle<v8::Array> arr,
-    const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-    const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc,
+  static bool FillVector(v8::Local<v8::Array> arr,
+    const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+    const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc,
     T vec)
   {
 
@@ -190,11 +190,11 @@ namespace NodeRT {
 
   template <class K, class V>
   static bool
-    FillMapFromJsArray(v8::Handle<v8::Array> arr,
-    const std::function<bool(v8::Handle<v8::Value>)>& checkKeyTypeFunc,
-    const std::function<K(v8::Handle<v8::Value>)>& convertToKeyTypeFunc,
-    const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-    const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc,
+    FillMapFromJsArray(v8::Local<v8::Array> arr,
+    const std::function<bool(v8::Local<v8::Value>)>& checkKeyTypeFunc,
+    const std::function<K(v8::Local<v8::Value>)>& convertToKeyTypeFunc,
+    const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+    const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc,
     std::map<K, V>& stdMap)
   {
     initProps();
@@ -241,14 +241,14 @@ namespace NodeRT {
 
   template <class V>
   static bool
-    FillMapFromJsObject(v8::Handle<v8::Object> obj,
-    const std::function<bool(v8::Handle<v8::Value>)>& checkKeyTypeFunc,
-    const std::function<::Platform::String^(v8::Handle<v8::Value>)>& convertToKeyTypeFunc,
-    const std::function<bool(v8::Handle<v8::Value>)>& checkValueTypeFunc,
-    const std::function<V(v8::Handle<v8::Value>)>& convertToValueTypeFunc,
+    FillMapFromJsObject(v8::Local<v8::Object> obj,
+    const std::function<bool(v8::Local<v8::Value>)>& checkKeyTypeFunc,
+    const std::function<::Platform::String^(v8::Local<v8::Value>)>& convertToKeyTypeFunc,
+    const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
+    const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc,
     std::map<::Platform::String^, V>& stdMap)
   {
-    Local<Array> objProps = obj->GetPropertyNames();
+    Local<Array> objProps = Nan::GetPropertyNames(obj).ToLocalChecked();
     for (uint32_t i = 0; i < objProps->Length(); i++)
     {
       Local<Value> key = Nan::Get(objProps, i).ToLocalChecked();

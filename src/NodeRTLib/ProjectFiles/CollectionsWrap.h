@@ -43,22 +43,22 @@ namespace NodeRT {
 			{
 				EscapableHandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
 
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Array").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
-				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Array").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
+				Nan::SetIndexedPropertyHandler(localRef->InstanceTemplate(), Get, Set);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), LengthGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), LengthGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateArrayWrapper(::Platform::Array<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc = nullptr,
-				const std::function<bool(MaybeLocal<Value>)>& checkTypeFunc = nullptr,
-				const std::function<T(MaybeLocal<Value>)>& convertToTypeFunc = nullptr)
+			static Local<Value> CreateArrayWrapper(::Platform::Array<T>^ winRtInstance,
+				const std::function<Local<Value>(T)>& getterFunc = nullptr,
+				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr)
 			{
 				EscapleHandleScope scope;
 				if (winRtInstance == nullptr)
@@ -72,8 +72,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -92,9 +92,9 @@ namespace NodeRT {
 		private:
 
 			ArrayWrapper(::Platform::Array<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkTypeFunc = nullptr,
-				const std::function<T(MaybeLocal<Value>)>& convertToTypeFunc = nullptr) :
+				const std::function<Local<Value>(T)>& getterFunc,
+				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc),
 				_checkTypeFunc(checkTypeFunc),
@@ -196,9 +196,9 @@ namespace NodeRT {
 
 		private:
 			::Platform::Array<T>^ _instance;
-			std::function<MaybeLocal<Value>(T)> _getterFunc;
-			std::function<bool(MaybeLocal<Value>)> _checkTypeFunc;
-			std::function<T(MaybeLocal<Value>)> _convertToTypeFunc;
+			std::function<Local<Value>(T)> _getterFunc;
+			std::function<bool(Local<Value>)> _checkTypeFunc;
+			std::function<T(Local<Value>)> _convertToTypeFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -214,22 +214,22 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterator").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterator").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
 
 				Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
 				Nan::SetPrototypeMethod(localRef, "moveNext", MoveNext);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("current").ToLocalChecked(), CurrentGetter);
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("hasCurrent").ToLocalChecked(), HasCurrentGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("current").ToLocalChecked(), CurrentGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("hasCurrent").ToLocalChecked(), HasCurrentGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateIteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc = nullptr)
+			static Local<Value> CreateIteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance,
+				const std::function<Local<Value>(T)>& getterFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -243,8 +243,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -262,7 +262,7 @@ namespace NodeRT {
 
 		private:
 
-			IteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance, const std::function<MaybeLocal<Value>(T)>& getterFunc) :
+			IteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance, const std::function<Local<Value>(T)>& getterFunc) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc)
 			{
@@ -372,7 +372,7 @@ namespace NodeRT {
 
 		private:
 			::Windows::Foundation::Collections::IIterator<T>^ _instance;
-			std::function<MaybeLocal<Value>(T)> _getterFunc;
+			std::function<Local<Value>(T)> _getterFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -385,18 +385,18 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterable").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterable").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
 
 				Nan::SetPrototypeMethod(localRef, "first", First);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateIterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc = nullptr)
+			static Local<Value> CreateIterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance,
+				const std::function<Local<Value>(T)>& getterFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -410,8 +410,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 
 				if (objectInstance.IsEmpty())
 				{
@@ -430,7 +430,7 @@ namespace NodeRT {
 
 		private:
 
-			IterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance, const std::function<MaybeLocal<Value>(T)>& getterFunc) :
+			IterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance, const std::function<Local<Value>(T)>& getterFunc) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc)
 			{
@@ -481,7 +481,7 @@ namespace NodeRT {
 
 		private:
 			::Windows::Foundation::Collections::IIterable<T>^ _instance;
-			std::function<MaybeLocal<Value>(T)> _getterFunc;
+			std::function<Local<Value>(T)> _getterFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -500,27 +500,27 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVectorView").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
-				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVectorView").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
+				Nan::SetIndexedPropertyHandler(localRef->InstanceTemplate(), Get);
 
 				Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
 				Nan::SetPrototypeMethod(localRef, "getAt", GetAt);
 				Nan::SetPrototypeMethod(localRef, "indexOf", IndexOf);
 				Nan::SetPrototypeMethod(localRef, "first", First);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateVectorViewWrapper(::Windows::Foundation::Collections::IVectorView<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkTypeFunc = nullptr,
-				const std::function<T(MaybeLocal<Value>)>& convertToTypeFunc = nullptr)
+			static Local<Value> CreateVectorViewWrapper(::Windows::Foundation::Collections::IVectorView<T>^ winRtInstance,
+				const std::function<Local<Value>(T)>& getterFunc,
+				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -534,8 +534,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -554,9 +554,9 @@ namespace NodeRT {
 		private:
 
 			VectorViewWrapper(::Windows::Foundation::Collections::IVectorView<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkTypeFunc = nullptr,
-				const std::function<T(MaybeLocal<Value>)>& convertToTypeFunc = nullptr) :
+				const std::function<Local<Value>(T)>& getterFunc,
+				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc),
 				_checkTypeFunc(checkTypeFunc),
@@ -708,7 +708,7 @@ namespace NodeRT {
 						unsigned int index;
 						bool result = wrapper->_instance->IndexOf(item, &index);
 
-						MaybeLocal<Object> resObj = Nan::New<Object>();
+						Local<Object> resObj = Nan::New<Object>();
 						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("boolean").ToLocalChecked(), Nan::New<v8::Boolean>(result).ToLocalChecked());
 						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("index").ToLocalChecked(), Nan::New<v8::Integer>(index).ToLocalChecked());
 						info.GetReturnValue().Set(resObj);
@@ -740,7 +740,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Integer::NewFromUnsigned(wrapper->_instance->Size);
+					return Nan::New<Integer>(wrapper->_instance->Size);
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -751,9 +751,9 @@ namespace NodeRT {
 
 		private:
 			::Windows::Foundation::Collections::IVectorView<T>^ _instance;
-			std::function<MaybeLocal<Value>(T)> _getterFunc;
-			std::function<bool(MaybeLocal<Value>)> _checkTypeFunc;
-			std::function<T(MaybeLocal<Value>)> _convertToTypeFunc;
+			std::function<Local<Value>(T)> _getterFunc;
+			std::function<bool(Local<Value>)> _checkTypeFunc;
+			std::function<T(Local<Value>)> _convertToTypeFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -769,11 +769,11 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVector").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
-				Nan::SetIndexedPropertyHandler(localRef.ToLocalChecked()->InstanceTemplate(), Get, Set);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVector").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
+				Nan::SetIndexedPropertyHandler(localRef->InstanceTemplate(), Get, Set);
 
 				Nan::SetPrototypeMethod(localRef, "getMany", GetMany);
 				Nan::SetPrototypeMethod(localRef, "getAt", GetAt);
@@ -788,16 +788,16 @@ namespace NodeRT {
 				Nan::SetPrototypeMethod(localRef, "replaceAll", ReplaceAll);
 				Nan::SetPrototypeMethod(localRef, "setAt", SetAt);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateVectorWrapper(::Windows::Foundation::Collections::IVector<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkTypeFunc = nullptr,
-				const std::function<T(MaybeLocal<Value>)>& convertToTypeFunc = nullptr)
+			static Local<Value> CreateVectorWrapper(::Windows::Foundation::Collections::IVector<T>^ winRtInstance,
+				const std::function<Local<Value>(T)>& getterFunc,
+				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -811,8 +811,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -831,9 +831,9 @@ namespace NodeRT {
 		private:
 
 			VectorWrapper(::Windows::Foundation::Collections::IVector<T>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(T)>& getterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkTypeFunc = nullptr,
-				const std::function<T(MaybeLocal<Value>)>& convertToTypeFunc = nullptr) :
+				const std::function<Local<Value>(T)>& getterFunc,
+				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
+				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr) :
 				_instance(winRtInstance),
 				_getterFunc(getterFunc),
 				_checkTypeFunc(checkTypeFunc),
@@ -1294,7 +1294,7 @@ namespace NodeRT {
 						unsigned int index;
 						bool result = wrapper->_instance->IndexOf(item, &index);
 
-						MaybeLocal<Object> resObj = Nan::New<Object>();
+						Local<Object> resObj = Nan::New<Object>();
 						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("boolean").ToLocalChecked(), Nan::New<Boolean>(result));
 						Nen::Set(resObj.ToLocalChecked(), Nan::New<String>("index").ToLocaclChecked(), Nan::New<Integer>(index));
 						info.GetReturnValue().Set(resObj);
@@ -1326,7 +1326,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Integer::NewFromUnsigned(wrapper->_instance->Size);
+					return Nan::New<Integer>(wrapper->_instance->Size);
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -1337,9 +1337,9 @@ namespace NodeRT {
 
 		private:
 			::Windows::Foundation::Collections::IVector<T>^ _instance;
-			std::function<MaybeLocal<Value>(T)> _getterFunc;
-			std::function<bool(MaybeLocal<Value>)> _checkTypeFunc;
-			std::function<T(MaybeLocal<Value>)> _convertToTypeFunc;
+			std::function<Local<Value>(T)> _getterFunc;
+			std::function<bool(Local<Value>)> _checkTypeFunc;
+			std::function<T(Local<Value>)> _convertToTypeFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -1355,20 +1355,20 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IKeyValuePair").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IKeyValuePair").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("key").ToLocalChecked(), KeyGetter);
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("value").ToLocalChecked(), ValueGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("key").ToLocalChecked(), KeyGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("value").ToLocalChecked(), ValueGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateKeyValuePairWrapper(::Windows::Foundation::Collections::IKeyValuePair<K, V>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(K)>& keyGetterFunc,
-				const std::function<MaybeLocal<Value>(V)>& valueGetterFunc)
+			static Local<Value> CreateKeyValuePairWrapper(::Windows::Foundation::Collections::IKeyValuePair<K, V>^ winRtInstance,
+				const std::function<Local<Value>(K)>& keyGetterFunc,
+				const std::function<Local<Value>(V)>& valueGetterFunc)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -1382,8 +1382,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -1402,8 +1402,8 @@ namespace NodeRT {
 		private:
 
 			KeyValuePairWrapper(::Windows::Foundation::Collections::IKeyValuePair<K, V>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(K)>& keyGetterFunc,
-				const std::function<MaybeLocal<Value>(V)>& valueGetterFunc) :
+				const std::function<Local<Value>(K)>& keyGetterFunc,
+				const std::function<Local<Value>(V)>& valueGetterFunc) :
 				_instance(winRtInstance),
 				_keyGetterFunc(keyGetterFunc),
 				_valueGetterFunc(valueGetterFunc)
@@ -1462,8 +1462,8 @@ namespace NodeRT {
 
 		private:
 			::Windows::Foundation::Collections::IKeyValuePair<K, V>^ _instance;
-			std::function<MaybeLocal<Value>(K)> _keyGetterFunc;
-			std::function<MaybeLocal<Value>(V)> _valueGetterFunc;
+			std::function<Local<Value>(K)> _keyGetterFunc;
+			std::function<Local<Value>(V)> _valueGetterFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -1479,27 +1479,27 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMapView").ToLocalChecked());
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMapView").ToLocalChecked());
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
 
 				Nan::SetPrototypeMethod(localRef, "hasKey", HasKey);
 				Nan::SetPrototypeMethod(localRef, "lookup", Lookup);
 				Nan::SetPrototypeMethod(localRef, "split", Split);
 				Nan::SetPrototypeMethod(localRef, "first", First);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateMapViewWrapper(::Windows::Foundation::Collections::IMapView<K, V>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(K)>& keyGetterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkKeyTypeFunc,
-				const std::function<K(MaybeLocal<Value>)>& convertToKeyTypeFunc,
-				const std::function<MaybeLocal<Value>(V)>& valueGetterFunc)
+			static Local<Value> CreateMapViewWrapper(::Windows::Foundation::Collections::IMapView<K, V>^ winRtInstance,
+				const std::function<Local<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Local<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Local<Value>)>& convertToKeyTypeFunc,
+				const std::function<Local<Value>(V)>& valueGetterFunc)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -1513,8 +1513,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -1533,10 +1533,10 @@ namespace NodeRT {
 		private:
 
 			MapViewWrapper(::Windows::Foundation::Collections::IMapView<K, V>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(K)>& keyGetterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkKeyTypeFunc,
-				const std::function<K(MaybeLocal<Value>)>& convertToKeyTypeFunc,
-				const std::function<MaybeLocal<Value>(V)> &valueGetterFunc) :
+				const std::function<Local<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Local<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Local<Value>)>& convertToKeyTypeFunc,
+				const std::function<Local<Value>(V)> &valueGetterFunc) :
 				_instance(winRtInstance),
 				_keyGetterFunc(keyGetterFunc),
 				_checkKeyTypeFunc(checkKeyTypeFunc),
@@ -1606,8 +1606,8 @@ namespace NodeRT {
 				{
 					try
 					{
-						const std::function<MaybeLocal<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
-						const std::function<MaybeLocal<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
+						const std::function<Local<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
+						const std::function<Local<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
 						info.GetReturnValue().Set(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
 							[keyGetter, valueGetter](::Windows::Foundation::Collections::IKeyValuePair<K, V>^ value) {
 							return KeyValuePairWrapper<K, V>::CreateKeyValuePairWrapper(value,
@@ -1689,7 +1689,7 @@ namespace NodeRT {
 
 						wrapper->_instance->Split(&first, &second);
 
-						MaybeLocal<Object> resObj = Nan::New<Object>();
+						Local<Object> resObj = Nan::New<Object>();
 						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("first").ToLocalChecked(), MapViewWrapper<K, V>::CreateMapViewWrapper(first, wrapper->_keyGetterFunc, wrapper->_checkTypeFunc, wrapper->_convertToKeyTypeFunc, wrapper->_valueGetterFunc).ToLocalChecked());
 						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("second").ToLocalChecked(), MapViewWrapper<K, V>::CreateMapViewWrapper(second, wrapper->_keyGetterFunc, wrapper->_checkTypeFunc, wrapper->_convertToKeyTypeFunc, wrapper->_valueGetterFunc).ToLocalChecked());
 						info.GetReturnValue().Set(resObj);
@@ -1721,7 +1721,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Integer::NewFromUnsigned(wrapper->_instance->Size);
+					return Nan::New<Integer>(wrapper->_instance->Size);
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -1732,11 +1732,11 @@ namespace NodeRT {
 
 		private:
 			::Windows::Foundation::Collections::IMapView<K, V>^ _instance;
-			std::function<bool(MaybeLocal<Value>)> _checkTypeFunc;
-			std::function<MaybeLocal<Value>(K)> _keyGetterFunc;
-			std::function<K(MaybeLocal<Value>)> _convertToKeyTypeFunc;
-			std::function<MaybeLocal<Value>(V)> _valueGetterFunc;
-			std::function<bool(MaybeLocal<Value>)> _checkKeyTypeFunc;
+			std::function<bool(Local<Value>)> _checkTypeFunc;
+			std::function<Local<Value>(K)> _keyGetterFunc;
+			std::function<K(Local<Value>)> _convertToKeyTypeFunc;
+			std::function<Local<Value>(V)> _valueGetterFunc;
+			std::function<bool(Local<Value>)> _checkKeyTypeFunc;
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
 
@@ -1752,10 +1752,10 @@ namespace NodeRT {
 			{
 				HandleScope scope;
 
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
 				s_constructorTemplate.Reset(localRef);
-				localRef.ToLocalChecked()->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap"));
-				localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap"));
+				localRef->InstanceTemplate()->SetInternalFieldCount(1);
 
 				Nan::SetPrototypeMethod(localRef, "hasKey"), FunctionTemplate::New(HasKey);
 				Nan::SetPrototypeMethod(localRef, "lookup"), FunctionTemplate::New(Lookup);
@@ -1765,19 +1765,19 @@ namespace NodeRT {
 				Nan::SetPrototypeMethod(localRef, "remove"), FunctionTemplate::New(Remove);
 				Nan::SetPrototypeMethod(localRef, "first"), FunctionTemplate::New(First);
 
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("size"), SizeGetter);
-				Nan::SetAccessor(localRef.ToLocalChecked()->PrototypeTemplate(), Nan::New<String>("length"), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("size"), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length"), SizeGetter);
 
 				return;
 			}
 
-			static MaybeLocal<Value> CreateMapWrapper(::Windows::Foundation::Collections::IMap<K, V>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(K)>& keyGetterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkKeyTypeFunc,
-				const std::function<K(MaybeLocal<Value>)>& convertToKeyTypeFunc,
-				const std::function<MaybeLocal<Value>(V)>& valueGetterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkValueTypeFunc,
-				const std::function<V(MaybeLocal<Value>)>& convertToValueTypeFunc)
+			static Local<Value> CreateMapWrapper(::Windows::Foundation::Collections::IMap<K, V>^ winRtInstance,
+				const std::function<Local<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Local<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Local<Value>)>& convertToKeyTypeFunc,
+				const std::function<Local<Value>(V)>& valueGetterFunc,
+				const std::function<bool(Local<Value>)>& checkValueTypeFunc,
+				const std::function<V(Local<Value>)>& convertToValueTypeFunc)
 			{
 				HandleScope scope;
 				if (winRtInstance == nullptr)
@@ -1791,8 +1791,8 @@ namespace NodeRT {
 				}
 
 				v8::Local<Value> info[] = { Undefined() };
-				MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-				MaybeLocal<Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction().ToLocalCheked(), 0, args);
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
 				if (objectInstance.IsEmpty())
 				{
 					return;
@@ -1817,12 +1817,12 @@ namespace NodeRT {
 		private:
 
 			MapWrapper(::Windows::Foundation::Collections::IMap<K, V>^ winRtInstance,
-				const std::function<MaybeLocal<Value>(K)>& keyGetterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkKeyTypeFunc,
-				const std::function<K(MaybeLocal<Value>)>& convertToKeyTypeFunc,
-				const std::function<MaybeLocal<Value>(V)>& valueGetterFunc,
-				const std::function<bool(MaybeLocal<Value>)>& checkValueTypeFunc,
-				const std::function<V(MaybeLocal<Value>)>& convertToValueTypeFunc) :
+				const std::function<Local<Value>(K)>& keyGetterFunc,
+				const std::function<bool(Local<Value>)>& checkKeyTypeFunc,
+				const std::function<K(Local<Value>)>& convertToKeyTypeFunc,
+				const std::function<Local<Value>(V)>& valueGetterFunc,
+				const std::function<bool(Local<Value>)>& checkValueTypeFunc,
+				const std::function<V(Local<Value>)>& convertToValueTypeFunc) :
 				_instance(winRtInstance),
 				_keyGetterFunc(keyGetterFunc),
 				_checkKeyTypeFunc(checkKeyTypeFunc),
@@ -1961,8 +1961,8 @@ namespace NodeRT {
 				{
 					try
 					{
-						const std::function<MaybeLocal<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
-						const std::function<MaybeLocal<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
+						const std::function<Local<Value>(K)>& keyGetter = wrapper->_keyGetterFunc;
+						const std::function<Local<Value>(V)>& valueGetter = wrapper->_valueGetterFunc;
 						info.GetReturnValue().Set(IteratorWrapper<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>::CreateIteratorWrapper(wrapper->_instance->First(),
 							[keyGetter, valueGetter](::Windows::Foundation::Collections::IKeyValuePair<K, V>^ value) {
 							return KeyValuePairWrapper<K, V>::CreateKeyValuePairWrapper(value,
@@ -2100,7 +2100,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Integer::NewFromUnsigned(wrapper->_instance->Size);
+					return Nan::New<Integer>(wrapper->_instance->Size);
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -2112,13 +2112,13 @@ namespace NodeRT {
 		private:
 			::Windows::Foundation::Collections::IMap<K, V>^ _instance;
 
-			std::function<MaybeLocal<Value>(K)> _keyGetterFunc;
-			std::function<K(MaybeLocal<Value>)> _convertToKeyTypeFunc;
-			std::function<bool(MaybeLocal<Value>)> _checkKeyTypeFunc;
+			std::function<Local<Value>(K)> _keyGetterFunc;
+			std::function<K(Local<Value>)> _convertToKeyTypeFunc;
+			std::function<bool(Local<Value>)> _checkKeyTypeFunc;
 
-			std::function<MaybeLocal<Value>(V)> _valueGetterFunc;
-			std::function<V(MaybeLocal<Value>)> _convertToValueTypeFunc;
-			std::function<bool(MaybeLocal<Value>)> _checkValueTypeFunc;
+			std::function<Local<Value>(V)> _valueGetterFunc;
+			std::function<V(Local<Value>)> _convertToValueTypeFunc;
+			std::function<bool(Local<Value>)> _checkValueTypeFunc;
 
 			static Persistent<FunctionTemplate> s_constructorTemplate;
 		};
