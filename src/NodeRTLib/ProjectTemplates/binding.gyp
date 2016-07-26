@@ -16,7 +16,7 @@
       ],
       'libraries': [ '-lruntimeobject.lib'],
       'conditions': [ [
-        'WIN_VER=="8.0"', {
+        'WIN_VER=="v8.0"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
               'AdditionalUsingDirectories' : [
@@ -29,7 +29,7 @@
             }
           }
         ],
-        ['WIN_VER=="8.1"', {
+        ['WIN_VER=="v8.1"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
               'AdditionalUsingDirectories' : [
@@ -40,14 +40,14 @@
               }
             }
           }],
-		  ['WIN_VER=="10"', {
+		  ['WIN_VER=="v10"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
               'AdditionalUsingDirectories' : [
-                '%ProgramFiles(x86)%/Microsoft Visual Studio 14.0\VC\lib\store\references',
-				'%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata',
-				'%ProgramFiles%/Microsoft Visual Studio 14.0\VC\lib\store\references',
-				'%ProgramFiles%/Windows Kits/10/UnionMetadata']
+                '%ProgramFiles(x86)%/Microsoft Visual Studio 14.0/VC/lib/store/references',
+				"%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata",
+				'%ProgramFiles%/Microsoft Visual Studio 14.0/VC/lib/store/references',
+				"%ProgramFiles%/Windows Kits/10/UnionMetadata"]
               }
             }
           }],

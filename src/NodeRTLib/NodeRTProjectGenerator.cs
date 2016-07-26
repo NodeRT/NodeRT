@@ -93,21 +93,21 @@ namespace NodeRTLib
 
             if (_vsVersion == VsVersions.Vs2012)
             {
-                bindingFileText.Replace("{WinVer}", "8.0");
+                bindingFileText.Replace("{WinVer}", "v8.0");
             }
             else if (_vsVersion == VsVersions.Vs2013)
             {
-                bindingFileText.Replace("{WinVer}", "8.1");
+                bindingFileText.Replace("{WinVer}", "v8.1");
             }
             else if (_vsVersion == VsVersions.Vs2015)
             {
-                bindingFileText.Replace("{WinVer}", "10");
+                bindingFileText.Replace("{WinVer}", "v10");
             }
 
             // resolve the x64 dirs using the sdk we use:
             if (!directoryName.EndsWith(@"windows kits\8.1\references\commonconfiguration\neutral") &&
                 !directoryName.EndsWith(@"windows kits\8.0\references\commonconfiguration\neutral") &&
-                !directoryName.EndsWith(@"Windows Kits\10\UnionMetadata"))
+                !directoryName.EndsWith(@"windows kits\10\unionmetadata"))
             {
                 bindingFileText.Replace("{AdditionalWinmdPath}", Path.GetDirectoryName(winrtFile));
                 bindingFileText.Replace("{UseAdditionalWinmd}", "true");

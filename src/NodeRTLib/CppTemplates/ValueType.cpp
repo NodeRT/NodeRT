@@ -14,7 +14,7 @@
     @:symbol = Nan::New<String>("@TX.Uncap(field.Name)").ToLocalChecked();
     @:if (Nan::Has(obj, symbol).FromMaybe(false))
     @:{
-    @:  if (!@(String.Format(Converter.TypeCheck(field.FieldType, TX.MainModel.Types.ContainsKey(field.FieldType)), "obj->Get(symbol)")))
+    @:  if (!@(String.Format(Converter.TypeCheck(field.FieldType, TX.MainModel.Types.ContainsKey(field.FieldType)), "Nan::Get(obj,symbol).ToLocalChecked()")))
     @:  {
     @:      return false;
     @:  }
@@ -31,7 +31,7 @@
     
     if (!value->IsObject())
     {
-      ThrowException(Exception::TypeError(NodeRT::Utils::NewString(L"Unexpected type, expected an object")));
+      Nan::ThrowError(Nan::TypeError(NodeRT::Utils::NewString(L"Unexpected type, expected an object")));
       return returnValue;
     }
 
@@ -44,7 +44,7 @@
     @:if (Nan::Has(obj, symbol).FromMaybe(false))
     @:{
       var winRtConversionInfo = Converter.ToWinRT(field.FieldType);
-    @:  returnValue.@(field.Name) = @(String.Format(winRtConversionInfo[1],"obj->Get(symbol)"));
+    @:  returnValue.@(field.Name) = @(String.Format(winRtConversionInfo[1],"Nan::Get(obj,symbol).ToLocalChecked()"));
     @:}
     @:
     }

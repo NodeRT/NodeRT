@@ -28,9 +28,9 @@ void  NodeRT::OpaqueWrapper::Init()
   Nan::HandleScope scope;
   // Prepare constructor template
   s_constructorTemplate.Reset(Nan::New<FunctionTemplate>(New));
-  Nan::MaybeLocal<v8::FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
-  localRef.ToLocalChecked()->SetClassName(Nan::New<String>("OpaqueWrapper").ToLocalChecked());
-  localRef.ToLocalChecked()->InstanceTemplate()->SetInternalFieldCount(1);
+  v8::Local<v8::FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+  localRef->SetClassName(Nan::New<String>("OpaqueWrapper").ToLocalChecked());
+  localRef->InstanceTemplate()->SetInternalFieldCount(1);
 }
 
 namespace NodeRT {
@@ -42,14 +42,14 @@ namespace NodeRT {
       return scope.Escape(Nan::Undefined());
     }
 
-    v8::Local<v8::Value> info[] = { Nan::Undefined() };
+    v8::Local<v8::Value> args[] = { Nan::Undefined() };
     if (OpaqueWrapper::s_constructorTemplate.IsEmpty())
     {
       OpaqueWrapper::Init();
     }
 
-	Nan::MaybeLocal<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(OpaqueWrapper::s_constructorTemplate);
-    v8::Local<v8::Object> objectInstance = Nan::NewInstance(localRef.ToLocalChecked()->GetFunction(), 0, args).ToLocalChecked();
+	  v8::Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(OpaqueWrapper::s_constructorTemplate);
+    v8::Local<v8::Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
     if (objectInstance.IsEmpty())
     {
       return scope.Escape(Nan::Undefined());
