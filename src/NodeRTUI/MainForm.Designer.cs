@@ -149,6 +149,7 @@ namespace NodeRTUI
             this.cmbTargetWindows.Name = "cmbTargetWindows";
             this.cmbTargetWindows.Size = new System.Drawing.Size(343, 21);
             this.cmbTargetWindows.TabIndex = 27;
+            this.cmbTargetWindows.SelectedIndexChanged += new System.EventHandler(this.cmbTargetWindows_SelectedIndexChanged);
             // 
             // lblWindowsVer
             // 

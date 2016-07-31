@@ -1296,7 +1296,7 @@ namespace NodeRT {
 
 						Local<Object> resObj = Nan::New<Object>();
 						Nan::Set(resObj, Nan::New<String>("boolean").ToLocalChecked(), Nan::New<Boolean>(result));
-						Nen::Set(resObj, Nan::New<String>("index").ToLocaclChecked(), Nan::New<Integer>(index));
+						Nan::Set(resObj, Nan::New<String>("index").ToLocalChecked(), Nan::New<Integer>(index));
 						info.GetReturnValue().Set(resObj);
 					}
 					catch (Platform::Exception ^exception)
@@ -1326,7 +1326,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Nan::New<Integer>(wrapper->_instance->Size);
+					info.GetReturnValue().Set(Nan::New<Integer>(wrapper->_instance->Size));
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -1721,7 +1721,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Nan::New<Integer>(wrapper->_instance->Size);
+					info.GetReturnValue().Set(Nan::New<Integer>(wrapper->_instance->Size));
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -1754,19 +1754,19 @@ namespace NodeRT {
 
 				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
-				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap"));
+				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
 
-				Nan::SetPrototypeMethod(localRef, "hasKey"), FunctionTemplate::New(HasKey);
-				Nan::SetPrototypeMethod(localRef, "lookup"), FunctionTemplate::New(Lookup);
-				Nan::SetPrototypeMethod(localRef, "getView"), FunctionTemplate::New(GetView);
-				Nan::SetPrototypeMethod(localRef, "clear"), FunctionTemplate::New(Clear);
-				Nan::SetPrototypeMethod(localRef, "insert"), FunctionTemplate::New(Insert);
-				Nan::SetPrototypeMethod(localRef, "remove"), FunctionTemplate::New(Remove);
-				Nan::SetPrototypeMethod(localRef, "first"), FunctionTemplate::New(First);
+				Nan::SetPrototypeMethod(localRef, "hasKey", HasKey);
+				Nan::SetPrototypeMethod(localRef, "lookup", Lookup);
+				Nan::SetPrototypeMethod(localRef, "getView", GetView);
+				Nan::SetPrototypeMethod(localRef, "clear", Clear);
+				Nan::SetPrototypeMethod(localRef, "insert", Insert);
+				Nan::SetPrototypeMethod(localRef, "remove", Remove);
+				Nan::SetPrototypeMethod(localRef, "first", First);
 
-				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("size"), SizeGetter);
-				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length"), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("size").ToLocalChecked(), SizeGetter);
+				Nan::SetAccessor(localRef->PrototypeTemplate(), Nan::New<String>("length").ToLocalChecked(), SizeGetter);
 
 				return;
 			}
@@ -2100,7 +2100,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Nan::New<Integer>(wrapper->_instance->Size);
+					info.GetReturnValue().Set(Nan::New<Integer>(wrapper->_instance->Size));
 				}
 				catch (Platform::Exception ^exception)
 				{

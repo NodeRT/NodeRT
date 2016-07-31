@@ -87,7 +87,7 @@ namespace NodeRTUI
         {
             Properties.Settings.Default.LastWinMDPath = "";
             Properties.Settings.Default.LastFilter = "";
-            Properties.Settings.Default.VsProjectComboSelection = 1;
+            Properties.Settings.Default.VsProjectComboSelection = 2;
             Properties.Settings.Default.OutputDirPath = GetDefaultOutputDir();
             Properties.Settings.Default.GenerateDefsChk = true;
             Properties.Settings.Default.Save();
@@ -292,6 +292,12 @@ namespace NodeRTUI
             {
                 btnGenerate.Text = "Generate module";
             }
+        }
+
+        private void cmbTargetWindows_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.VsProjectComboSelection = cmbTargetWindows.SelectedIndex;
+            Properties.Settings.Default.Save();
         }
     }
 }

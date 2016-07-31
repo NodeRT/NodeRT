@@ -17,7 +17,7 @@
       @if(Model.MemberSyncMethods.Length > 0) {
       @:
       foreach(var method in Model.MemberSyncMethods) {
-      @:Nan::SetPrototypeMethod(localRef, "@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))", @(TX.CSharpMethodToCppMethod(method.Name));
+      @:Nan::SetPrototypeMethod(localRef, "@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))", @(TX.CSharpMethodToCppMethod(method.Name)));
         }
       @:
       }
@@ -53,7 +53,7 @@
       }
       }}
       
-      Local<Function> constructor = Nan::GetFunction(localRef).ToLocalChecked();
+      Local<Object> constructor = Nan::To<Object>(Nan::GetFunction(localRef).ToLocalChecked()).ToLocalChecked();
 
       @{
         if(Model.StaticSyncMethods.Length > 0) {
