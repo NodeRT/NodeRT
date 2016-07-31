@@ -121,7 +121,7 @@ namespace NodeRT {
       const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
       const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
-      std::vector<V> vec(arr.ToLocalChecked()->Length());
+      std::vector<V> vec(arr->Length());
       if (!FillVector<std::vector<V>&, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
       {
         return nullptr;
@@ -135,7 +135,7 @@ namespace NodeRT {
       const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
       const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
-      auto vec = ref new ::Platform::Array<V>(arr.ToLocalChecked()->Length());
+      auto vec = ref new ::Platform::Array<V>(arr->Length());
       if (!FillVector<::Platform::Array<V>^, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
       {
         return nullptr;
@@ -206,7 +206,7 @@ namespace NodeRT {
 
       if (!curr->IsObject())
       {
-        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects")));
         return false;
       }
 
@@ -214,7 +214,7 @@ namespace NodeRT {
 
       if (!obj->Has(g_keyProp) || !obj->Has(g_valueProp))
       {
-		Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects with \'key\' and \'value\' properties")));
+		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects with \'key\' and \'value\' properties")));
         return false;
       }
 
@@ -223,13 +223,13 @@ namespace NodeRT {
 
       if (!checkKeyTypeFunc(key))
       {
-        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid key type")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid key type")));
         return false;
       }
 
       if (!checkValueTypeFunc(value))
       {
-		Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid value type")));
+		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid value type")));
         return false;
       }
 
@@ -255,7 +255,7 @@ namespace NodeRT {
       Local<Value> value = Nan::Get(obj, key).ToLocalChecked();
       if (!checkValueTypeFunc(value))
       {
-		    Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Received object with unexpected value type")));
+		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Received object with unexpected value type")));
         return false;
       }
       stdMap.insert(std::pair<::Platform::String^, V>(convertToKeyTypeFunc(key), convertToValueTypeFunc(value)));

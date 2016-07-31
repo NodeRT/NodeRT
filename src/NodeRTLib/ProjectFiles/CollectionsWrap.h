@@ -60,7 +60,7 @@ namespace NodeRT {
 				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
 				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr)
 			{
-				EscapleHandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
           return scope.Escape(Undefined());

@@ -91,7 +91,7 @@
       @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener)).ToLocalChecked();
           }
       @:Nan::Set(constructor, Nan::New<String>("addListener").ToLocalChecked(), addListenerFunc);
-      @:Nan::set(constructor, Nan::New<String>("on").ToLocalChecked(), addListenerFunc);
+      @:Nan::Set(constructor, Nan::New<String>("on").ToLocalChecked(), addListenerFunc);
             
           if (!Model.HasMemberEvents)
           {
