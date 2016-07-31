@@ -39,11 +39,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				EscapableHandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Array").ToLocalChecked());
@@ -63,7 +63,7 @@ namespace NodeRT {
 				EscapleHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -71,17 +71,17 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				ArrayWrapper<T> *wrapperInstance = new ArrayWrapper<T>(winRtInstance, getterFunc, checkTypeFunc, convertToTypeFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -110,7 +110,7 @@ namespace NodeRT {
 				info.GetReturnValue().Set(info.This());
 			}
 
-			void LengthGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void LengthGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Platform::Array<T>^>(info.This()))
@@ -210,11 +210,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterator").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -231,10 +231,10 @@ namespace NodeRT {
 			static Local<Value> CreateIteratorWrapper(::Windows::Foundation::Collections::IIterator<T>^ winRtInstance,
 				const std::function<Local<Value>(T)>& getterFunc = nullptr)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+					return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -242,17 +242,17 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				IteratorWrapper<T> *wrapperInstance = new IteratorWrapper<T>(winRtInstance, getterFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -269,7 +269,7 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
@@ -277,7 +277,7 @@ namespace NodeRT {
 			}
 
 
-			void MoveNext(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void MoveNext(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -311,14 +311,14 @@ namespace NodeRT {
 			}
 
 			// Not supporting this for now since we need to initialize the array ourselves and don't know which size to use
-			void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
 				return;
 			}
 
-			void CurrentGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void CurrentGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IIterator<T>^>(info.This()))
@@ -348,7 +348,7 @@ namespace NodeRT {
 				}
 			}
 
-			void HasCurrentGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void HasCurrentGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IIterator<T>^>(info.This()))
@@ -381,11 +381,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IIterable").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -409,9 +409,9 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 
 				if (objectInstance.IsEmpty())
 				{
@@ -420,7 +420,7 @@ namespace NodeRT {
 
 				IterableWrapper<T> *wrapperInstance = new IterableWrapper<T>(winRtInstance, getterFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -437,7 +437,7 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
@@ -445,7 +445,7 @@ namespace NodeRT {
 			}
 
 
-			void First(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void First(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -496,11 +496,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVectorView").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -522,10 +522,10 @@ namespace NodeRT {
 				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
 				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+					return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -533,17 +533,17 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				VectorViewWrapper<T> *wrapperInstance = new VectorViewWrapper<T>(winRtInstance, getterFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -565,14 +565,14 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
 
-			void Get(uint32_t index, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void Get(uint32_t index, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IVectorView<T>^>(info.This()))
@@ -589,16 +589,16 @@ namespace NodeRT {
 
 				if (wrapper->_getterFunc == nullptr)
 				{
-					return CreateOpaqueWrapper(wrapper->_instance->GetAt(index));
+					info.GetReturnValue().Set(CreateOpaqueWrapper(wrapper->_instance->GetAt(index)));
 				}
 				else
 				{
-					return wrapper->_getterFunc(wrapper->_instance->GetAt(index));
+					info.GetReturnValue().Set(wrapper->_getterFunc(wrapper->_instance->GetAt(index)));
 				}
 			}
 
 
-			void GetAt(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetAt(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -642,14 +642,14 @@ namespace NodeRT {
 				return;
 			}
 
-			void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
 				return;
 			}
 
-			void First(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void First(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -682,7 +682,7 @@ namespace NodeRT {
 			}
 
 
-			void IndexOf(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void IndexOf(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -709,8 +709,8 @@ namespace NodeRT {
 						bool result = wrapper->_instance->IndexOf(item, &index);
 
 						Local<Object> resObj = Nan::New<Object>();
-						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("boolean").ToLocalChecked(), Nan::New<v8::Boolean>(result).ToLocalChecked());
-						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("index").ToLocalChecked(), Nan::New<v8::Integer>(index).ToLocalChecked());
+						Nan::Set(resObj, Nan::New<String>("boolean").ToLocalChecked(), Nan::New<v8::Boolean>(result));
+						Nan::Set(resObj, Nan::New<String>("index").ToLocalChecked(), Nan::New<v8::Integer>(index));
 						info.GetReturnValue().Set(resObj);
 					}
 					catch (Platform::Exception ^exception)
@@ -728,7 +728,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IVectorView<T>^>(info.This()))
@@ -740,7 +740,7 @@ namespace NodeRT {
 
 				try
 				{
-					return Nan::New<Integer>(wrapper->_instance->Size);
+					info.GetReturnValue().Set(Nan::New<Integer>(wrapper->_instance->Size));
 				}
 				catch (Platform::Exception ^exception)
 				{
@@ -765,11 +765,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IVector").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -799,10 +799,10 @@ namespace NodeRT {
 				const std::function<bool(Local<Value>)>& checkTypeFunc = nullptr,
 				const std::function<T(Local<Value>)>& convertToTypeFunc = nullptr)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -810,17 +810,17 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				VectorWrapper<T> *wrapperInstance = new VectorWrapper<T>(winRtInstance, getterFunc, checkTypeFunc, convertToTypeFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -842,14 +842,14 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
 
-			void Get(uint32_t index, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void Get(uint32_t index, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IVector<T>^>(info.This()))
@@ -866,15 +866,15 @@ namespace NodeRT {
 
 				if (wrapper->_getterFunc == nullptr)
 				{
-					return CreateOpaqueWrapper(wrapper->_instance->GetAt(index));
+					info.GetReturnValue().Set(CreateOpaqueWrapper(wrapper->_instance->GetAt(index)));
 				}
 				else
 				{
-					return wrapper->_getterFunc(wrapper->_instance->GetAt(index));
+					info.GetReturnValue().Set(wrapper->_getterFunc(wrapper->_instance->GetAt(index)));
 				}
 			}
 
-			void Set(uint32 index, Local<Value> value, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void Set(uint32 index, Local<Value> value, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 
@@ -907,7 +907,7 @@ namespace NodeRT {
 			}
 
 
-			void Append(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Append(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -942,7 +942,7 @@ namespace NodeRT {
 			}
 
 
-			void Clear(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Clear(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -974,14 +974,14 @@ namespace NodeRT {
 				return;
 			}
 
-			void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
 				return;
 			}
 
-			void GetView(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetView(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1018,7 +1018,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void InsertAt(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void InsertAt(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1052,7 +1052,7 @@ namespace NodeRT {
 				}
 			}
 
-			void RemoveAt(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void RemoveAt(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1085,7 +1085,7 @@ namespace NodeRT {
 				}
 			}
 
-			void RemoveAtEnd(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void RemoveAtEnd(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1116,7 +1116,7 @@ namespace NodeRT {
 				}
 			}
 
-			void ReplaceAll(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void ReplaceAll(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1149,7 +1149,7 @@ namespace NodeRT {
 				}
 			}
 
-			void GetAt(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetAt(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1193,7 +1193,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void SetAt(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void SetAt(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1235,7 +1235,7 @@ namespace NodeRT {
 			}
 
 
-			void First(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void First(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1268,7 +1268,7 @@ namespace NodeRT {
 			}
 
 
-			void IndexOf(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void IndexOf(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1295,8 +1295,8 @@ namespace NodeRT {
 						bool result = wrapper->_instance->IndexOf(item, &index);
 
 						Local<Object> resObj = Nan::New<Object>();
-						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("boolean").ToLocalChecked(), Nan::New<Boolean>(result));
-						Nen::Set(resObj.ToLocalChecked(), Nan::New<String>("index").ToLocaclChecked(), Nan::New<Integer>(index));
+						Nan::Set(resObj, Nan::New<String>("boolean").ToLocalChecked(), Nan::New<Boolean>(result));
+						Nen::Set(resObj, Nan::New<String>("index").ToLocaclChecked(), Nan::New<Integer>(index));
 						info.GetReturnValue().Set(resObj);
 					}
 					catch (Platform::Exception ^exception)
@@ -1314,7 +1314,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IVector<T>^>(info.This()))
@@ -1351,11 +1351,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IKeyValuePair").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1370,10 +1370,10 @@ namespace NodeRT {
 				const std::function<Local<Value>(K)>& keyGetterFunc,
 				const std::function<Local<Value>(V)>& valueGetterFunc)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -1381,17 +1381,17 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				KeyValuePairWrapper<K, V> *wrapperInstance = new KeyValuePairWrapper<K, V>(winRtInstance, keyGetterFunc, valueGetterFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -1411,14 +1411,14 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
-				info.GetReturnValue.Set(info.This());
+				info.GetReturnValue().Set(info.This());
 
 			}
 
-			void KeyGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void KeyGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>(info.This()))
@@ -1439,7 +1439,7 @@ namespace NodeRT {
 				}
 			}
 
-			void ValueGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void ValueGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IKeyValuePair<K, V>^>(info.This()))
@@ -1475,11 +1475,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMapView").ToLocalChecked());
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1501,10 +1501,10 @@ namespace NodeRT {
 				const std::function<K(Local<Value>)>& convertToKeyTypeFunc,
 				const std::function<Local<Value>(V)>& valueGetterFunc)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -1512,17 +1512,17 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				MapViewWrapper<K, V> *wrapperInstance = new MapViewWrapper<K, V>(winRtInstance, keyGetterFunc, checkKeyTypeFunc, convertToKeyTypeFunc, valueGetterFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -1546,7 +1546,7 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
@@ -1554,7 +1554,7 @@ namespace NodeRT {
 			}
 
 
-			void HasKey(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void HasKey(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1591,7 +1591,7 @@ namespace NodeRT {
 			}
 
 
-			void First(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void First(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1631,7 +1631,7 @@ namespace NodeRT {
 			}
 
 
-			void Lookup(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Lookup(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1669,7 +1669,7 @@ namespace NodeRT {
 
 
 
-			void Split(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Split(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1690,8 +1690,8 @@ namespace NodeRT {
 						wrapper->_instance->Split(&first, &second);
 
 						Local<Object> resObj = Nan::New<Object>();
-						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("first").ToLocalChecked(), MapViewWrapper<K, V>::CreateMapViewWrapper(first, wrapper->_keyGetterFunc, wrapper->_checkTypeFunc, wrapper->_convertToKeyTypeFunc, wrapper->_valueGetterFunc).ToLocalChecked());
-						Nan::Set(resObj.ToLocalChecked(), Nan::New<String>("second").ToLocalChecked(), MapViewWrapper<K, V>::CreateMapViewWrapper(second, wrapper->_keyGetterFunc, wrapper->_checkTypeFunc, wrapper->_convertToKeyTypeFunc, wrapper->_valueGetterFunc).ToLocalChecked());
+						Nan::Set(resObj, Nan::New<String>("first").ToLocalChecked(), MapViewWrapper<K, V>::CreateMapViewWrapper(first, wrapper->_keyGetterFunc, wrapper->_checkTypeFunc, wrapper->_convertToKeyTypeFunc, wrapper->_valueGetterFunc));
+						Nan::Set(resObj, Nan::New<String>("second").ToLocalChecked(), MapViewWrapper<K, V>::CreateMapViewWrapper(second, wrapper->_keyGetterFunc, wrapper->_checkTypeFunc, wrapper->_convertToKeyTypeFunc, wrapper->_valueGetterFunc));
 						info.GetReturnValue().Set(resObj);
 					}
 					catch (Platform::Exception ^exception)
@@ -1709,7 +1709,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IMapView<K, V>^>(info.This()))
@@ -1748,11 +1748,11 @@ namespace NodeRT {
 		{
 		public:
 
-			void Init()
+			static void Init()
 			{
 				HandleScope scope;
 
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New).ToLocalChecked();
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
 				s_constructorTemplate.Reset(localRef);
 				localRef->SetClassName(Nan::New<String>("Windows::Foundation::Collections:IMap"));
 				localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1779,10 +1779,10 @@ namespace NodeRT {
 				const std::function<bool(Local<Value>)>& checkValueTypeFunc,
 				const std::function<V(Local<Value>)>& convertToValueTypeFunc)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -1790,12 +1790,12 @@ namespace NodeRT {
 					Init();
 				}
 
-				v8::Local<Value> info[] = { Undefined() };
-				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
-				Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked()
+				v8::Local<Value> args[] = { Undefined() };
+				Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
+        Local<Object> objectInstance = Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(), 0, args).ToLocalChecked();
 				if (objectInstance.IsEmpty())
 				{
-					return;
+          return scope.Escape(Undefined());
 				}
 
 				MapWrapper<K, V> *wrapperInstance = new MapWrapper<K, V>(winRtInstance,
@@ -1806,7 +1806,7 @@ namespace NodeRT {
 					checkValueTypeFunc,
 					convertToValueTypeFunc);
 				wrapperInstance->Wrap(objectInstance);
-				info.GetReturnValue().Set(objectInstance);
+				return scope.Escape(objectInstance);
 			}
 
 			virtual ::Platform::Object^ GetObjectInstance() const override
@@ -1834,14 +1834,14 @@ namespace NodeRT {
 
 			}
 
-			void New(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
 
-			void HasKey(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void HasKey(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1877,7 +1877,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void Remove(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Remove(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1911,7 +1911,7 @@ namespace NodeRT {
 				}
 			}
 
-			void Insert(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Insert(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1946,7 +1946,7 @@ namespace NodeRT {
 				}
 			}
 
-			void First(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void First(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -1985,7 +1985,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void Lookup(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Lookup(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -2021,7 +2021,7 @@ namespace NodeRT {
 				return;
 			}
 
-			void GetView(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void GetView(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -2057,7 +2057,7 @@ namespace NodeRT {
 				}
 			}
 
-			void Clear(Nan::NAN_METHOD_ARGS_TYPE info)
+			static void Clear(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
 
@@ -2088,7 +2088,7 @@ namespace NodeRT {
 				}
 			}
 
-			void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
+			static void SizeGetter(Local<String> property, const Nan::PropertyCallbackInfo<v8::Value>& info)
 			{
 				HandleScope scope;
 				if (!NodeRT::Utils::IsWinRtWrapperOf<::Windows::Foundation::Collections::IMap<K, V>^>(info.This()))

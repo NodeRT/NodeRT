@@ -10,7 +10,7 @@
         {
           Persistent<Object>* perstPtr = new Persistent<Object>();
           perstPtr->Reset(NodeRT::Utils::CreateCallbackObjectInDomain(callback));
-          std::shared_ptr<Persistent<Object>> callbackObjPtr(perstPtr), 
+          std::shared_ptr<Persistent<Object>> callbackObjPtr(perstPtr, 
             [] (Persistent<Object> *ptr ) {
               NodeUtils::Async::RunOnMain([ptr]() {
                 ptr->Reset();
@@ -58,12 +58,14 @@
 
                 @if (eventArgs.Length > 0)
                 {
-                @:Local<Value> info[] = { @foreachArg("wrappedArg{2}, ", 2) };
-                @:NodeRT::Utils::CallCallbackInDomain(*callbackObjPtr, _countof(args), args);
+                @:Local<Value> args[] = { @foreachArg("wrappedArg{2}, ", 2) };
+                @:Local<Object> callbackObjLocalRef = Nan::New<Object>(*callbackObjPtr);
+                @:NodeRT::Utils::CallCallbackInDomain(callbackObjLocalRef, _countof(args), args);
                 }
                 else
                 {
-                @:NodeRT::Utils::CallCallbackInDomain(*callbackObjPtr, 0, nullptr);
+                @:Local<Object> callbackObjLocalRef = Nan::New<Object>(*callbackObjPtr);
+                @:NodeRT::Utils::CallCallbackInDomain(callbackObjLocalRef,0, nullptr);
                 }
               });
             })

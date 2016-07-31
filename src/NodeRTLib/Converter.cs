@@ -157,7 +157,7 @@ namespace NodeRTLib
             {
                 String[] conversionInfo = ToJS(type.GetGenericArguments()[0]);
                 // TODO: Verify that the casting here to Local<Value> of Undefined() is actually needed..
-                conversionInfo[1] = "{0} ? " + String.Format(conversionInfo[1], "{0}->Value") + ": static_cast<Local<Value>>(Undefined())";
+                conversionInfo[1] = "{0} ? static_cast<Local<Value>>(" + String.Format(conversionInfo[1], "{0}->Value") + ") : Undefined()";
                 return conversionInfo;
             }
 

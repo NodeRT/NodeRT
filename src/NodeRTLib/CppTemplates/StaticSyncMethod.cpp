@@ -100,7 +100,7 @@
             if (Model.Overloads[0].ReturnType != typeof(void))
             {
               var jsConversionInfo = Converter.ToJS(Model.Overloads[0].ReturnType, TX.MainModel.Types.ContainsKey(Model.Overloads[0].ReturnType)); 
-          @:info.GetReturnValue.Set(@string.Format(jsConversionInfo[1], "result"));
+          @:info.GetReturnValue().Set(@string.Format(jsConversionInfo[1], "result"));
           @:return;
             }
             else

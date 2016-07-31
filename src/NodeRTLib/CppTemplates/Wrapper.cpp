@@ -33,6 +33,7 @@
 
 const char* REGISTRATION_TOKEN_MAP_PROPERTY_NAME = "__registrationTokenMap__";
 
+using v8::Array;
 using v8::String;
 using v8::Handle;
 using v8::Value;
@@ -44,6 +45,7 @@ using v8::Local;
 using v8::Function;
 using v8::Date;
 using v8::Number;
+using v8::PropertyAttribute;
 using Nan::HandleScope;
 using Nan::Persistent;
 using Nan::Undefined;
@@ -82,7 +84,7 @@ NAN_MODULE_INIT(init)
 {
   if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
   {
-    ThrowError(Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
+    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
     return;
   }
   

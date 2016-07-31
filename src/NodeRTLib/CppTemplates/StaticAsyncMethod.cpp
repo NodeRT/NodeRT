@@ -85,7 +85,7 @@
             @{
                if (taskReturnType == typeof(void))
               {
-            @:Local<Value> info[] = {Undefined()};
+            @:Local<Value> args[] = {Undefined()};
               }
               else
               {
@@ -105,7 +105,7 @@
 
             @:if (arg1.IsEmpty()) arg1 = Undefined();
 
-            @:Local<Value> info[] = {error, arg1};
+            @:Local<Value> args[] = {error, arg1};
               }
             }
             invokeCallback(_countof(args), args);
@@ -117,7 +117,7 @@
           
             Local<Value> error = NodeRT::Utils::WinRtExceptionToJsError(exception);
         
-            Local<Value> info[] = {error};
+            Local<Value> args[] = {error};
             invokeCallback(_countof(args), args);
           });
         }  		

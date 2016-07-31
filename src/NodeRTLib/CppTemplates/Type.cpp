@@ -84,7 +84,6 @@
 
     friend v8::Local<v8::Value> Wrap@(Model.Name)(@(TX.ToWinRT(Model.Type)) wintRtInstance);
     friend @(TX.ToWinRT(Model.Type)) Unwrap@(Model.Name)(Local<Value> value);
-    friend bool Is@(Model.Name)Wrapper(Local<Value> value);
   };
   Persistent<FunctionTemplate> @(Model.Name)::s_constructorTemplate;
 
@@ -94,11 +93,11 @@
 
     if (winRtInstance == nullptr)
     {
-      return scope.Close(Undefined());
+      return scope.Escape(Undefined());
     }
 
-    Local<Object> opaqueWrapper = CreateOpaqueWrapper(winRtInstance);
-    Local<Value> info[] = {opaqueWrapper};
+    Local<Value> opaqueWrapper = CreateOpaqueWrapper(winRtInstance);
+    Local<Value> args[] = {opaqueWrapper};
     Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(@(Model.Name)::s_constructorTemplate);
     return scope.Escape(Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(),_countof(args), args).ToLocalChecked());
   }

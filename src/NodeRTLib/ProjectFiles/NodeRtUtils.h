@@ -69,7 +69,7 @@ namespace NodeRT {
         return true;
       }
 
-      WrapperBase* wrapper = nan::ObjectWrap::Unwrap<WrapperBase>(value.As<v8::Object>());
+      WrapperBase* wrapper = Nan::ObjectWrap::Unwrap<WrapperBase>(value.As<v8::Object>());
 
       if (wrapper->GetObjectInstance() == nullptr)
       {

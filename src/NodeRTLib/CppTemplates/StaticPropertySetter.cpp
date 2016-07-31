@@ -1,4 +1,4 @@
-﻿    static void @(Model.Name)Setter(Local<String> property, Local<Value> value, const Nan::PropertyCallbackInfo<v8::Value> &info)
+﻿    static void @(Model.Name)Setter(Local<String> property, Local<Value> value, const Nan::PropertyCallbackInfo<void> &info)
     {
       HandleScope scope;
       

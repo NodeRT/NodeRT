@@ -3,7 +3,7 @@
     {
       HandleScope scope;
       
-	    Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New)
+      Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(New);
       s_constructorTemplate.Reset(localRef);
       localRef->SetClassName(Nan::New<String>("@(Model.Name)").ToLocalChecked());
       localRef->InstanceTemplate()->SetInternalFieldCount(1);
@@ -24,22 +24,22 @@
       @if(Model.MemberASyncMethods.Length > 0) {
       @:
       foreach(var method in Model.MemberASyncMethods) {
-      @:funcTemplate = Nan::New<FunctionTemplate>(@TX.CSharpMethodToCppMethod(method.Name)).ToLocalChecked();
+      @:funcTemplate = Nan::New<FunctionTemplate>(@TX.CSharpMethodToCppMethod(method.Name));
       @:func = Nan::GetFunction(funcTemplate).ToLocalChecked();
       @:Nan::ForceSet(func, asyncSymbol, True(), PropertyAttribute::DontEnum);
-      @:Nan::SetPrototype(localRef, Nan::New<String>("@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))").ToLocalChecked(), func);
+      @:Nan::SetPrototypeTemplate(localRef, "@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))", func);
         }
       @:
       }
       @if(Model.HasMemberEvents) {  
       @:
-      @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener).ToLocalChecked()).ToLocalChecked();
-      @:Nan::SetPrototype(localRef, Nan::New<String>("addListener").ToLocalChecked(), addListenerFunc);
-      @:Nan::SetPrototype(localRef, Nan::New<String>("on").ToLocalChecked(), addListenerFunc);
+      @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener)).ToLocalChecked();
+      @:Nan::SetPrototypeTemplate(localRef,"addListener", addListenerFunc);
+      @:Nan::SetPrototypeTemplate(localRef,"on", addListenerFunc);
       
-      @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener).ToLocalChecked()).ToLocalChecked();
-      @:Nan::SetPrototype(localRef, Nan::New<String>("removeListener").ToLocalChecked(), removeListenerFunc);
-      @:Nan::SetPrototype(localRef, Nan::New<String>("off").ToLocalChecked(), removeListenerFunc);
+      @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener)).ToLocalChecked();
+      @:Nan::SetPrototypeTemplate(localRef,"removeListener", removeListenerFunc);
+      @:Nan::SetPrototypeTemplate(localRef, "off", removeListenerFunc);
       }
       @if(Model.MemberProperties.Length > 0) {
       @:
@@ -63,8 +63,8 @@
         }
         if(Model.StaticASyncMethods.Length > 0) {
           foreach(var method in Model.StaticASyncMethods) {
-      @:func = Nan::GetFunction(Nan::New<FunctionTemplate>(@TX.CSharpMethodToCppMethod(method.Name)).ToLocalChecked()).ToLocalChecked();
-      @:Nan::Set(func,->Set(asyncSymbol, True(), PropertyAttribute::DontEnum);
+      @:func = Nan::GetFunction(Nan::New<FunctionTemplate>(@TX.CSharpMethodToCppMethod(method.Name))).ToLocalChecked();
+      @:Nan::ForceSet(func, asyncSymbol, True(), PropertyAttribute::DontEnum);
       @:Nan::Set(constructor, Nan::New<String>("@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))").ToLocalChecked(), func);
           }
         }
@@ -88,14 +88,14 @@
       @:
           if (!Model.HasMemberEvents)
           {
-      @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener).ToLocalChecked()).ToLocalChecked();
+      @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener)).ToLocalChecked();
           }
       @:Nan::Set(constructor, Nan::New<String>("addListener").ToLocalChecked(), addListenerFunc);
       @:Nan::set(constructor, Nan::New<String>("on").ToLocalChecked(), addListenerFunc);
             
           if (!Model.HasMemberEvents)
           {
-      @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener).ToLocalChecked()).ToLocalChecked();
+      @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener)).ToLocalChecked();
           }         
       @:Nan::Set(constructor, Nan::New<String>("removeListener").ToLocalChecked(), removeListenerFunc);
       @:Nan::Set(constructor, Nan::New<String>("off").ToLocalChecked(), removeListenerFunc);

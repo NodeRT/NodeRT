@@ -48,12 +48,12 @@
 		return;
       }
 
-      Local<Value> tokenMap = callback->GetHiddenValue(String::NewSymbol(REGISTRATION_TOKEN_MAP_PROPERTY_NAME));
+      Local<Value> tokenMap = callback->GetHiddenValue(Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
                 
       if (tokenMap.IsEmpty() || Nan::Equals(tokenMap,Undefined()).FromMaybe(false))
       {
 		  tokenMap = Nan::New<Object>();
-		  callback->SetHiddenValue(String::NewSymbol(REGISTRATION_TOKEN_MAP_PROPERTY_NAME), tokenMap);
+		  callback->SetHiddenValue(Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked(), tokenMap);
       }
 
       Nan::Set(Nan::To<Object>(tokenMap).ToLocalChecked(), info[1], CreateOpaqueWrapper(::Windows::Foundation::PropertyValue::CreateInt64(registrationToken.Value)));
@@ -81,12 +81,12 @@
       Local<Function> callback = info[1].As<Function>();
       Local<Value> tokenMap = callback->GetHiddenValue(Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
                 
-      if (tokenMap.IsEmpty() || Nan::Equals(tokenMap, Undefined()).FroMaybe(false))
+      if (tokenMap.IsEmpty() || Nan::Equals(tokenMap, Undefined()).FromMaybe(false))
       {
         return;
       }
 
-      Local<Value> opaqueWrapperObj =  Nan::Get(Nan::To<Object>(tokenMap).ToLocalChecked(), Get(info[1])).ToLocalChecked();
+      Local<Value> opaqueWrapperObj =  Nan::Get(Nan::To<Object>(tokenMap).ToLocalChecked(), info[1]).ToLocalChecked();
 
       if (opaqueWrapperObj.IsEmpty() || Nan::Equals(opaqueWrapperObj,Undefined()).FromMaybe(false))
       {

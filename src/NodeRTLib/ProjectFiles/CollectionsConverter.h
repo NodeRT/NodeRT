@@ -107,7 +107,7 @@ namespace NodeRT {
       const std::function<bool(v8::Local<v8::Value>)>& checkValueTypeFunc,
       const std::function<V(v8::Local<v8::Value>)>& convertToValueTypeFunc)
     {
-      std::vector<V> vec(arr.ToLocalChecked()->Length());
+      std::vector<V> vec(arr->Length());
       if (!FillVector<std::vector<V>&, V>(arr, checkValueTypeFunc, convertToValueTypeFunc, vec))
       {
         return nullptr;
@@ -177,7 +177,7 @@ namespace NodeRT {
 
       if (!checkValueTypeFunc(value))
       {
-        Nan::Throw(Nan::Error(NodeRT::Utils::NewString(L"Received array with unexpected value type")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Received array with unexpected value type")));
         return false;
       }
 

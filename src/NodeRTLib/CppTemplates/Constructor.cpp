@@ -3,7 +3,7 @@
     {
       HandleScope scope;
 
-	  Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate).ToLocalChecked();
+	    Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(s_constructorTemplate);
 
       // in case the constructor was called without the new operator
       if (!localRef->HasInstance(info.This()))
@@ -12,19 +12,19 @@
         {
           std::unique_ptr<Local<Value> []> constructorArgs(new Local<Value>[info.Length()]);
 
-          Local<Value> *argsPtr = constructorinfo.get();
+          Local<Value> *argsPtr = constructorArgs.get();
           for (int i = 0; i < info.Length(); i++)
           {
             argsPtr[i] = info[i];
           }
 
-          info.GetReturnValue().Set(Nan::CallAsConstructor(localRef->GetFunction().ToLocalChecked(), info.Length(), constructorinfo.get()).ToLocalChecked());
-		  return;
+          info.GetReturnValue().Set(Nan::CallAsConstructor(Nan::GetFunction(localRef).ToLocalChecked(), info.Length(), constructorArgs.get()).ToLocalChecked());
+	    	  return;
         }
         else
         {
-          info.GetReturnValue().Set(Nan::CallAsConstructor(localRef->GetFunction().ToLocalChecked(), info.Length(), nullptr).ToLocalChecked());
-		  return;
+          info.GetReturnValue().Set(Nan::CallAsConstructor(Nan::GetFunction(localRef).ToLocalChecked(), info.Length(), nullptr).ToLocalChecked());
+		       return;
         }
       }
       
@@ -44,7 +44,7 @@
         catch (Platform::Exception ^exception)
         {
           NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
-          return scope.Close(Undefined());
+          return;
         }
       }
       @foreach(var overload in constructors)
@@ -86,13 +86,13 @@
       else
       {
         Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Invalid arguments, no suitable constructor found")));
-		return;
+	    	return;
       }
 
-      info.This()->SetHiddenValue(String::NewSymbol("__winRtInstance__"), True());
+      info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
       @(Model.Name) *wrapperInstance = new @(Model.Name)(winRtInstance);
       wrapperInstance->Wrap(info.This());
 
-      info.GetReturnValue.Set(info.This());
+      info.GetReturnValue().Set(info.This());
     }
