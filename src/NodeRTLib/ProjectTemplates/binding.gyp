@@ -45,7 +45,7 @@
             'VCCLCompilerTool': {
               'AdditionalUsingDirectories' : [
                 '%ProgramFiles(x86)%/Microsoft Visual Studio 14.0/VC/lib/store/references',
-				"%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata",
+				'%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata',
 				'%ProgramFiles%/Microsoft Visual Studio 14.0/VC/lib/store/references',
 				"%ProgramFiles%/Windows Kits/10/UnionMetadata"]
               }

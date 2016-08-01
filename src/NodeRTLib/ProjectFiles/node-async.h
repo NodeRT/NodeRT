@@ -318,21 +318,21 @@ namespace NodeUtils
         
         if (!receiver.IsEmpty())
         {
-          callbackData->SetPrototype(receiver);
+          Nan::SetPrototype(callbackData, receiver);
         }
         
-        callbackData->Set(New<String>("callback").ToLocalChecked(), callback);
+        Nan::Set(callbackData, New<String>("callback").ToLocalChecked(), callback);
       
         // get the current domain:
-        Handle<Value> currentDomain = Undefined();
+        Local<Value> currentDomain = Undefined();
 
-        Handle<Object> process = GetCurrentContext()->Global()->Get(New<String>("process").ToLocalChecked()).As<Object>();
+        Local<Object> process = Nan::To<Object>(Nan::Get(GetCurrentContext()->Global(), New<String>("process").ToLocalChecked()).ToLocalChecked()).ToLocalChecked();
         if (!process->Equals(Undefined()))
         {
           currentDomain = process->Get(New<String>("domain").ToLocalChecked()) ;
         }
 
-        callbackData->Set(New<String>("domain").ToLocalChecked(), currentDomain);
+        Nan::Set(callbackData, New<String>("domain").ToLocalChecked(), currentDomain);
       }
 
       return scope.Escape(callbackData);
@@ -447,4 +447,3 @@ namespace NodeUtils
     }
   };
 }
-
