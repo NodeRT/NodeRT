@@ -89,7 +89,7 @@
 	    	return;
       }
 
-      info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+      NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
       @(Model.Name) *wrapperInstance = new @(Model.Name)(winRtInstance);
       wrapperInstance->Wrap(info.This());

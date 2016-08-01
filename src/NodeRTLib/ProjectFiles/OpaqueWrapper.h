@@ -15,6 +15,7 @@
 #include <string>
 #include "WrapperBase.h"
 #include "nan_object_wrap.h"
+#include "NodeRTUtils.h"
 
 namespace NodeRT {
   class OpaqueWrapperInitializer;
@@ -37,7 +38,7 @@ namespace NodeRT {
         return false;
       }
 	  
-	  v8::Handle<v8::Value> hiddenVal = value.As<v8::Object>()->GetHiddenValue(Nan::New<v8::String>("__winrtOpaqueWrapper__").ToLocalChecked());
+	  v8::Handle<v8::Value> hiddenVal = NodeRT::Utils::GetHiddenValue(value.As<v8::Object>(), Nan::New<v8::String>("__winrtOpaqueWrapper__").ToLocalChecked());
 	  if (hiddenVal.IsEmpty() || !hiddenVal->IsBoolean())
 	  {
 		  return false;

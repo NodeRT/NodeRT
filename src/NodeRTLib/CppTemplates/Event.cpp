@@ -48,15 +48,15 @@
 		return;
       }
 
-      Local<Value> tokenMap = callback->GetHiddenValue(Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
+      Local<Object> tokenMap = Nan::To<Object>(NodeRT::Utils::GetHiddenValue(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked())).ToLocalChecked();
                 
       if (tokenMap.IsEmpty() || Nan::Equals(tokenMap,Undefined()).FromMaybe(false))
       {
 		  tokenMap = Nan::New<Object>();
-		  callback->SetHiddenValue(Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked(), tokenMap);
+		  NodeRT::Utils::SetHiddenValueWithObject(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked(), tokenMap);
       }
 
-      Nan::Set(Nan::To<Object>(tokenMap).ToLocalChecked(), info[1], CreateOpaqueWrapper(::Windows::Foundation::PropertyValue::CreateInt64(registrationToken.Value)));
+      Nan::Set(tokenMap, info[1], CreateOpaqueWrapper(::Windows::Foundation::PropertyValue::CreateInt64(registrationToken.Value)));
     }
 
     static void RemoveListener(Nan::NAN_METHOD_ARGS_TYPE info)
@@ -79,7 +79,7 @@
       }
 
       Local<Function> callback = info[1].As<Function>();
-      Local<Value> tokenMap = callback->GetHiddenValue(Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
+      Local<Value> tokenMap = NodeRT::Utils::GetHiddenValue(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
                 
       if (tokenMap.IsEmpty() || Nan::Equals(tokenMap, Undefined()).FromMaybe(false))
       {

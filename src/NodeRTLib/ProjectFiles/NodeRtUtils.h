@@ -89,32 +89,36 @@ namespace NodeRT {
 
     ::Platform::Object^ GetObjectInstance(v8::Local<v8::Value>  value);
 
-    v8::Local<v8::Value> DateTimeToJS(::Windows::Foundation::DateTime value);
+	void SetHiddenValue(v8::Local<v8::Object> obj, v8::Local<v8::String> symbol, v8::Local<v8::Primitive> data);
+	void SetHiddenValueWithObject(v8::Local<v8::Object> obj, v8::Local<v8::String> symbol, v8::Local<v8::Object> data);
+	v8::Local<v8::Value> GetHiddenValue(v8::Local<v8::Object> obj, v8::Local<v8::String> symbol);
+
+    v8::Local<v8::Date> DateTimeToJS(::Windows::Foundation::DateTime value);
     ::Windows::Foundation::TimeSpan TimeSpanFromMilli(int64_t millis);
     ::Windows::Foundation::DateTime DateTimeFromJSDate(v8::Local<v8::Value> value);
 
     bool IsGuid(v8::Local<v8::Value> value);
     ::Platform::Guid GuidFromJs(v8::Local<v8::Value> value);
-    v8::Local<v8::Value> GuidToJs(::Platform::Guid guid);
+    v8::Local<v8::String> GuidToJs(::Platform::Guid guid);
 
-    v8::Local<v8::Value> ColorToJs(::Windows::UI::Color color);
+    v8::Local<v8::Object> ColorToJs(::Windows::UI::Color color);
     ::Windows::UI::Color ColorFromJs(v8::Local<v8::Value> value);
     bool IsColor(v8::Local<v8::Value> value);
 
-    v8::Local<v8::Value> RectToJs(::Windows::Foundation::Rect rect);
+    v8::Local<v8::Object> RectToJs(::Windows::Foundation::Rect rect);
     ::Windows::Foundation::Rect RectFromJs(v8::Local<v8::Value> value);
     bool IsRect(v8::Local<v8::Value> value);
 
-    v8::Local<v8::Value> PointToJs(::Windows::Foundation::Point point);
+    v8::Local<v8::Object> PointToJs(::Windows::Foundation::Point point);
     ::Windows::Foundation::Point PointFromJs(v8::Local<v8::Value> value);
     bool IsPoint(v8::Local<v8::Value> value);
 
-    v8::Local<v8::Value> SizeToJs(::Windows::Foundation::Size size);
+    v8::Local<v8::Object> SizeToJs(::Windows::Foundation::Size size);
     ::Windows::Foundation::Size SizeFromJs(v8::Local<v8::Value> value);
     bool IsSize(v8::Local<v8::Value> value);
 
     wchar_t GetFirstChar(v8::Local<v8::Value> value);
-    v8::Local<v8::Value> JsStringFromChar(wchar_t value);
+    v8::Local<v8::String> JsStringFromChar(wchar_t value);
 
     ::Windows::Foundation::HResult HResultFromJsInt32(int32_t value);
 

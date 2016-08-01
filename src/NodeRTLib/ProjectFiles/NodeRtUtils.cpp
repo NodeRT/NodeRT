@@ -29,6 +29,8 @@ namespace NodeRT { namespace Utils {
   using v8::Function;
   using v8::Date;
   using v8::Number;
+  using v8::Primitive;
+  using v8::PropertyAttribute;
   using Nan::HandleScope;
   using Nan::Persistent;
   using Nan::Undefined;
@@ -242,9 +244,24 @@ namespace NodeRT { namespace Utils {
       return true;
     }
 
-    Local<Value> hiddenVal = Nan::To<Object>(value).ToLocalChecked()->GetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked());
+    Local<Value> hiddenVal = GetHiddenValue(Nan::To<Object>(value).ToLocalChecked(), Nan::New<String>("__winRtInstance__").ToLocalChecked());
 
     return (!hiddenVal.IsEmpty() && hiddenVal->IsTrue());
+  }
+
+  void SetHiddenValue(Local<Object> obj, Local<String> symbol, Local<Primitive> data)
+  {
+    Nan::ForceSet(obj, symbol, data, static_cast<PropertyAttribute>(v8::ReadOnly & v8::DontEnum));
+  }
+
+  void SetHiddenValueWithObject(Local<Object> obj, Local<String> symbol, Local<Object> data)
+  {
+	  Nan::ForceSet(obj, symbol, data, static_cast<PropertyAttribute>(v8::ReadOnly & v8::DontEnum));
+  }
+
+  Local<Value> GetHiddenValue(Local<Object> obj, Local<String> symbol)
+  {
+	  return Nan::Get(obj, symbol).ToLocalChecked();
   }
 
   ::Windows::Foundation::TimeSpan TimeSpanFromMilli(int64_t millis)
@@ -269,7 +286,7 @@ namespace NodeRT { namespace Utils {
     return time; 
   }
 
-  Local<Value> DateTimeToJS(::Windows::Foundation::DateTime value)
+  Local<Date> DateTimeToJS(::Windows::Foundation::DateTime value)
   {
     // 116444736000000000 = The time 100 nanoseconds between 1/1/1970(UTC) to 1/1/1601(UTC)
     // ux_time = (Current time since 1601 in 100 nano sec units)/10000 - 11644473600000;
@@ -314,17 +331,17 @@ namespace NodeRT { namespace Utils {
     return ::Platform::Guid(guid);
   }
 
-  Handle<Value> GuidToJs(::Platform::Guid guid)
+  Local<String> GuidToJs(::Platform::Guid guid)
   {
     OLECHAR* bstrGuid;
     StringFromCLSID(guid, &bstrGuid);
     
-    Handle<String> strVal = NewString(bstrGuid);
+    Local<String> strVal = NewString(bstrGuid);
     CoTaskMemFree(bstrGuid);
     return strVal;
   }
 
-  Local<Value> ColorToJs(::Windows::UI::Color color)
+  Local<Object> ColorToJs(::Windows::UI::Color color)
   {
     EscapableHandleScope scope;
     Local<Object> obj = Nan::New<Object>();
@@ -402,7 +419,7 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  Local<Value> RectToJs(::Windows::Foundation::Rect rect)
+  Local<Object> RectToJs(::Windows::Foundation::Rect rect)
   {
     EscapableHandleScope scope;
     Local<Object> obj = Nan::New<Object>();
@@ -487,7 +504,7 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  Local<Value> PointToJs(::Windows::Foundation::Point point)
+  Local<Object> PointToJs(::Windows::Foundation::Point point)
   {
     EscapableHandleScope scope;
     Local<Object> obj = Nan::New<Object>();
@@ -545,7 +562,7 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  Local<Value> SizeToJs(::Windows::Foundation::Size size)
+  Local<Object> SizeToJs(::Windows::Foundation::Size size)
   {
     EscapableHandleScope scope;
     Local<Object> obj = Nan::New<Object>();
@@ -623,7 +640,7 @@ namespace NodeRT { namespace Utils {
     return retVal;
   }
 
-  Local<Value> JsStringFromChar(wchar_t value)
+  Local<String> JsStringFromChar(wchar_t value)
   {
     wchar_t str[2];
     str[0] = value;

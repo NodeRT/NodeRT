@@ -17,7 +17,7 @@ Nan::Persistent<v8::FunctionTemplate> NodeRT::OpaqueWrapper::s_constructorTempla
 
 void NodeRT::OpaqueWrapper::New(Nan::NAN_METHOD_ARGS_TYPE info)
 {
-  info.This()->SetHiddenValue(Nan::New<String>("__winrtOpaqueWrapper__").ToLocalChecked(), Nan::True());
+  NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winrtOpaqueWrapper__").ToLocalChecked(), Nan::True());
 
   info.GetReturnValue().Set(info.This());
 }

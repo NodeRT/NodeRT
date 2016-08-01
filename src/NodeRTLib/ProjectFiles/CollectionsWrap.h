@@ -105,7 +105,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
@@ -271,7 +271,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
@@ -439,7 +439,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(). Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
@@ -567,7 +567,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
@@ -844,7 +844,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
@@ -1413,7 +1413,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 				info.GetReturnValue().Set(info.This());
 
 			}
@@ -1548,7 +1548,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}
@@ -1836,7 +1836,7 @@ namespace NodeRT {
 
 			static void New(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
-				info.This()->SetHiddenValue(Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
+				NodeRT::Utils::SetHiddenValue(info.This(), Nan::New<String>("__winRtInstance__").ToLocalChecked(), True());
 
 				info.GetReturnValue().Set(info.This());
 			}

@@ -46,6 +46,7 @@ using v8::Function;
 using v8::Date;
 using v8::Number;
 using v8::PropertyAttribute;
+using v8::Primitive;
 using Nan::HandleScope;
 using Nan::Persistent;
 using Nan::Undefined;
