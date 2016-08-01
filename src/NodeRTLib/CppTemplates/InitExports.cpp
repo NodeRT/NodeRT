@@ -10,7 +10,6 @@
       
       @if(Model.MemberASyncMethods.Length > 0 || Model.StaticASyncMethods.Length > 0)
       {
-      @:Local<Value> asyncSymbol = Nan::New<String>("__winRtAsync__").ToLocalChecked();
       @:Local<Function> func;
       @:Local<FunctionTemplate> funcTemplate;
       }
@@ -24,22 +23,16 @@
       @if(Model.MemberASyncMethods.Length > 0) {
       @:
       foreach(var method in Model.MemberASyncMethods) {
-      @:funcTemplate = Nan::New<FunctionTemplate>(@TX.CSharpMethodToCppMethod(method.Name));
-      @:func = Nan::GetFunction(funcTemplate).ToLocalChecked();
-      @:Nan::ForceSet(func, asyncSymbol, True(), PropertyAttribute::DontEnum);
-      @:Nan::SetPrototypeTemplate(localRef, "@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))", func);
+      @:Nan::SetPrototypeMethod(localRef, "@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))", @TX.CSharpMethodToCppMethod(method.Name));
         }
       @:
       }
       @if(Model.HasMemberEvents) {  
       @:
-      @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener)).ToLocalChecked();
-      @:Nan::SetPrototypeTemplate(localRef,"addListener", addListenerFunc);
-      @:Nan::SetPrototypeTemplate(localRef,"on", addListenerFunc);
-      
-      @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener)).ToLocalChecked();
-      @:Nan::SetPrototypeTemplate(localRef,"removeListener", removeListenerFunc);
-      @:Nan::SetPrototypeTemplate(localRef, "off", removeListenerFunc);
+      @:Nan::SetPrototypeMethod(localRef,"addListener", AddListener);
+      @:Nan::SetPrototypeMethod(localRef,"on", AddListener);
+      @:Nan::SetPrototypeMethod(localRef,"removeListener", RemoveListener);
+      @:Nan::SetPrototypeMethod(localRef, "off", RemoveListener);
       }
       @if(Model.MemberProperties.Length > 0) {
       @:
@@ -64,7 +57,6 @@
         if(Model.StaticASyncMethods.Length > 0) {
           foreach(var method in Model.StaticASyncMethods) {
       @:func = Nan::GetFunction(Nan::New<FunctionTemplate>(@TX.CSharpMethodToCppMethod(method.Name))).ToLocalChecked();
-      @:Nan::ForceSet(func, asyncSymbol, True(), PropertyAttribute::DontEnum);
       @:Nan::Set(constructor, Nan::New<String>("@(TX.Uncap(TX.CSharpMethodToCppMethod(method.Name)))").ToLocalChecked(), func);
           }
         }
