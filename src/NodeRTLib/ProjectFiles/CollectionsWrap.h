@@ -398,10 +398,10 @@ namespace NodeRT {
 			static Local<Value> CreateIterableWrapper(::Windows::Foundation::Collections::IIterable<T>^ winRtInstance,
 				const std::function<Local<Value>(T)>& getterFunc = nullptr)
 			{
-				HandleScope scope;
+				EscapableHandleScope scope;
 				if (winRtInstance == nullptr)
 				{
-					return;
+					return scope.Escape(Undefined());
 				}
 
 				if (s_constructorTemplate.IsEmpty())
@@ -415,7 +415,7 @@ namespace NodeRT {
 
 				if (objectInstance.IsEmpty())
 				{
-					return;
+					return scope.Escape(Undefined());
 				}
 
 				IterableWrapper<T> *wrapperInstance = new IterableWrapper<T>(winRtInstance, getterFunc);

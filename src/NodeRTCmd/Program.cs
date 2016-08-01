@@ -55,7 +55,7 @@ namespace NodeRTCmd
             string ns = ValueOrNull(argsDictionary, "namespace");
             string customWinMdDir = ValueOrNull(argsDictionary, "customwinmddir");
 
-            VsVersions vsVersion = VsVersions.Vs2013;
+            VsVersions vsVersion = VsVersions.Vs2015;
 
             string nodeSrcDir = ValueOrNull(argsDictionary, "nodesrcdir");
 
@@ -198,7 +198,7 @@ namespace NodeRTCmd
             Console.WriteLine("    --outdir [path]          The output dir in which the NodeRT module");
             Console.WriteLine("                             will be created in");
             Console.WriteLine();
-            Console.WriteLine("    --vs [Vs2012|Vs2013]     Optional, VS version to use, default is Vs2013");
+            Console.WriteLine("    --vs [Vs2015|Vs2013|Vs2012]     Optional, VS version to use, default is Vs2015");
             Console.WriteLine();
             Console.WriteLine("    --nodefgen               Optional, specifying this option will reult in");
             Console.WriteLine("                             skipping the generation of TypeScript and");
