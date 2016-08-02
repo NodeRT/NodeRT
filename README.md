@@ -57,7 +57,7 @@ In order to use NodeRT, make sure you have the following installed:<br>
 npm install -g node-gyp
 ```
 
-Next, download the NodeRT binaries from <a href="https://github.com/NodeRT/NodeRT/raw/master/bin/NodeRT.zip">here</a>, or clone this repository to your machine and build the NodeRT solution using Visual Studio.
+Next, download the latest NodeRT release from <a href="https://github.com/NodeRT/NodeRT/releases">here</a>, or clone this repository to your machine and build the NodeRT solution using Visual Studio.
 
 -----------
 <a name="GeneratingWithUI"></a> 
