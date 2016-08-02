@@ -156,8 +156,10 @@ namespace NodeRTLib
             
             if (_vsVersion == VsVersions.Vs2012)
                 packageJsonFileText.Replace("{VSVersion}", "2012");
-            else
+            else if (_vsVersion == VsVersions.Vs2013)
                 packageJsonFileText.Replace("{VSVersion}", "2013");
+            else
+                packageJsonFileText.Replace("{VSVersion}", "2015");
 
             File.WriteAllText(Path.Combine(destinationFolder, "package.json"), packageJsonFileText.ToString());
 

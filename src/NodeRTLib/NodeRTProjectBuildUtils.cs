@@ -21,7 +21,7 @@ namespace NodeRTLib
     // Provides helper methods for compiling the genrated projects and copying the needed files for a package to an output directory
     public class NodeRTProjectBuildUtils
     {
-        private const string NODE_GYP_CMD_TEMPLATE = "\"cd \"{0}\" & node-gyp rebuild --msvs_version={1}\"";
+        private const string NODE_GYP_CMD_TEMPLATE = "\"cd \"{0}\" & npm install --ignore-scripts & node-gyp rebuild --msvs_version={1}\"";
 
         // Builds the given project/sln for the given platforms and copies the output & package file to the output directory
         public static void BuildWithNodeGyp(string moduleDirectory, VsVersions vsVersion)
