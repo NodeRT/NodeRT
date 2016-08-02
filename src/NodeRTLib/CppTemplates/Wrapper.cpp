@@ -7,11 +7,12 @@
 //
 // See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
 
+// TODO: Verify that this is is still needed..
 #define NTDDI_VERSION 0x06010000
 
 #include <v8.h>
+#include "nan.h"
 #include <string>
-#include <node_object_wrap.h>
 #include <ppltasks.h>
 #include "CollectionsConverter.h"
 #include "CollectionsWrap.h"
@@ -32,11 +33,34 @@
 
 const char* REGISTRATION_TOKEN_MAP_PROPERTY_NAME = "__registrationTokenMap__";
 
-using namespace v8;
-using namespace node;
+using v8::Array;
+using v8::String;
+using v8::Handle;
+using v8::Value;
+using v8::Boolean;
+using v8::Integer;
+using v8::FunctionTemplate;
+using v8::Object;
+using v8::Local;
+using v8::Function;
+using v8::Date;
+using v8::Number;
+using v8::PropertyAttribute;
+using v8::Primitive;
+using Nan::HandleScope;
+using Nan::Persistent;
+using Nan::Undefined;
+using Nan::True;
+using Nan::False;
+using Nan::Null;
+using Nan::MaybeLocal;
+using Nan::EscapableHandleScope;
+using Nan::HandleScope;
+using Nan::TryCatch;
 using namespace concurrency;
 
 @foreach(var name in Model.Namespaces) @("namespace " + name + " { ")
+
 
 @TX.CppTemplates.TypeWrapperForwardDecleration(Model)
 
@@ -57,11 +81,11 @@ using namespace concurrency;
 @foreach(var name in Model.Namespaces) @("} ")
 
 
-void init(Handle<Object> exports)
+NAN_MODULE_INIT(init)
 {
   if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
   {
-    ThrowException(v8::Exception::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
+    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
     return;
   }
   
@@ -74,16 +98,16 @@ void init(Handle<Object> exports)
   
     foreach(var en in Model.Enums) 
     {
-  @:@(namespacePrefix)Init@(en.Name)Enum(exports);
+  @:@(namespacePrefix)Init@(en.Name)Enum(target);
     }
   
     foreach(var t in Model.Types.Values)
     {
-  @:@(namespacePrefix)Init@(t.Name)(exports);
+  @:@(namespacePrefix)Init@(t.Name)(target);
     }
 
   }
-  NodeRT::Utils::RegisterNameSpace("@(Model.WinRTNamespace)", exports);
+  NodeRT::Utils::RegisterNameSpace("@(Model.WinRTNamespace)", target);
 }
 @{
   var moduleName = Model.Namespaces[0];

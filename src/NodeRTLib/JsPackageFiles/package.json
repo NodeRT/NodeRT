@@ -1,7 +1,7 @@
 {
   "name": "{PackageName}",
-  "version": "0.1.6",
-  "description": "Use the {Namespace} WinRT API directly from Node.js",
+  "version": "0.1.7",
+  "description": "Use the {Namespace} UWP API directly from Node.js",
   "main": "lib/main.js",
   "scripts" : {
     "install" : "node-gyp rebuild --msvs_version={VSVersion}"
@@ -11,7 +11,10 @@
     "NodeRT",
     "WinRT",
     "Microsoft"
-  ],
+  ], 
+  "dependencies" : {
+  	  "nan" : "latest"
+  },
   "optionalDependencies" : {
     {Dependencies}
   },

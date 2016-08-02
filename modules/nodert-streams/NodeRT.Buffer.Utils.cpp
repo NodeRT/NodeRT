@@ -9,6 +9,7 @@
 
 #define NTDDI_VERSION 0x06010000
 #define _WIN32_WINNT 0x0600
+#include "nan.h"
 #include <v8.h>
 
 #include "OpaqueWrapper.h"
@@ -20,10 +21,15 @@
 
 #include "NativeBuffer.h"
 
-using namespace v8;
 using namespace concurrency;
 
 namespace NodeRT { namespace Buffer { namespace Utils { 
+
+  using v8::Local;
+  using v8::Value;
+  using v8::Object;
+  using v8::String;
+	using Nan::HandleScope;
 
   ::Windows::Storage::Streams::IBuffer^ CreateNativeBuffer(LPVOID lpBuffer, UINT32 nNumberOfBytes)
   {
@@ -35,49 +41,49 @@ namespace NodeRT { namespace Buffer { namespace Utils {
     return buffer;
   }
 
-  static v8::Handle<v8::Value> ToIBuffer(const v8::Arguments& args)
+  static void ToIBuffer(Nan::NAN_METHOD_ARGS_TYPE info)
   {
     HandleScope scope;
 
     // the constructor if else should be auto generated
-    if (args.Length() == 0)
+    if (info.Length() == 0)
     {
-      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Invalid arguments, buffer was not passed in")));
-      return scope.Close(Undefined());
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Invalid arguments, buffer was not passed in")));
+      return;
     }
-    else if (args.Length() == 1 && !args[0]->IsObject())
+    else if (info.Length() == 1 && !info[0]->IsObject())
     {
-      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Invalid arguments, first argument should be a Buffer object")));
-      return scope.Close(Undefined());
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Invalid arguments, first argument should be a Buffer object")));
+      return;
     }
 
-    Local<Value> buffer = args[0];
+    Local<Value> buffer = info[0];
     char* data = node::Buffer::Data(buffer);
     size_t bufferLength = node::Buffer::Length(buffer);
 
     ::Windows::Storage::Streams::IBuffer^ ibuffer = CreateNativeBuffer(data, (UINT32)bufferLength);
 
-    Handle<Value> bufferWrapper = NodeRT::CreateOpaqueWrapper(ibuffer); 
+    Local<Value> bufferWrapper = NodeRT::CreateOpaqueWrapper(ibuffer); 
 
-    return scope.Close(bufferWrapper);
+    info.GetReturnValue().Set(bufferWrapper);
   }
 
-  void Init(Handle<Object> exports)
+  void Init(Local<Object> exports)
   {
-    exports->Set(String::NewSymbol("toIBuffer"), FunctionTemplate::New(ToIBuffer)->GetFunction());
+    Nan::SetMethod(exports, "toIBuffer", ToIBuffer);
   }
 
 } } }
 
-void init(Handle<Object> exports)
+NAN_MODULE_INIT(init)
 {
   if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
   {
-    ThrowException(v8::Exception::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
+    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
     return;
   }
 
-  NodeRT::Buffer::Utils::Init(exports);
+  NodeRT::Buffer::Utils::Init(target);
 }
 
 NODE_MODULE(NodeRT_Buffer_Utils, init)

@@ -1,13 +1,13 @@
-﻿    static Handle<Value> @(TX.CSharpMethodToCppMethod(Model.Name))(const v8::Arguments& args)
+﻿    static void @(TX.CSharpMethodToCppMethod(Model.Name))(Nan::NAN_METHOD_ARGS_TYPE info)
     {
       HandleScope scope;
 
-      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(args.This()))
+      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(info.This()))
       {
-        return scope.Close(Undefined());
+        return;
       }
 
-      @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(args.This());
+      @(Model.Overloads[0].DeclaringType.Name) *wrapper = @(Model.Overloads[0].DeclaringType.Name)::Unwrap<@(Model.Overloads[0].DeclaringType.Name)>(info.This());
       @{int c = 0;}
       @foreach(var overload in Model.Overloads)
       {
@@ -25,13 +25,13 @@
           else
             methodHasOutParams = true;
         }
-      @:@(elseString)if (args.Length() == @(inParamsCount)@{if (inParamsCount==0)@(")")}
+      @:@(elseString)if (info.Length() == @(inParamsCount)@{if (inParamsCount==0)@(")")}
 
         foreach (var paramInfo in overload.GetParameters())
         {
           if (paramInfo.IsOut)
             continue;
-        @:&& @(String.Format(Converter.TypeCheck(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)), "args[" + i.ToString() + "]"))@{if (inParamsCount==(i+1)) @(")")}
+        @:&& @(String.Format(Converter.TypeCheck(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)), "info[" + i.ToString() + "]"))@{if (inParamsCount==(i+1)) @(")")}
           i++;
         }
       @:{
@@ -69,7 +69,7 @@
           }
           else
           {
-          @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "args[" +parameterCounter + "]" ));
+          @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "info[" +parameterCounter + "]" ));
           }
           parameterCounter++;
           }
@@ -92,13 +92,13 @@
 
           if (methodHasOutParams)
           {
-          @:Handle<Object> resObj = Object::New();
+          @:Local<Object> resObj = Nan::New<Object>();
           
             if (Model.Overloads[0].ReturnType != typeof(void))
             {
             var jsConversionInfo = Converter.ToJS(overload.ReturnType, TX.MainModel.Types.ContainsKey(overload.ReturnType));
           
-          @:resObj->Set(String::NewSymbol("@(Converter.ToOutParameterName(overload.ReturnType))"), @(string.Format(jsConversionInfo[1], "result")));
+          @:Nan::Set(resObj, Nan::New<String>("@(Converter.ToOutParameterName(overload.ReturnType))").ToLocalChecked(), @(string.Format(jsConversionInfo[1], "result")));
             }
             parameterCounter = 0;
             foreach (var paramInfo in overload.GetParameters())
@@ -106,23 +106,25 @@
               if (paramInfo.IsOut)
               {
                 var paramJsConversionInfo = Converter.ToJS(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)); 
-          @:resObj->Set(String::NewSymbol("@(paramInfo.Name)"), @(string.Format(paramJsConversionInfo[1], "arg" + parameterCounter.ToString())));
+          @:Nan::Set(resObj, Nan::New<String>("@(paramInfo.Name)").ToLocalChecked(), @(string.Format(paramJsConversionInfo[1], "arg" + parameterCounter.ToString())));
               }
               parameterCounter++;
             }
 
-          @:return scope.Close(resObj);
+          @:info.GetReturnValue().Set(resObj);
+          @:return;
           }
           else
           {
             if (Model.Overloads[0].ReturnType != typeof(void))
             {
               var jsConversionInfo = Converter.ToJS(Model.Overloads[0].ReturnType, TX.MainModel.Types.ContainsKey(Model.Overloads[0].ReturnType)); 
-          @:return scope.Close(@string.Format(jsConversionInfo[1], "result"));
+          @:info.GetReturnValue().Set(@string.Format(jsConversionInfo[1], "result"));
+          @:return;
             }
             else
             {
-          @:return scope.Close(Undefined());   
+          @:return;   
             }
           }
 
@@ -130,16 +132,14 @@
         @:catch (Platform::Exception ^exception)
         @:{
           @:NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
-          @:return scope.Close(Undefined());
+          @:return;
         @:}
       @:}
         c++;
       }
       else 
       {
-        ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
-        return scope.Close(Undefined());
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+        return;
       }
-
-      return scope.Close(Undefined());
     }

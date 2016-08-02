@@ -1,15 +1,10 @@
 NodeRT
 ======
-
-**Please Note**: For now, this project only supports node.js versions <= 0.10.*, if you wish to use more up-to-date node.js distributions, you can try using <a href="https://github.com/Microsoft/node-uwp" target="_blank">node-uwp</a> which runs on top of <a href="https://github.com/Microsoft/node" target="_blank">node.js with Chakra</a>.
-
-(Also - will be more than happy to accept any contributions that will help to bring NodeRT forward! :))
-
 <H3>WinRT modules generator for node.js</H3>
 
-NodeRT is a tool that automatically generates node.js Native add-on wrappers for <a href="http://en.wikipedia.org/wiki/Windows_Runtime">WinRT APIs</a>.
+NodeRT is a tool that automatically generates node.js Native add-on wrappers for <a href="http://en.wikipedia.org/wiki/Windows_Runtime">UWP/WinRT APIs</a>.
 
-NodeRT automatically exposes Microsoft’s WinRT APIs to the node.js environment by generating node modules. This enables node.js developers to write code that consumes native Windows capabilities. The generated modules' APIs are (almost) the same as the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx">WinRT APIs listed in MSDN</a>.
+NodeRT automatically exposes Microsoft’s UWP/WinRT APIs to the node.js environment by generating node modules. This enables node.js developers to write code that consumes native Windows capabilities. The generated modules' APIs are (almost) the same as the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx">UWP/WinRT APIs listed in MSDN</a>.
 NodeRT can be used to generate node.js modules both from command line (NodeRTCmd) and from its UI tool (NodeRTUI).
 
 NodeRT is developed and released by a group of node.js enthusiasts at Microsoft.
@@ -52,22 +47,17 @@ For more examples of what NodeRT can do, check out our <a href="/samples">sample
 -----------
 <a name="Prerequisites"></a> 
 <H3>NodeRT Prerequisites</H3>
-First, in order to use WinRT you must be running on a Windows environment that supports WinRT- meaning Windows 8.1, Windows 8, or Windows Server 2012.
+First, in order to use WinRT you must be running on a Windows environment that supports WinRT- meaning Windows 10, Windows 8.1, Windows 8, or Windows Server 2012.
 
 In order to use NodeRT, make sure you have the following installed:<br>
-* Visual Studio 2013, or <a href="http://www.microsoft.com/en-gb/download/details.aspx?id=40787">VS 2013 Express for Windows Desktop</a>, for generating Windows 8.1 compatible modules, or Visual Studio 2012 for generating Windows 8 compatible modules.<br>
-* node.js (version > 10.*) - from <a href="http://www.nodejs.org">www.nodejs.org</a><br>
-* node.js native development files - these files can be installed using the following cmd-line:
+* Visual Studio 2015, or <a href="https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx">VS 2015 Express for Windows Desktop</a>, for generating Windows 10 compatible modules, or Visual Studio 2013/2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
+* node.js (version > 10.*) - from <a href="https://nodejs.org/en/">nodejs.org</a><br>
+* node-gyp - make sure to get the latest version from npm by running:
 ```
-node-gyp install
+npm install -g node-gyp
 ```
-(In order to make sure those files are installed - check if the following directory exists: 
-```
-c:\users\[your user name]\.node_gyp\[your node.js version]
-```
-  Another option is to download the node.js source code to your machine and build it. More information on this is available in the node.js site/github repository.<br>
 
-Next, download the NodeRT binaries from <a href="https://github.com/NodeRT/NodeRT/raw/master/bin/NodeRT.zip">here</a>, or clone this repository to your machine and build the NodeRT solution using Visual Studio.
+Next, download the latest NodeRT release from <a href="https://github.com/NodeRT/NodeRT/releases">here</a>, or clone this repository to your machine and build the NodeRT solution using Visual Studio.
 
 -----------
 <a name="GeneratingWithUI"></a> 
@@ -78,6 +68,10 @@ First, launch the UI tool by running NodeRTUI.exe:<br>
 
 Then, follow this short list of steps in order to create a NodeRT module:<br>
 * Choose a WinMD file: <br>
+    - For Windows 10 SDK: <br>
+    ```
+    c:\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd
+    ```
     - For Windows 8.1 SDK: <br>
     ```
     c:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd
@@ -87,7 +81,7 @@ Then, follow this short list of steps in order to create a NodeRT module:<br>
     c:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral\Windows.winmd
     ```
 * Choose a namespace to generate from the list of namespaces.<br>
-* Select whether you are generating a Windows 8.1 compatible module, using VS2013 or a Windows 8.0 compatible module using VS2012.<br>
+* Select whether you are generating a Windows 10 compatible module using VS 015, Windows 8.1 compatible module using VS2013 or a Windows 8.0 compatible module using VS2012.<br>
 * Choose the output directory in which the module will be created, or just stick with the default ones.
 * You're good to go, hit the Generate & Build button! A message box with (hopefully) a success message should appear shortly.<br>
 
@@ -96,36 +90,36 @@ Then, follow this short list of steps in order to create a NodeRT module:<br>
 <H3>Generating a NodeRT module using the cmd line interface</H3>
 NodeRT modules generation is available via a cmd-line interface using the NodeRTCmd tool.
 
-An example of generating the Windows.Devices.Geolocation namespace from the Windows 8.1 Windows.winmd:
+An example of generating the Windows.Devices.Geolocation namespace from the Windows 10 Windows.winmd:
 ```
-NodeRTCmd.exe --winmd "c:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" --codegendir c:\NodeRT\codegen --outdir c:\NodeRT\output --namespace Windows.Devices.Geolocation
+NodeRTCmd.exe --winmd "c:\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd" --codegendir c:\NodeRT\codegen --outdir c:\NodeRT\output --namespace Windows.Devices.Geolocation
 ```
 Note that omitting the --namespace option will generate all of the namespaces in the Winmd file.
 
 The following is the list of options that the tool supports:
 ```
- --winmd [path]           File path to winmd file from which the module
-                          will be generated
+ --winmd [path]              File path to winmd file from which the module
+                             will be generated
 
- --namespaces             Lists all of the namespaces in the winmd file
-                          (only needs --winmd)
+ --namespaces                Lists all of the namespaces in the winmd file
+                             (only needs --winmd)
 
- --namespace [namespace]  The namespace to generate from the winmd when
-                          not specified , all namespaces will be generated
+ --namespace [namespace]     The namespace to generate from the winmd when
+                             not specified , all namespaces will be generated
 
- --outdir [path]          The output dir in which the compiled NodeRT module
-                          will be created in
+ --outdir [path]             The output dir in which the compiled NodeRT module
+                             will be created in
 
- --vs [Vs2012|Vs2013]     Optional, VS version to use, default is Vs2013
+ --vs [Vs2015|Vs2013|Vs2012]  Optional, VS version to use, default is Vs2015
  
- --nodefgen               Optional, specifying this option will reult in
-                          skipping the generation of TypeScript and
-                          JavaScript definition files
+ --nodefgen                  Optional, specifying this option will reult in
+                             skipping the generation of TypeScript and
+                             JavaScript definition files
 
- --nobuild                Optional, specifying this option will result in
-                          skipping the build process for the NodeRT module
+ --nobuild                   Optional, specifying this option will result in
+                             skipping the build process for the NodeRT module
 
- --help                   Print this help screen
+ --help                      Print this help screen
 
 ```
 
@@ -196,23 +190,6 @@ locator.getGeopositionAsync( function(err, res) {
 
   console.info('(',res.coordinate.longitude, res.coordinate.latitude, ')');
 });
-```
-
-If you wish to use the exact method signatures that are listed in the MSDN examples, you can use the nodert-promisize module (located in modules/nodert-promisize), or any other similar node.js library:
-
-```javascript
-var promisize = require('nodert-promisize').promisize;
-var geolocation = promisize('windows.devices.geolocation');
-var locator = new geolocation.Geolocator();
-locator.getPositionAsync(filePath)
-  .then(function(res) {
-    console.info('(',res.coordinate.longitude,   res.coordinate.latitude, ')');
-  }, 
-  function(err) {
-    console.error(err);
-  }
-);
-```
 
 <b>Events</b>
 

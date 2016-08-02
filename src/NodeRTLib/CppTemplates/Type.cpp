@@ -82,32 +82,32 @@
     @(TX.ToWinRT(Model.Type)) _instance;
     static Persistent<FunctionTemplate> s_constructorTemplate;
 
-    friend v8::Handle<v8::Value> Wrap@(Model.Name)(@(TX.ToWinRT(Model.Type)) wintRtInstance);
-    friend @(TX.ToWinRT(Model.Type)) Unwrap@(Model.Name)(Handle<Value> value);
-    friend bool Is@(Model.Name)Wrapper(Handle<Value> value);
+    friend v8::Local<v8::Value> Wrap@(Model.Name)(@(TX.ToWinRT(Model.Type)) wintRtInstance);
+    friend @(TX.ToWinRT(Model.Type)) Unwrap@(Model.Name)(Local<Value> value);
   };
   Persistent<FunctionTemplate> @(Model.Name)::s_constructorTemplate;
 
-  v8::Handle<v8::Value> Wrap@(Model.Name)(@(TX.ToWinRT(Model.Type)) winRtInstance)
+  v8::Local<v8::Value> Wrap@(Model.Name)(@(TX.ToWinRT(Model.Type)) winRtInstance)
   {
-    HandleScope scope;
+    EscapableHandleScope scope;
 
     if (winRtInstance == nullptr)
     {
-      return scope.Close(Undefined());
+      return scope.Escape(Undefined());
     }
 
-    Handle<Object> opaqueWrapper = CreateOpaqueWrapper(winRtInstance);
-    Handle<Value> args[] = {opaqueWrapper};
-    return scope.Close(@(Model.Name)::s_constructorTemplate->GetFunction()->NewInstance(_countof(args), args));
+    Local<Value> opaqueWrapper = CreateOpaqueWrapper(winRtInstance);
+    Local<Value> args[] = {opaqueWrapper};
+    Local<FunctionTemplate> localRef = Nan::New<FunctionTemplate>(@(Model.Name)::s_constructorTemplate);
+    return scope.Escape(Nan::NewInstance(Nan::GetFunction(localRef).ToLocalChecked(),_countof(args), args).ToLocalChecked());
   }
 
-  @(TX.ToWinRT(Model.Type)) Unwrap@(Model.Name)(Handle<Value> value)
+  @(TX.ToWinRT(Model.Type)) Unwrap@(Model.Name)(Local<Value> value)
   {
-     return @(Model.Name)::Unwrap<@(Model.Name)>(value.As<Object>())->_instance;
+     return @(Model.Name)::Unwrap<@(Model.Name)>(Nan::To<Object>(value).ToLocalChecked())->_instance;
   }
 
-  void Init@(Model.Name)(Handle<Object> exports)
+  void Init@(Model.Name)(Local<Object> exports)
   {
     @(Model.Name)::Init(exports);
   }

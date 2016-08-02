@@ -1,20 +1,20 @@
 ﻿  
-  static bool Is@(Model.Name)JsObject(Handle<Value> value)
+  static bool Is@(Model.Name)JsObject(Local<Value> value)
   {
     if (!value->IsObject())
     {
       return false;
     }
 
-    Handle<String> symbol;
-    Handle<Object> obj = value.As<Object>();
+    Local<String> symbol;
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
 
     @foreach (var field in Model.GetFields())
     {
-    @:symbol = String::NewSymbol("@TX.Uncap(field.Name)");
-    @:if (obj->Has(symbol))
+    @:symbol = Nan::New<String>("@TX.Uncap(field.Name)").ToLocalChecked();
+    @:if (Nan::Has(obj, symbol).FromMaybe(false))
     @:{
-    @:  if (!@(String.Format(Converter.TypeCheck(field.FieldType, TX.MainModel.Types.ContainsKey(field.FieldType)), "obj->Get(symbol)")))
+    @:  if (!@(String.Format(Converter.TypeCheck(field.FieldType, TX.MainModel.Types.ContainsKey(field.FieldType)), "Nan::Get(obj,symbol).ToLocalChecked()")))
     @:  {
     @:      return false;
     @:  }
@@ -24,45 +24,45 @@
     return true;
   }
 
-  @TX.ToWinRT(Model) @(Model.Name)FromJsObject(Handle<Value> value)
+  @TX.ToWinRT(Model) @(Model.Name)FromJsObject(Local<Value> value)
   {
     HandleScope scope;
     @TX.ToWinRT(Model) returnValue;
     
     if (!value->IsObject())
     {
-      ThrowException(Exception::TypeError(NodeRT::Utils::NewString(L"Unexpected type, expected an object")));
+      Nan::ThrowError(Nan::TypeError(NodeRT::Utils::NewString(L"Unexpected type, expected an object")));
       return returnValue;
     }
 
-    Handle<Object> obj = value.As<Object>();
-    Handle<String> symbol;
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
+    Local<String> symbol;
 
     @foreach (var field in Model.GetFields())
     {
-    @:symbol = String::NewSymbol("@TX.Uncap(field.Name)");
-    @:if (obj->Has(symbol))
+    @:symbol = Nan::New<String>("@TX.Uncap(field.Name)").ToLocalChecked();
+    @:if (Nan::Has(obj, symbol).FromMaybe(false))
     @:{
       var winRtConversionInfo = Converter.ToWinRT(field.FieldType);
-    @:  returnValue.@(field.Name) = @(String.Format(winRtConversionInfo[1],"obj->Get(symbol)"));
+    @:  returnValue.@(field.Name) = @(String.Format(winRtConversionInfo[1],"Nan::Get(obj,symbol).ToLocalChecked()"));
     @:}
     @:
     }
     return returnValue;
   }
 
-  Handle<Value> @(Model.Name)ToJsObject(@TX.ToWinRT(Model) value)
+  Local<Value> @(Model.Name)ToJsObject(@TX.ToWinRT(Model) value)
   {
-    HandleScope scope;
+    EscapableHandleScope scope;
 
-    Handle<Object> obj = Object::New();
+    Local<Object> obj = Nan::New<Object>();
 
     @foreach (var field in Model.GetFields())
     {
     var jsConversionInfo = Converter.ToJS(field.FieldType, TX.MainModel.Types.ContainsKey(field.FieldType)); 
-    @:obj->Set(String::NewSymbol("@TX.Uncap(field.Name)"), @string.Format(jsConversionInfo[1], "value." + field.Name));
+    @:Nan::Set(obj, Nan::New<String>("@TX.Uncap(field.Name)").ToLocalChecked(), @string.Format(jsConversionInfo[1], "value." + field.Name));
     }
     
-    return scope.Close(obj);
+    return scope.Escape(obj);
   }
 

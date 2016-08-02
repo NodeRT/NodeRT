@@ -1,6 +1,5 @@
-﻿    static Handle<Value> @(TX.CSharpMethodToCppMethod(Model.Name))(const v8::Arguments& args)
+﻿    static void @(TX.CSharpMethodToCppMethod(Model.Name))(Nan::NAN_METHOD_ARGS_TYPE info)
     {
       HandleScope scope;
-      ThrowException(Exception::Error(NodeRT::Utils::NewString(L"Not implemented")));
-      return scope.Close(Undefined());
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
     }

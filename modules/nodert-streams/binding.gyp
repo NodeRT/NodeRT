@@ -6,13 +6,17 @@
       "sources": [ "NodeRT.Buffer.Utils.cpp",
                   "NodeRtUtils.cpp",
                   "OpaqueWrapper.cpp"],
+	  "include_dirs": [
+        "<!(node -e \"require('nan')\")"
+      ],
       'libraries': [ '-lruntimeobject.lib'],
       'msvs_settings': {
         'VCCLCompilerTool': {
-            'AdditionalUsingDirectories' : ['C:/Program Files (x86)/Microsoft SDKs/Windows/v8.1/ExtensionSDKs/Microsoft.VCLibs/12.0/References/CommonConfiguration/neutral',
-                                            'C:/Program Files (x86)/Windows Kits/8.1/References/CommonConfiguration/Neutral'],
+            'AdditionalUsingDirectories' : [
+			    '%ProgramFiles(x86)%/Microsoft Visual Studio 14.0/VC/lib/store/references',
+				'%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata'
+			],
             'AdditionalOptions': [ '/ZW'] 
-            
         }
       }
      }

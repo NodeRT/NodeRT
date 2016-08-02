@@ -7,35 +7,56 @@
 //
 // See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
 
-#pragma once 
 
 #include <v8.h>
-#include <node.h>
+#include "nan.h"
 #include <string>
+#include "NodeRtUtils.h"
 #include "OpaqueWrapper.h"
 
 #define WCHART_NOT_BUILTIN_IN_NODE 1
 
-using namespace v8;
-
 namespace NodeRT { namespace Utils {
+
+  using v8::String;
+  using v8::Handle;
+  using v8::Value;
+  using v8::Boolean;
+  using v8::Integer;
+  using v8::FunctionTemplate;
+  using v8::Object;
+  using v8::Local;
+  using v8::Function;
+  using v8::Date;
+  using v8::Number;
+  using v8::Primitive;
+  using v8::PropertyAttribute;
+  using Nan::HandleScope;
+  using Nan::Persistent;
+  using Nan::Undefined;
+  using Nan::True;
+  using Nan::False;
+  using Nan::Null;
+  using Nan::MaybeLocal;
+  using Nan::EscapableHandleScope;
 
   v8::Local<v8::Value> WinRtExceptionToJsError(Platform::Exception^ exception)
   {
-    v8::HandleScope scope;
+    EscapableHandleScope scope;
 
     if (exception == nullptr)
     {
-      return scope.Close(v8::Undefined());
+      return scope.Escape(Undefined());
     }
 
     // we use casting here in case that wchar_t is not a built-in type
     const wchar_t* errorMessage = exception->Message->Data();
+    unsigned int length = exception->Message->Length();
 
-    v8::Handle<v8::Value> error = v8::Exception::Error(v8::String::New(reinterpret_cast<const uint16_t*>(errorMessage)));
-    error.As<v8::Object>()->Set(v8::String::NewSymbol("HRESULT"),v8::Integer::New(exception->HResult));
+    Local<Value> error = Nan::Error(Nan::New<String>(reinterpret_cast<const uint16_t*>(errorMessage)).ToLocalChecked());
+    Nan::Set(Nan::To<Object>(error).ToLocalChecked(), Nan::New<String>("HRESULT").ToLocalChecked(), Nan::New<Integer>(exception->HResult));
 
-    return scope.Close(error);
+    return scope.Escape(error);
   }
 
   void ThrowWinRtExceptionInJs(Platform::Exception^ exception)
@@ -45,7 +66,7 @@ namespace NodeRT { namespace Utils {
       return;
     }
 
-    v8::ThrowException(WinRtExceptionToJsError(exception));
+    Nan::ThrowError(WinRtExceptionToJsError(exception));
   }
 
   // creates an object with the following structure:
@@ -53,54 +74,59 @@ namespace NodeRT { namespace Utils {
   //    "callback" : [callback fuction]
   //    "domain" : [the domain in which the async function/event was called/registered] (this is optional)
   // }
-  v8::Handle<v8::Object> CreateCallbackObjectInDomain(v8::Handle<v8::Function> callback)
+  Local<v8::Object> CreateCallbackObjectInDomain(Local<v8::Function> callback)
   {
-    v8::HandleScope scope;
+    EscapableHandleScope scope;
     
     // get the current domain:
-    v8::Handle<v8::Object> callbackObject = v8::Object::New();
+    MaybeLocal<v8::Object> callbackObject = Nan::New<Object>();
     
-    callbackObject->Set(v8::String::NewSymbol("callback"), callback);
-
-    v8::Handle<v8::Object> process = v8::Context::GetCurrent()->Global()->Get(v8::String::NewSymbol("process")).As<v8::Object>();
-
-    if (process.IsEmpty() || process->Equals(v8::Undefined()))
+    Nan::Set(callbackObject.ToLocalChecked(), Nan::New<String>("callback").ToLocalChecked(), callback);
+    
+    MaybeLocal<Value> processVal = Nan::Get(Nan::GetCurrentContext()->Global(), Nan::New<String>("process").ToLocalChecked());
+    v8::Local<Object> process = Nan::To<Object>(processVal.ToLocalChecked()).ToLocalChecked();
+    if (process.IsEmpty() || Nan::Equals(process,Undefined()).FromMaybe(true))
     {
-      return scope.Close(callbackObject);
+      return scope.Escape(callbackObject.ToLocalChecked());
     }
 
-    v8::Handle<v8::Value> currentDomain = process->Get(v8::String::NewSymbol("domain")) ;
+    MaybeLocal<Value> currentDomain = Nan::Get(process, Nan::New<String>("domain").ToLocalChecked());
 
-    if (!currentDomain.IsEmpty() && !currentDomain->Equals(v8::Undefined()))
+    if (!currentDomain.IsEmpty() && !Nan::Equals(currentDomain.ToLocalChecked(), Undefined()).FromMaybe(true))
     {
-      callbackObject->Set(v8::String::NewSymbol("domain"), currentDomain);  
+      Nan::Set(callbackObject.ToLocalChecked(), Nan::New<String>("domain").ToLocalChecked(), currentDomain.ToLocalChecked());
     }
 
-    return scope.Close(callbackObject);
+    return scope.Escape(callbackObject.ToLocalChecked());
   }
 
   // Calls the callback in the appropriate domwin, expects an object in the following format:
   // {
-  //    "callback" : [callback fuction]
+  //    "callback" : [callback function]
   //    "domain" : [the domain in which the async function/event was called/registered] (this is optional)
   // }
-  v8::Handle<v8::Value> CallCallbackInDomain(v8::Handle<v8::Object> callbackObject, int argc, v8::Handle<v8::Value> argv[]) 
+  Local<Value> CallCallbackInDomain(Local<v8::Object> callbackObject, int argc, Local<Value> argv[]) 
   {
-    return node::MakeCallback(callbackObject, v8::String::NewSymbol("callback"), argc, argv);
+    return Nan::MakeCallback(callbackObject, Nan::New<String>("callback").ToLocalChecked(), argc, argv);
   }
 
-  ::Platform::Object^ GetObjectInstance(v8::Handle<v8::Value>  value)
+  ::Platform::Object^ GetObjectInstance(Local<Value> value)
   {
-    WrapperBase* wrapper = node::ObjectWrap::Unwrap<WrapperBase>(value.As<v8::Object>());
+    // nulls are allowed when a WinRT wrapped object is expected 
+    if (value->IsNull()) {
+      return nullptr;
+    }
+
+    WrapperBase* wrapper = Nan::ObjectWrap::Unwrap<WrapperBase>(Nan::To<Object>(value).ToLocalChecked());
     return wrapper->GetObjectInstance();
   }
 
-  v8::Handle<v8::String> NewString(const wchar_t* str)
+  Local<String> NewString(const wchar_t* str)
   {
 #ifdef WCHART_NOT_BUILTIN_IN_NODE
-    return v8::String::New(reinterpret_cast<const uint16_t*>(str));
+    return Nan::New<String>(reinterpret_cast<const uint16_t*>(str)).ToLocalChecked();
 #else
-    return v8::String::New(str);
+    return Nan::New<String>(str).ToLocalChecked();
 #endif
   }
 
@@ -112,6 +138,19 @@ namespace NodeRT { namespace Utils {
     return *str;
 #endif
   }
+
+  // Note: current implementation converts any JS value that has a toString method to a ::Platform::String^
+  // Changes to this code might break the Collection Convertor logic
+  ::Platform::String^ V8StringToPlatformString(Local<Value> value)
+  {
+    v8::String::Value stringVal(value);
+#ifdef WCHART_NOT_BUILTIN_IN_NODE
+    return ref new Platform::String(reinterpret_cast<const wchar_t*>(*stringVal));
+#else
+    return ref new Platform::String(*stringVal);
+#endif
+  }
+
 
 #ifndef min
   size_t min(size_t one, size_t two)
@@ -141,49 +180,88 @@ namespace NodeRT { namespace Utils {
     return (_wcsnicmp(str1, str2, maxCount) == 0);
   }
 
-  void RegisterNameSpace(const char* ns, Handle<Value> nsExports)
+  void RegisterNameSpace(const char* ns, Local<Value> nsExports)
   {
     HandleScope scope;
-    Handle<Object> global = Context::GetCurrent()->Global();
-    if (!global->Has(String::NewSymbol("__winRtNamespaces__")))
+    Local<Object> global = Nan::GetCurrentContext()->Global();
+    
+    if (!Nan::Has(global, Nan::New<String>("__winRtNamespaces__").ToLocalChecked()).FromMaybe(false))
     {
-      global->Set(String::NewSymbol("__winRtNamespaces__"), Object::New(), PropertyAttribute::DontEnum) ;
+		  Nan::ForceSet(global, Nan::New<String>("__winRtNamespaces__").ToLocalChecked(), Nan::New<Object>(), (v8::PropertyAttribute) (v8::PropertyAttribute::DontEnum & v8::PropertyAttribute::DontDelete));
     }
 
-    Handle<Object> nsObject = global->Get(String::NewSymbol("__winRtNamespaces__")).As<Object>();
-    nsObject->Set(String::NewSymbol(ns), nsExports);
+    MaybeLocal<Value> nsObject = Nan::Get(global, Nan::New<String>("__winRtNamespaces__").ToLocalChecked());
+    Nan::Set(Nan::To<Object>(nsObject.ToLocalChecked()).ToLocalChecked(), Nan::New<String>(ns).ToLocalChecked(), nsExports);
   }
 
-  v8::Handle<v8::Value> CreateExternalWinRTObject(const char* ns, const char* objectName, ::Platform::Object ^instance)
+  Local<Value> CreateExternalWinRTObject(const char* ns, const char* objectName, ::Platform::Object ^instance)
   {
-    HandleScope scope;
+    EscapableHandleScope scope;
     Handle<Value> opaqueWrapper = CreateOpaqueWrapper(instance);
 
-    Handle<Object> global = Context::GetCurrent()->Global();
-    if (!global->Has(String::NewSymbol("__winRtNamespaces__")))
+    Local<Object> global = Nan::GetCurrentContext()->Global();
+    if (!Nan::Has(global, Nan::New<String>("__winRtNamespaces__").ToLocalChecked()).FromMaybe(false))
     {
-      return scope.Close(opaqueWrapper);
+      return scope.Escape(opaqueWrapper);
     }
 
-    Handle<Object> winRtObj = global->Get(String::NewSymbol("__winRtNamespaces__")).As<Object>();
+    Local<Object> winRtObj = Nan::To<Object>(Nan::Get(global, Nan::New<String>("__winRtNamespaces__").ToLocalChecked()).ToLocalChecked()).ToLocalChecked();
 
-    Handle<String> nsSymbol = String::NewSymbol(ns);
-    if (!winRtObj->Has(nsSymbol))
+    Local<String> nsSymbol = Nan::New<String>(ns).ToLocalChecked();
+    if (!Nan::Has(winRtObj, nsSymbol).FromMaybe(false))
     {
-      return scope.Close(opaqueWrapper);
+      return scope.Escape(opaqueWrapper);
     }
 
-    Handle<Object> nsObject = winRtObj->Get(nsSymbol).As<Object>();
+    Local<Object> nsObject = Nan::To<Object>(Nan::Get(winRtObj, nsSymbol).ToLocalChecked()).ToLocalChecked();
 
-    Handle<String> objectNameSymbol = String::NewSymbol(objectName);
-    if (!nsObject->Has(objectNameSymbol))
+    Local<String> objectNameSymbol = Nan::New<String>(objectName).ToLocalChecked();
+    if (!Nan::Has(nsObject, objectNameSymbol).FromMaybe(false))
     {
-      return scope.Close(opaqueWrapper);
+      return scope.Escape(opaqueWrapper);
     }
 
-    Handle<Function> objectFunc = nsObject->Get(objectNameSymbol).As<Function>();
-    Handle<Value> args[] = {opaqueWrapper};
-    return scope.Close(objectFunc->NewInstance(_countof(args), args));
+    Local<Function> objectFunc = Nan::Get(nsObject, objectNameSymbol).ToLocalChecked().As<Function>();
+    Local<Value> args[] = {opaqueWrapper};
+    return scope.Escape(Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked());
+  }
+
+  bool IsWinRtWrapper(Local<Value> value)
+  {
+    if (value.IsEmpty() || (!value->IsObject() && !value->IsNull()))
+    {
+      return false;
+    }
+
+    // allow passing nulls when a WinRT wrapped object is expected
+    if (value->IsNull())
+    {
+      return true;
+    }
+
+    if (NodeRT::OpaqueWrapper::IsOpaqueWrapper(value))
+    {
+      return true;
+    }
+
+    Local<Value> hiddenVal = GetHiddenValue(Nan::To<Object>(value).ToLocalChecked(), Nan::New<String>("__winRtInstance__").ToLocalChecked());
+
+    return (!hiddenVal.IsEmpty() && hiddenVal->IsTrue());
+  }
+
+  void SetHiddenValue(Local<Object> obj, Local<String> symbol, Local<Primitive> data)
+  {
+    Nan::ForceSet(obj, symbol, data, static_cast<PropertyAttribute>(v8::ReadOnly & v8::DontEnum));
+  }
+
+  void SetHiddenValueWithObject(Local<Object> obj, Local<String> symbol, Local<Object> data)
+  {
+	  Nan::ForceSet(obj, symbol, data, static_cast<PropertyAttribute>(v8::ReadOnly & v8::DontEnum));
+  }
+
+  Local<Value> GetHiddenValue(Local<Object> obj, Local<String> symbol)
+  {
+	  return Nan::Get(obj, symbol).ToLocalChecked();
   }
 
   ::Windows::Foundation::TimeSpan TimeSpanFromMilli(int64_t millis)
@@ -194,19 +272,28 @@ namespace NodeRT { namespace Utils {
     return timeSpan;
   }
 
-  ::Windows::Foundation::DateTime DateTimeFromJSDate(v8::Handle<v8::Value> value)
+  ::Windows::Foundation::DateTime DateTimeFromJSDate(Local<Value> value)
   {
     ::Windows::Foundation::DateTime time;
+    time.UniversalTime = 0;
     if (value->IsDate())
     {
       // 116444736000000000 = The time in 100 nanoseconds between 1/1/1970(UTC) to 1/1/1601(UTC)
       // ux_time = (Current time since 1601 in 100 nano sec units)/10000 - 116444736000000000;
       time.UniversalTime = value->IntegerValue()* 10000 + 116444736000000000;
     }
+
     return time; 
   }
 
-  bool StrToGuid(v8::Handle<v8::Value> value, LPCLSID guid)
+  Local<Date> DateTimeToJS(::Windows::Foundation::DateTime value)
+  {
+    // 116444736000000000 = The time 100 nanoseconds between 1/1/1970(UTC) to 1/1/1601(UTC)
+    // ux_time = (Current time since 1601 in 100 nano sec units)/10000 - 11644473600000;
+    return Nan::New<Date>(value.UniversalTime / 10000.0 - 11644473600000).ToLocalChecked();
+  }
+
+  bool StrToGuid(Local<Value> value, LPCLSID guid)
   {
     if (value.IsEmpty() || !value->IsString())
     {
@@ -227,13 +314,13 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  bool IsGuid(v8::Handle<v8::Value> value)
+  bool IsGuid(Local<Value> value)
   {
     GUID guid;
     return StrToGuid(value, &guid);
   }
 
-  ::Platform::Guid GuidFromJs(v8::Handle<v8::Value> value)
+  ::Platform::Guid GuidFromJs(Local<Value> value)
   {
     GUID guid;
     if(!StrToGuid(value, &guid))
@@ -244,85 +331,87 @@ namespace NodeRT { namespace Utils {
     return ::Platform::Guid(guid);
   }
 
-  Handle<Value> GuidToJs(::Platform::Guid guid)
+  Local<String> GuidToJs(::Platform::Guid guid)
   {
     OLECHAR* bstrGuid;
     StringFromCLSID(guid, &bstrGuid);
     
-    Handle<String> strVal = NewString(bstrGuid);
+    Local<String> strVal = NewString(bstrGuid);
     CoTaskMemFree(bstrGuid);
     return strVal;
   }
 
-  Handle<Value> ColorToJs(::Windows::UI::Color color)
+  Local<Object> ColorToJs(::Windows::UI::Color color)
   {
-    HandleScope scope;
-    Handle<Object> obj = Object::New();
+    EscapableHandleScope scope;
+    Local<Object> obj = Nan::New<Object>();
 
-    obj->Set(String::NewSymbol("G"), Integer::NewFromUnsigned(color.G));
-    obj->Set(String::NewSymbol("B"), Integer::NewFromUnsigned(color.B));
-    obj->Set(String::NewSymbol("A"), Integer::NewFromUnsigned(color.A));
-    obj->Set(String::NewSymbol("R"), Integer::NewFromUnsigned(color.R));
+    Nan::Set(obj, Nan::New<String>("G").ToLocalChecked(), Nan::New<Integer>(color.G));
+    Nan::Set(obj, Nan::New<String>("B").ToLocalChecked(), Nan::New<Integer>(color.B));
+    Nan::Set(obj, Nan::New<String>("A").ToLocalChecked(), Nan::New<Integer>(color.A));
+    Nan::Set(obj, Nan::New<String>("R").ToLocalChecked(), Nan::New<Integer>(color.R));
 
-    return scope.Close(obj);
+    return scope.Escape(obj);
   }
 
-  ::Windows::UI::Color ColorFromJs(Handle<Value> value)
+  ::Windows::UI::Color ColorFromJs(Local<Value> value)
   {
-    ::Windows::UI::Color retVal;
+    ::Windows::UI::Color retVal = ::Windows::UI::Colors::Black;
     if (!value->IsObject())
     {
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return retVal;
     }
 
-    Handle<Object> obj = value.As<Object>();
-    if (!obj->Has(String::NewSymbol("G")))
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
+    if (!Nan::Has(obj, Nan::New<String>("G").ToLocalChecked()).FromMaybe(false))
     {
-      retVal.G = static_cast<unsigned char>(obj->Get(String::NewSymbol("G"))->Uint32Value());
+      
+      retVal.G = static_cast<unsigned char>(Nan::To<uint32_t>(Nan::Get(obj, Nan::New<String>("G").ToLocalChecked()).ToLocalChecked()).FromMaybe(0));
     }
 
-    if (!obj->Has(String::NewSymbol("A")))
+    if (!Nan::Has(obj, Nan::New<String>("A").ToLocalChecked()).FromMaybe(false))
     {
-      retVal.G = static_cast<unsigned char>(obj->Get(String::NewSymbol("A"))->Uint32Value());
+      retVal.G = static_cast<unsigned char>(Nan::To<uint32_t>(Nan::Get(obj, Nan::New<String>("A").ToLocalChecked()).ToLocalChecked()).FromMaybe(0));
     }
 
-    if (!obj->Has(String::NewSymbol("B")))
+    if (!Nan::Has(obj, Nan::New<String>("B").ToLocalChecked()).FromMaybe(false))
     {
-      retVal.G = static_cast<unsigned char>(obj->Get(String::NewSymbol("B"))->Uint32Value());
+      retVal.G = static_cast<unsigned char>(Nan::To<uint32_t>(Nan::Get(obj, Nan::New<String>("B").ToLocalChecked()).ToLocalChecked()).FromMaybe(0));
     }
 
-    if (!obj->Has(String::NewSymbol("R")))
+    if (!Nan::Has(obj, Nan::New<String>("R").ToLocalChecked()).FromMaybe(false))
     {
-      retVal.G = static_cast<unsigned char>(obj->Get(String::NewSymbol("R"))->Uint32Value());
+      retVal.G = static_cast<unsigned char>(Nan::To<uint32_t>(Nan::Get(obj, Nan::New<String>("R").ToLocalChecked()).ToLocalChecked()).FromMaybe(0));
     }
 
     return retVal;
   }
 
-  bool IsColor(Handle<Value> value)
+  bool IsColor(Local<Value> value)
   {
     if (!value->IsObject())
     {
       return false;
     }
 
-    Handle<Object> obj = value.As<Object>();
-    if (!obj->Has(String::NewSymbol("G")))
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
+    if (!Nan::Has(obj, Nan::New<String>("G").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("A")))
+    if (!Nan::Has(obj, Nan::New<String>("A").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("B")))
+    if (!Nan::Has(obj, Nan::New<String>("B").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("R")))
+    if (!Nan::Has(obj, Nan::New<String>("R").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
@@ -330,82 +419,84 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  v8::Handle<v8::Value> RectToJs(::Windows::Foundation::Rect rect)
+  Local<Object> RectToJs(::Windows::Foundation::Rect rect)
   {
-    HandleScope scope;
-    Handle<Object> obj = Object::New();
+    EscapableHandleScope scope;
+    Local<Object> obj = Nan::New<Object>();
 
-    obj->Set(String::NewSymbol("bottom"), Number::New(rect.Bottom));
-    obj->Set(String::NewSymbol("height"), Number::New(rect.Height));
-    obj->Set(String::NewSymbol("left"), Number::New(rect.Left));
-    obj->Set(String::NewSymbol("right"), Number::New(rect.Right));
-    obj->Set(String::NewSymbol("top"), Number::New(rect.Top));
-    obj->Set(String::NewSymbol("width"), Number::New(rect.Width));
-    obj->Set(String::NewSymbol("x"), Number::New(rect.X));
-    obj->Set(String::NewSymbol("y"), Number::New(rect.Y));
+    Nan::Set(obj, Nan::New<String>("bottom").ToLocalChecked(), Nan::New<Number>(rect.Bottom));
+    Nan::Set(obj, Nan::New<String>("height").ToLocalChecked(), Nan::New<Number>(rect.Height));
+    Nan::Set(obj, Nan::New<String>("left").ToLocalChecked(), Nan::New<Number>(rect.Left));
+    Nan::Set(obj, Nan::New<String>("right").ToLocalChecked(), Nan::New<Number>(rect.Right));
+    Nan::Set(obj, Nan::New<String>("top").ToLocalChecked(), Nan::New<Number>(rect.Top));
+    Nan::Set(obj, Nan::New<String>("width").ToLocalChecked(), Nan::New<Number>(rect.Width));
+    Nan::Set(obj, Nan::New<String>("x").ToLocalChecked(), Nan::New<Number>(rect.X));
+    Nan::Set(obj, Nan::New<String>("y").ToLocalChecked(), Nan::New<Number>(rect.Y));
 
-    return scope.Close(obj);
+    return scope.Escape(obj);
   }
 
-  ::Windows::Foundation::Rect RectFromJs(v8::Handle<v8::Value> value)
+  ::Windows::Foundation::Rect RectFromJs(Local<Value> value)
   {
-    ::Windows::Foundation::Rect rect;  
+    ::Windows::Foundation::Rect rect = ::Windows::Foundation::Rect::Empty;
 
     if (!value->IsObject())
     {
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return rect;
     }
 
-    Handle<Object> obj = value.As<Object>();
-
-    if (obj->Has(String::NewSymbol("x")))
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
+    
+    if (Nan::Has(obj, Nan::New<String>("x").ToLocalChecked()).FromMaybe(false))
     {
-      rect.X = static_cast<float>(obj->Get(String::NewSymbol("x"))->NumberValue());
+		
+      rect.X = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("x").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
-    if (obj->Has(String::NewSymbol("y")))
+    if (Nan::Has(obj, Nan::New<String>("y").ToLocalChecked()).FromMaybe(false))
     {
-      rect.Y = static_cast<float>(obj->Get(String::NewSymbol("y"))->NumberValue());
+      rect.Y = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("y").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
-    if (obj->Has(String::NewSymbol("height")))
+    if (Nan::Has(obj, Nan::New<String>("height").ToLocalChecked()).FromMaybe(false))
     {
-      rect.Height = static_cast<float>(obj->Get(String::NewSymbol("height"))->NumberValue());
+      rect.Height = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("height").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
-    if (obj->Has(String::NewSymbol("width")))
+    if (Nan::Has(obj, Nan::New<String>("width").ToLocalChecked()).FromMaybe(false))
     {
-      rect.Width = static_cast<float>(obj->Get(String::NewSymbol("width"))->NumberValue());
+      rect.Width = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("width").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
     return rect;
   }
 
-  bool IsRect(v8::Handle<v8::Value> value)
+  bool IsRect(Local<Value> value)
   {
     if (!value->IsObject())
     {
       return false;
     }
 
-    Handle<Object> obj = value.As<Object>();
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
 
-    if (!obj->Has(String::NewSymbol("x")))
+    if (!Nan::Has(obj, Nan::New<String>("x").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("y")))
+    if (!Nan::Has(obj, Nan::New<String>("y").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("height")))
+    if (!Nan::Has(obj, Nan::New<String>("height").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("width")))
+    if (!Nan::Has(obj, Nan::New<String>("width").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
@@ -413,56 +504,57 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  v8::Handle<v8::Value> PointToJs(::Windows::Foundation::Point point)
+  Local<Object> PointToJs(::Windows::Foundation::Point point)
   {
-    HandleScope scope;
-    Handle<Object> obj = Object::New();
+    EscapableHandleScope scope;
+    Local<Object> obj = Nan::New<Object>();
 
-    obj->Set(String::NewSymbol("x"), Number::New(point.X));
-    obj->Set(String::NewSymbol("y"), Number::New(point.Y));
+    Nan::Set(obj, Nan::New<String>("x").ToLocalChecked(), Nan::New<Number>(point.X));
+    Nan::Set(obj, Nan::New<String>("y").ToLocalChecked(), Nan::New<Number>(point.Y));
 
-    return scope.Close(obj);
+    return scope.Escape(obj);
   }
 
-  ::Windows::Foundation::Point PointFromJs(v8::Handle<v8::Value> value)
+  ::Windows::Foundation::Point PointFromJs(Local<Value> value)
   {
-    ::Windows::Foundation::Point point;  
+    ::Windows::Foundation::Point point(0,0);  
 
     if (!value->IsObject())
     {
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return point;
     }
 
-    Handle<Object> obj = value.As<Object>();
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
 
-    if (obj->Has(String::NewSymbol("x")))
+    if (Nan::Has(obj, Nan::New<String>("x").ToLocalChecked()).FromMaybe(false))
     {
-      point.X = static_cast<float>(obj->Get(String::NewSymbol("x"))->NumberValue());
+		point.X = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("x").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
-    if (obj->Has(String::NewSymbol("y")))
+    if (Nan::Has(obj, Nan::New<String>("y").ToLocalChecked()).FromMaybe(false))
     {
-      point.Y = static_cast<float>(obj->Get(String::NewSymbol("y"))->NumberValue());
+      point.Y = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("y").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
     return point;
   }
 
-  bool IsPoint(v8::Handle<v8::Value> value)
+  bool IsPoint(Local<Value> value)
   {
     if (!value->IsObject())
     {
       return false;
     }
 
-    Handle<Object> obj = value.As<Object>();
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
 
-    if (!obj->Has(String::NewSymbol("x")))
+    if (!Nan::Has(obj, Nan::New<String>("x").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("y")))
+    if (!Nan::Has(obj, Nan::New<String>("y").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
@@ -470,56 +562,57 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  v8::Handle<v8::Value> SizeToJs(::Windows::Foundation::Size size)
+  Local<Object> SizeToJs(::Windows::Foundation::Size size)
   {
-    HandleScope scope;
-    Handle<Object> obj = Object::New();
+    EscapableHandleScope scope;
+    Local<Object> obj = Nan::New<Object>();
 
-    obj->Set(String::NewSymbol("height"), Number::New(size.Height));
-    obj->Set(String::NewSymbol("width"), Number::New(size.Width));
+    Nan::Set(obj, Nan::New<String>("height").ToLocalChecked(), Nan::New<Number>(size.Height));
+    Nan::Set(obj, Nan::New<String>("width").ToLocalChecked(), Nan::New<Number>(size.Width));
 
-    return scope.Close(obj);
+    return scope.Escape(obj);
   }
 
-  ::Windows::Foundation::Size SizeFromJs(v8::Handle<v8::Value> value)
+  ::Windows::Foundation::Size SizeFromJs(Local<Value> value)
   {
-    ::Windows::Foundation::Size size;  
+    ::Windows::Foundation::Size size(0,0);  
 
     if (!value->IsObject())
     {
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
       return size;
     }
 
-    Handle<Object> obj = value.As<Object>();
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
 
-    if (obj->Has(String::NewSymbol("height")))
+    if (Nan::Has(obj, Nan::New<String>("height").ToLocalChecked()).FromMaybe(false))
     {
-      size.Height = static_cast<float>(obj->Get(String::NewSymbol("height"))->NumberValue());
+      size.Height = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("height").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
-    if (obj->Has(String::NewSymbol("width")))
+    if (Nan::Has(obj, Nan::New<String>("width").ToLocalChecked()).FromMaybe(false))
     {
-      size.Width = static_cast<float>(obj->Get(String::NewSymbol("width"))->NumberValue());
+      size.Width = static_cast<float>(Nan::To<double>(Nan::Get(obj, Nan::New<String>("width").ToLocalChecked()).ToLocalChecked()).FromMaybe(0.0));
     }
 
     return size;
   }
 
-  bool IsSize(v8::Handle<v8::Value> value)
+  bool IsSize(Local<Value> value)
   {
     if (!value->IsObject())
     {
       return false;
     }
 
-    Handle<Object> obj = value.As<Object>();
+    Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
 
-    if (!obj->Has(String::NewSymbol("height")))
+    if (!Nan::Has(obj, Nan::New<String>("height").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
 
-    if (!obj->Has(String::NewSymbol("width")))
+    if (!Nan::Has(obj, Nan::New<String>("width").ToLocalChecked()).FromMaybe(false))
     {
       return false;
     }
@@ -527,7 +620,7 @@ namespace NodeRT { namespace Utils {
     return true;
   }
 
-  wchar_t GetFirstChar(v8::Handle<v8::Value> value)
+  wchar_t GetFirstChar(Local<Value> value)
   {
     wchar_t retVal = 0;
 
@@ -536,7 +629,7 @@ namespace NodeRT { namespace Utils {
       return retVal;
     }
 
-    Handle<String> str = value.As<String>();
+    Local<String> str = Nan::To<String>(value).ToLocalChecked();
     if (str->Length() == 0)
     {
       return retVal;
@@ -547,13 +640,20 @@ namespace NodeRT { namespace Utils {
     return retVal;
   }
 
-  v8::Handle<v8::Value> JsStringFromChar(wchar_t value)
+  Local<String> JsStringFromChar(wchar_t value)
   {
     wchar_t str[2];
     str[0] = value;
     str[1] = L'\0';
 
     return NewString(str);
+  }
+
+  ::Windows::Foundation::HResult HResultFromJsInt32(int32_t value)
+  {
+    ::Windows::Foundation::HResult res;
+    res.Value = value;
+    return res;
   }
 
 } } 

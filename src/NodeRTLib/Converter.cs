@@ -101,11 +101,11 @@ namespace NodeRTLib
                     type == typeof(UInt32)
                     )
                 {
-                    return new[] { "Integer", "Integer::New({0})" };
+                    return new[] { "Integer", "Nan::New<Integer>({0})" };
                 }
                 else if (type == typeof(UInt32))
                 {
-                    return new[] { "Integer", "Integer::NewFromUnsigned({0})" };
+                    return new[] { "Integer", "Nan::New<Integer>({0})" };
                 }
                 else if (type == typeof(Int64) ||
                     type == typeof(UInt64) ||
@@ -114,11 +114,11 @@ namespace NodeRTLib
                     type == typeof(IntPtr) ||
                     type == typeof(UIntPtr))
                 {
-                    return new[] { "Number", "Number::New(static_cast<double>({0}))" };
+                    return new[] { "Number", "Nan::New<Number>(static_cast<double>({0}))" };
                 }
                 else if (type == typeof(Boolean))
                 {
-                    return new[] { "Boolean", "Boolean::New({0})" };
+                    return new[] { "Boolean", "Nan::New<Boolean>({0})" };
                 }
                 else if (type == typeof(Char))
                 {
@@ -143,21 +143,21 @@ namespace NodeRTLib
 
             if (type == typeof(Exception))
             {
-                return new[] { "Number", "Integer::New({0}.Value)" };
+                return new[] { "Number", "Nan::New<Integer>({0}.Value)" };
             }
 
             if (type == typeof(TimeSpan))
             {
                 // convert 100 nano seconds units to millisecond
                 // the conversion factor is 10000
-                return new[] { "Number", "Number::New({0}.Duration/10000.0)" };
+                return new[] { "Number", "Nan::New<Number>({0}.Duration/10000.0)" };
             }
 
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 String[] conversionInfo = ToJS(type.GetGenericArguments()[0]);
-
-                conversionInfo[1] = "{0} ? " + String.Format(conversionInfo[1], "{0}->Value") + ": static_cast<Handle<Value>>(Undefined())";
+                // TODO: Verify that the casting here to Local<Value> of Undefined() is actually needed..
+                conversionInfo[1] = "{0} ? static_cast<Local<Value>>(" + String.Format(conversionInfo[1], "{0}->Value") + ") : Undefined()";
                 return conversionInfo;
             }
 
@@ -183,7 +183,7 @@ namespace NodeRTLib
 
             if (type.IsEnum)
             {
-                return new[] { "Integer", "Integer::New(static_cast<int>({0}))" };
+                return new[] { "Integer", "Nan::New<Integer>(static_cast<int>({0}))" };
             }
 
             if (type.IsArray)
@@ -271,13 +271,13 @@ namespace NodeRTLib
             string[] jsToElementType = ToWinRT(elementType, TX.MainModel.Types.ContainsKey(elementType));
             // note that double curl braces here are used because String.Format will 
             string creatorFunction = "NodeRT::Collections::"+ collectionName + "Wrapper<" + elementRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
-"            [](" + elementRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + elementRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(elementTypeToJs[1], "val")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> bool {{\r\n" +
+"            [](Local<Value> value) -> bool {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(checkType, "value")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> " + elementRtType + " {{\r\n" +
+"            [](Local<Value> value) -> " + elementRtType + " {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToElementType[1], "value")) + ";\r\n" +
 "            }}\r\n" +
 "          )";
@@ -292,7 +292,7 @@ namespace NodeRTLib
 
             // note that double curl braces here are used because String.Format will 
             string creatorFunction = "NodeRT::Collections::" + collectionName + "Wrapper<" + elementRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
-"            [](" + elementRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + elementRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(elementTypeToJs[1], "val")) + ";\r\n" +
 "            }}\r\n" +
 "          )";
@@ -310,10 +310,10 @@ namespace NodeRTLib
 
             // note that double curl braces here are used because String.Format will 
             string creatorFunction = "NodeRT::Collections::" + collectionName + "Wrapper<" + keyRtType + "," + valueRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
-"            [](" + keyRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + keyRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(keyTypeToJs[1], "val")) + ";\r\n" +
 "            }},\r\n" +
-"            [](" + valueRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + valueRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(valueTypeToJs[1], "val")) + ";\r\n" +
 "            }}\r\n" +
 "          )";
@@ -333,16 +333,16 @@ namespace NodeRTLib
 
             // note that double curl braces here are used because String.Format will 
             string creatorFunction = "NodeRT::Collections::" + collectionName + "Wrapper<" + keyRtType + "," + valueRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
-"            [](" + keyRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + keyRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(keyTypeToJs[1], "val")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> bool {{\r\n" +
+"            [](Local<Value> value) -> bool {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(keyCheckType, "value")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> " + keyRtType + " {{\r\n" +
+"            [](Local<Value> value) -> " + keyRtType + " {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToKeyElementType[1], "value")) + ";\r\n" +
 "            }},\r\n" +
-"            [](" + valueRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + valueRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(valueTypeToJs[1], "val")) + ";\r\n" +
 "            }}\r\n" +
 "          )";
@@ -364,22 +364,22 @@ namespace NodeRTLib
 
             // note that double curl braces here are used because String.Format will 
             string creatorFunction = "NodeRT::Collections::" + collectionName + "Wrapper<" + keyRtType + "," + valueRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
-"            [](" + keyRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + keyRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(keyTypeToJs[1], "val")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> bool {{\r\n" +
+"            [](Local<Value> value) -> bool {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(keyCheckType, "value")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> " + keyRtType + " {{\r\n" +
+"            [](Local<Value> value) -> " + keyRtType + " {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToKeyElementType[1], "value")) + ";\r\n" +
 "            }},\r\n" +
-"            [](" + valueRtType + " val) -> Handle<Value> {{\r\n" +
+"            [](" + valueRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(valueTypeToJs[1], "val")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> bool {{\r\n" +
+"            [](Local<Value> value) -> bool {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(valueCheckType, "value")) + ";\r\n" +
 "            }},\r\n" +
-"            [](Handle<Value> value) -> " + valueRtType + " {{\r\n" +
+"            [](Local<Value> value) -> " + valueRtType + " {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToValueElementType[1], "value")) + ";\r\n" +
 "            }}\r\n" +
 "          )";
@@ -406,10 +406,10 @@ namespace NodeRTLib
             }
 
             return 
-"                 [](Handle<Value> value) -> bool {{\r\n" +
+"                 [](Local<Value> value) -> bool {{\r\n" +
 "                   return " + ReplaceBracketsWithDoubleBrackets(String.Format(checkType, "value")) + ";\r\n" +
 "                 }},\r\n" +
-"                 [](Handle<Value> value) -> " + rtType + " {{\r\n" +
+"                 [](Local<Value> value) -> " + rtType + " {{\r\n" +
 "                   return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToElementType[1], "value")) + ";\r\n" +
 "                 }}";
       }
@@ -505,7 +505,7 @@ namespace NodeRTLib
             castingType = (keyType == typeof(String)) ? "Object" : "Array";
 
             string funcStr = "\r\n" +
-"            [] (v8::Handle<v8::Value> value) -> " + winrtFullType + "\r\n" +
+"            [] (v8::Local<v8::Value> value) -> " + winrtFullType + "\r\n" +
 "            {{\r\n" +
 "              if (value->Is" + jsType + "())\r\n" +
 "              {{\r\n" +
@@ -534,55 +534,55 @@ namespace NodeRTLib
             {
                 if (type == typeof(Byte))
                 {
-                    return new[] { "unsigned char", "static_cast<unsigned char>({0}->Int32Value())" };
+                    return new[] { "unsigned char", "static_cast<unsigned char>(Nan::To<int32_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(SByte))
                 {
-                    return new[] { "char", "static_cast<char>({0}->Int32Value())" };
+                    return new[] { "char", "static_cast<char>(Nan::To<int32_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(Int16))
                 {
-                    return new[] { "short", "static_cast<short>({0}->Int32Value())" };
+                    return new[] { "short", "static_cast<short>(Nan::To<int32_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(UInt16))
                 {
-                    return new[] { "unsigned short", "static_cast<unsigned short>({0}->Int32Value())" };
+                    return new[] { "unsigned short", "static_cast<unsigned short>(Nan::To<int32_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(Int32))
                 {
-                    return new[] { "int", "static_cast<int>({0}->Int32Value())" };
+                    return new[] { "int", "static_cast<int>(Nan::To<int32_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(UInt32))
                 {
-                    return new[] { "unsigned int", "static_cast<unsigned int>({0}->IntegerValue())" };
+                    return new[] { "unsigned int", "static_cast<unsigned int>(Nan::To<uint32_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(Int64))
                 {
-                    return new[] { "__int64", "{0}->IntegerValue()" };
+                    return new[] { "__int64", "Nan::To<int64_t>({0}).FromMaybe(0)" };
                 }
                 else if (type == typeof(UInt64))
                 {
-                    return new[] { "unsigned __int64", "static_cast<unsigned __int64>({0}->IntegerValue())" };
+                    return new[] { "unsigned __int64", "static_cast<unsigned __int64>(Nan::To<int64_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(IntPtr))
                 {
-                    return new[] { "__int64", "{0}->IntegerValue()" };
+                    return new[] { "__int64", "Nan::To<int64_t>({0}).FromMaybe(0)" };
                 }
                 else if (type == typeof(UIntPtr))
                 {
-                    return new[] { "unsigned __int64", "static_cast<unsigned __int64>({0}->IntegerValue())" };
+                    return new[] { "unsigned __int64", "static_cast<unsigned __int64>(Nan::To<int64_t>({0}).FromMaybe(0))" };
                 }
                 else if (type == typeof(Single))
                 {
-                    return new[] { "float", "static_cast<float>({0}->NumberValue())" };
+                    return new[] { "float", "static_cast<float>(Nan::To<double>({0}).FromMaybe(0.0))" };
                 }
                 else if (type == typeof(Double))
                 {
-                    return new[] { "double", "{0}->NumberValue()" };
+                    return new[] { "double", "Nan::To<double>({0}).FromMaybe(0.0)" };
                 }
                 else if (type == typeof(Boolean))
                 {
-                    return new[] { "bool", "{0}->BooleanValue()" };
+                    return new[] { "bool", "Nan::To<bool>({0}).FromMaybe(false)" };
                 }
                 else if (type == typeof(Char))
                 {
@@ -607,12 +607,12 @@ namespace NodeRTLib
 
             if (type == typeof(Exception))
             {
-                return new[] { "::Windows::Foundation::HResult", "NodeRT::Utils::HResultFromJsInt32({0}->Int32Value())" };
+                return new[] { "::Windows::Foundation::HResult", "NodeRT::Utils::HResultFromJsInt32(Nan::To<int32_t>({0}).FromMaybe(0))" };
             }
 
             if (type == typeof(TimeSpan))
             {
-                return new[] { "::Windows::Foundation::TimeSpan", "NodeRT::Utils::TimeSpanFromMilli({0}->IntegerValue())" };
+                return new[] { "::Windows::Foundation::TimeSpan", "NodeRT::Utils::TimeSpanFromMilli(Nan::To<int64_t>({0}).FromMaybe(0))" };
             }
 
             if (type.FullName == "Windows.UI.Color")
@@ -645,7 +645,7 @@ namespace NodeRTLib
 
             if (type.IsEnum)
             {
-                return new[] { winrtFullType, "static_cast<" + winrtFullType + ">({0}->Int32Value())" };
+                return new[] { winrtFullType, "static_cast<" + winrtFullType + ">(Nan::To<int32_t>({0}).FromMaybe(0))" };
             }
 
             // this if clause should come after IsEnum, since an enum will also return true for IsValueType

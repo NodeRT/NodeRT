@@ -8,10 +8,10 @@
 // See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
 
 #pragma once
-#include <node_object_wrap.h>
+#include <nan_object_wrap.h>
 
 namespace NodeRT {
-  class WrapperBase : public node::ObjectWrap
+  class WrapperBase : public Nan::ObjectWrap
   {
   public:
     virtual ::Platform::Object^ GetObjectInstance() const = 0;

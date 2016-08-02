@@ -1,14 +1,12 @@
-﻿  static v8::Handle<v8::Value> Init@(Model.Name)Enum(const Handle<Object> exports)
+﻿  static void Init@(Model.Name)Enum(const Local<Object> exports)
   {
     HandleScope scope;
     
-    Handle<Object> enumObject = Object::New();
-    exports->Set(String::NewSymbol("@(Model.Name)"), enumObject);
+	Local<Object> enumObject = Nan::New<Object>();
+    Nan::Set(exports, Nan::New<String>("@(Model.Name)").ToLocalChecked(), enumObject);
     @foreach(var name in Enum.GetNames(Model)) {
-    @:enumObject->Set(String::NewSymbol("@(TX.Uncap(name))"), Integer::New(static_cast<int>(@TX.ToWinRT(Model)::@(name))));
+	@:Nan::Set(enumObject, Nan::New<String>("@(TX.Uncap(name))").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(@TX.ToWinRT(Model)::@(name))));
     }
-
-    return scope.Close(Undefined());
   }
 
 

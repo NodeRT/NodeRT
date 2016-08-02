@@ -10,15 +10,43 @@
 #pragma once
 
 #include <v8.h>
+#include "nan.h"
 #include <TlHelp32.h>
 
 #include <functional>
 #include <memory>
 #include <vector>
 
+#if NAUV_UVVERSION < 0x000b17
+#define NODEASYNC_ASYNC_WORK_CB(func) \
+    static void __cdecl func(uv_async_t *handle, int)
+#define NODEASYNC_IDLE_WORK_CB(func) \
+    static void __cdecl func(uv_idle_t *handle, int)
+#else
+#define NODEASYNC_ASYNC_WORK_CB(func) \
+    static void __cdecl func(uv_async_t *handle)
+#define NODEASYNC_IDLE_WORK_CB(func) \
+    static void __cdecl func(uv_idle_t *handle)
+#endif
+
 namespace NodeUtils
 {
-  using namespace v8;
+  using v8::Integer;
+  using v8::String;
+  using v8::Function;
+  using v8::Exception;
+  using v8::Object;
+  using v8::Local;
+  using v8::Handle;
+  using v8::Value;
+  using Nan::New;
+  using Nan::HandleScope;
+  using Nan::GetCurrentContext;
+  using Nan::EscapableHandleScope;
+  using Nan::MakeCallback;
+  using Nan::Null;
+  using Nan::Persistent;
+  using Nan::Undefined;
   
   typedef std::function<void (int, Handle<Value>*)> InvokeCallbackDelegate;
   
@@ -29,26 +57,41 @@ namespace NodeUtils
     struct Baton 
     {
       int error_code;
-      std::string error_message;
+      std::wstring error_message;
 
       // Custom data
       std::shared_ptr<TInput> data;
       std::shared_ptr<TResult> result;
-      std::vector<Persistent<Value>> callback_args;
+      std::shared_ptr<Persistent<Value>> callback_args;
+      unsigned callback_args_size;
+
+      Baton() 
+      {
+        callback_args_size = 0;
+      }
 
       void setCallbackArgs(Handle<Value>* argv, int argc)
       {
+        HandleScope scope;
+
+        callback_info.reset(new Persistent<Value>[argc], [](Persistent<Value> * ptr) {
+          delete [] ptr;
+        });
+
+        callback_args_size = 0;
+
         for (int i=0; i<argc; i++)
         {
-          callback_args.push_back(Persistent<Value>::New(argv[i]));
+          //callback_info.get()[i] = argv[i];
+          callback_info.get()[i].Reset(argv[i]);
         }
       }
-
+      
       virtual ~Baton()
       {
-        for (std::vector<Persistent<Value>>::iterator it = callback_args.begin(); it != callback_args.end(); it++)
+        for (int i = 0; i < callback_args_size; i++)
         {
-          it->Dispose();
+          callback_info.get()[i].Reset();
         }
       }
 
@@ -56,7 +99,7 @@ namespace NodeUtils
       uv_work_t request;
       std::function<void (Baton*)> doWork;
       std::function<void (Baton*)> afterWork;
-      Persistent<Object> callbackData;
+      Nan::Persistent<Object> callbackData;
 
       friend Async;
     };
@@ -105,7 +148,7 @@ namespace NodeUtils
 
       virtual ~TokenData()
       {
-        callbackData.Dispose();
+        callbackData.Reset();
       }
 
     private:
@@ -120,7 +163,7 @@ namespace NodeUtils
         Handle<Value> receiver)
       {
         TokenData* Token = static_cast<TokenData*>(handleData);
-        Token->callbackData = Persistent<Object>::New(CreateCallbackData(callback, receiver));
+        Token->callbackData.Reset(CreateCallbackData(callback, receiver));
       }
 
       TokenData() {}
@@ -141,11 +184,11 @@ namespace NodeUtils
       Handle<Value> receiver = Handle<Value>())
     {
       HandleScope scope;
-      Handle<Object> callbackData = CreateCallbackData(callback, receiver);
+      Local<Object> callbackData = CreateCallbackData(callback, receiver);
       
       Baton<TInput, TResult>* baton = new Baton<TInput, TResult>();
       baton->request.data = baton;
-      baton->callbackData = Persistent<Object>::New(callbackData);
+      baton->callbackData.Reset(callbackData);
       baton->error_code = 0;
       baton->data = input;
       baton->doWork = doWork;
@@ -188,8 +231,8 @@ namespace NodeUtils
     static void __cdecl RunOnMain(std::function<void ()> func)
     {
       static unsigned int uvMainThreadId = GetMainThreadId();
-
-      if (uvMainThreadId == uv_thread_self()) 
+      
+      if (uvMainThreadId == (unsigned int)uv_thread_self()) 
       {
         func();
       }
@@ -210,7 +253,7 @@ namespace NodeUtils
       {
         if (!Token->callbackData.IsEmpty())
         {
-          node::MakeCallback(Token->callbackData, String::NewSymbol("callback"), argc, argv);
+          MakeCallback(New(Token->callbackData), New<String>("callback").ToLocalChecked(), argc, argv);
         }
       };
 
@@ -250,7 +293,7 @@ namespace NodeUtils
       {
         if (!Token->callbackData.IsEmpty())
         {
-          node::MakeCallback(Token->callbackData, String::NewSymbol("callback"), argc, argv);
+          MakeCallback(New(Token->callbackData), New<String>("callback").ToLocalChecked(), argc, argv);
         }
       };
 
@@ -266,33 +309,33 @@ namespace NodeUtils
   private:
     static Handle<Object> CreateCallbackData(Handle<Function> callback, Handle<Value> receiver)
     {
-      HandleScope scope;
+      EscapableHandleScope scope;
 
-      Handle<Object> callbackData;
+      Local<Object> callbackData;
       if (!callback.IsEmpty() && !callback->Equals(Undefined()))
       {
-        callbackData = Object::New();
+        callbackData = New<Object>();
         
         if (!receiver.IsEmpty())
         {
-          callbackData->SetPrototype(receiver);
+          Nan::SetPrototype(callbackData, receiver);
         }
-
-        callbackData->Set(String::NewSymbol("callback"), callback);
+        
+        Nan::Set(callbackData, New<String>("callback").ToLocalChecked(), callback);
       
         // get the current domain:
-        Handle<Value> currentDomain = Undefined();
+        Local<Value> currentDomain = Undefined();
 
-        Handle<Object> process = v8::Context::GetCurrent()->Global()->Get(String::NewSymbol("process")).As<Object>();
+        Local<Object> process = Nan::To<Object>(Nan::Get(GetCurrentContext()->Global(), New<String>("process").ToLocalChecked()).ToLocalChecked()).ToLocalChecked();
         if (!process->Equals(Undefined()))
         {
-          currentDomain = process->Get(String::NewSymbol("domain")) ;
+          currentDomain = process->Get(New<String>("domain").ToLocalChecked()) ;
         }
 
-        callbackData->Set(String::NewSymbol("domain"), currentDomain);
+        Nan::Set(callbackData, New<String>("domain").ToLocalChecked(), currentDomain);
       }
 
-      return scope.Close(callbackData);
+      return scope.Escape(callbackData);
     };
 
     template<typename TInput, typename TResult> 
@@ -312,7 +355,7 @@ namespace NodeUtils
     template<typename TInput, typename TResult> 
     static void __cdecl AsyncAfter(uv_work_t* req, int status) 
     {
-      HandleScope scope;
+      HandleScope scope;;
       Baton<TInput, TResult>* baton = static_cast<Baton<TInput, TResult>*>(req->data);
 
       // typical AfterWorkFunc implementation
@@ -330,20 +373,20 @@ namespace NodeUtils
 
       baton->afterWork(baton);
       
-      if (!baton->callbackData.IsEmpty() || !baton->callbackData->Equals(Undefined()))
+      if (!baton->callbackData.IsEmpty())
       {
         // call the callback, using domains and all
-        int argc = static_cast<int>(baton->callback_args.size());
-        std::unique_ptr<Handle<Value>> handlesArr(new Handle<Value>[argc]);
+        int argc = static_cast<int>(baton->callback_args_size);
+        std::unique_ptr<Local<Value>> handlesArr(new Local<Value>[argc]);
         for (int i=0; i < argc; i++)
         {
-          handlesArr.get()[i] = baton->callback_args[i];
+          handlesArr.get()[i] = New(baton->callback_info.get()[i]);
         }
 
-        node::MakeCallback(baton->callbackData, String::NewSymbol("callback"), argc, handlesArr.get());
+        MakeCallback(New(baton->callbackData), New<String>("callback").ToLocalChecked(), argc, handlesArr.get());
       }
-
-      baton->callbackData.Dispose();
+      
+      baton->callbackData.Reset();
       delete baton;
     }
     
@@ -358,7 +401,7 @@ namespace NodeUtils
     }
 
     // Called by run on main in case we are not running on the main thread
-    static void __cdecl AsyncCb(uv_async_t *handle, int status)
+    NODEASYNC_ASYNC_WORK_CB(AsyncCb)
     {
       auto Token = static_cast<TokenData*>(handle->data);
       Token->func();
@@ -394,7 +437,7 @@ namespace NodeUtils
       return result;
     }
 
-    static void __cdecl onNextTick(uv_idle_t *handle, int status)
+    NODEASYNC_IDLE_WORK_CB(onNextTick)
     {
       std::function<void ()> *func = static_cast<std::function<void ()> *>(handle->data);
       (*func)();
@@ -404,4 +447,3 @@ namespace NodeUtils
     }
   };
 }
-
