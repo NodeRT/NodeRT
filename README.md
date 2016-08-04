@@ -1,6 +1,9 @@
 NodeRT
 ======
+<H4><b>[New!] Now supporting latest versions of node.js + Electron!</b></H4>
+
 <H3>WinRT modules generator for node.js</H3>
+
 
 NodeRT is a tool that automatically generates node.js Native add-on wrappers for <a href="http://en.wikipedia.org/wiki/Windows_Runtime">UWP/WinRT APIs</a>.
 
