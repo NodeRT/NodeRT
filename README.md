@@ -193,6 +193,7 @@ locator.getGeopositionAsync( function(err, res) {
 
   console.info('(',res.coordinate.longitude, res.coordinate.latitude, ')');
 });
+```
 
 <b>Events</b>
 
