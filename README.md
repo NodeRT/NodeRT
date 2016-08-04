@@ -1,6 +1,6 @@
 NodeRT
 ======
-<H4><b>[New!] Now supporting latest versions of node.js + Electron!</b></H4>
+<H4><b>[New!] Now supporting Windows 10 and latest versions of node.js + Electron!</b></H4>
 
 <H3>WinRT modules generator for node.js</H3>
 
