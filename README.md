@@ -39,7 +39,9 @@ For more examples of what NodeRT can do, check out our <a href="/samples">sample
 
 <a href="#GeneratingWithCmd">Generating a NodeRT module using the cmd line interface</a>
 
-<a href="#ConsumingNodeRT">Consuming a NodeRT module in node.js</a>
+<a href="#BuildingForElectron">Building for Electron</a>
+
+<a href="#ConsumingNodeRT">Consuming a NodeRT module in node.js/Electron</a>
 
 <a href="#License">License</a>
 
@@ -127,8 +129,25 @@ The following is the list of options that the tool supports:
 ```
 
 -----------
+<a name="BuildingForElectron"></a>
+<H3>Building for Electron</H3>
+In order to build the generated NodeRT module for Electron, you can follow the instructions in <a href="https://github.com/electron/electron/blob/master/docs/tutorial/using-native-node-modules.md#installing-modules-and-rebuilding-for-electron">here</a>. 
+
+The easiest way to build the module for Electron, is probably to run node-gyp directly from the module folder with the appropriate cmd-line arguments.
+
+For example, opening the cmd-line, cd-ing to the generated module directory and running:
+```
+node-gyp rebuild --target=1.3.1 --arch=x64 --dist-url=https://atom.io/download/atom-shell
+```
+
+Just make sure to use the correct Electron version for the "target" argument (here we used 1.3.1).
+
+After rebuilding the module - you can copy it to your Electron app node_modules directory (in case you havn't done that already) and use it like every other node.js/Electron module.
+
+
+-----------
 <a name="ConsumingNodeRT"></a> 
-<H3>Consuming a NodeRT module in node.js</H3>
+<H3>Consuming a NodeRT module in node.js/Electron</H3>
 
 Requiring a generated NodeRT module is just like requiring any other node.js module - if for example, you've just generated Windows.Devices.Geolocation, copy the generated windows.devices.geolocation directory from the output folder to a node_modules folder near you (or use a full path), and run:
 ```javascript
