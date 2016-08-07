@@ -1,0 +1,23 @@
+{
+  "8.0": {
+	"windowsWinMDPath" : [
+	  "%ProgramFiles(x86)%\\Windows Kits\\8.0\\References\\CommonConfiguration\\Neutral\\Windows.winmd",
+	  "%ProgramFiles%\\Windows Kits\\8.0\\References\\CommonConfiguration\\Neutral\\Windows.winmd"
+	],
+	"vsVersion" : "Vs2012"
+  },
+  "8.1": {
+	"windowsWinMDPath" : [
+	  "%ProgramFiles(x86)%\\Windows Kits\\8.1\\References\\CommonConfiguration\\Neutral\\Windows.winmd",
+	  "%ProgramFiles%\\Windows Kits\\8.1\\References\\CommonConfiguration\\Neutral\\Windows.winmd"
+	],
+	"vsVersion" : "Vs2013"
+  },
+  "10.": {
+	"windowsWinMDPath" : [
+	  "%ProgramFiles(x86)%\\Windows Kits\\10\\UnionMetadata\\Windows.winmd",
+	  "%ProgramFiles%\\Windows Kits\\10\\UnionMetadata\\Windows.winmd"
+	],
+	"vsVersion" : "Vs2015"
+  }
+}
