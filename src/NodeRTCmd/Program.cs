@@ -46,6 +46,7 @@ namespace NodeRTCmd
             string outDir = argsDictionary["outdir"];
             bool noDefGen = argsDictionary.ContainsKey("nodefgen");
             bool noBuild = argsDictionary.ContainsKey("nobuild");
+            bool verbose = argsDictionary.ContainsKey("verbose");
 
             if (!Directory.Exists(outDir))
             {
@@ -67,7 +68,7 @@ namespace NodeRTCmd
             // generate specific namespace
             if (!String.IsNullOrEmpty(ns))
             {
-                GenerateAndBuildNamespace(ns,vsVersion, winmd, outDir, noDefGen, noBuild);
+                GenerateAndBuildNamespace(ns,vsVersion, winmd, outDir, noDefGen, noBuild, verbose);
             }
             else // try to generate & build all namespaces in winmd file
             {
@@ -77,7 +78,7 @@ namespace NodeRTCmd
                 {
                     if (!GenerateAndBuildNamespace(winRtNamespace,
                           vsVersion, winmd,
-                          outDir, noDefGen, noBuild))
+                          outDir, noDefGen, noBuild, verbose))
                     {
                         failedList.Add(winRtNamespace);
                     }
@@ -120,7 +121,7 @@ namespace NodeRTCmd
         }
 
         static bool GenerateAndBuildNamespace(string ns, 
-            VsVersions vsVersion, string winmd, string outDir, bool noDefGen, bool noBuild)
+            VsVersions vsVersion, string winmd, string outDir, bool noDefGen, bool noBuild, bool verbose)
         {
             string moduleOutDir = Path.Combine(outDir, ns.ToLower());
 
@@ -149,7 +150,7 @@ namespace NodeRTCmd
 
                 try
                 {
-                    NodeRTProjectBuildUtils.BuildWithNodeGyp(moduleOutDir, vsVersion);
+                    NodeRTProjectBuildUtils.BuildWithNodeGyp(moduleOutDir, vsVersion, verbose);
                 }
                 catch (IOException e)
                 {
@@ -206,6 +207,9 @@ namespace NodeRTCmd
             Console.WriteLine();
             Console.WriteLine("    --nobuild                Optional, specifying this option will result in");
             Console.WriteLine("                             skipping the build process for the NodeRT module");
+            Console.WriteLine();
+            Console.WriteLine("    --verbose                Optional, specifying this option will result in");
+            Console.WriteLine("                             verbose output for the module build operation");
             Console.WriteLine();
             Console.WriteLine("    --help                   Print this help screen");
             Console.WriteLine();

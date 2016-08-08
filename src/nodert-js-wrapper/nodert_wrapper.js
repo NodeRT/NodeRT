@@ -1,7 +1,10 @@
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 var os = require('os');
 var path = require('path');
 var platformConfig = require('./platform_config.json')
+
+var NODERT_CMD_LINE_PATH = path.join(__dirname, 'bin/NodeRTCmd.exe');
 
 function isWindows() {
   return os.platform() == 'win32';
@@ -44,10 +47,10 @@ function getConfigForPlatform() {
       var resolvedPath = filePath.replace(/%([^%]+)%/g, function(_,n) {
         return process.env[n];
       })
-      console.info(resolvedPath);
+
       fs.statSync(resolvedPath);
       // if this didn't throw then we are good
-      windowsWinMDPath = filePath;
+      windowsWinMDPath = resolvedPath;
       break;
     }
     catch (e) {
@@ -64,4 +67,31 @@ function getConfigForPlatform() {
   }
 }
 
-console.info(getConfigForPlatform());
+function getDefaultDir() {
+  return path.join(__dirname, 'node_modules');
+}
+
+function spawnNodeRT(config, verbose) {
+  verbose = !!verbose;
+  var opts;
+  if (verbose) {
+    opts = { stdio : 'inherit' };
+  }
+
+  proc = spawn(NODERT_CMD_LINE_PATH, ['--winmd', config["windowsWinMDPath"], '--namespace', config["namespace"],
+    '--outdir', config["outputDir"], '--vs', config["vsVersion"]], opts);
+  
+  return proc;
+}
+
+function generateModule(namespace, outputDir) {
+  outputDir = outputDir || getDefaultDir();
+  var config = getConfigForPlatform();
+  config["namespace"] = namespace;
+  config["outputDir"] = outputDir;
+  // for now we just run the command line
+  return spawnNodeRT(config, true);
+}
+
+
+generateModule("windows.devices.geolocation");

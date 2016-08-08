@@ -24,9 +24,9 @@ namespace NodeRTLib
         private const string NODE_GYP_CMD_TEMPLATE = "\"cd \"{0}\" & npm install --ignore-scripts & node-gyp rebuild --msvs_version={1}\"";
 
         // Builds the given project/sln for the given platforms and copies the output & package file to the output directory
-        public static void BuildWithNodeGyp(string moduleDirectory, VsVersions vsVersion)
+        public static void BuildWithNodeGyp(string moduleDirectory, VsVersions vsVersion, bool verbose = false)
         {
-            BuildModule(moduleDirectory, vsVersion);
+            BuildModule(moduleDirectory, vsVersion, verbose);
         }
 
         private static string CreateBuildCmd(string moduleDirectory, VsVersions vsVersion)
@@ -50,33 +50,53 @@ namespace NodeRTLib
             return String.Format(NODE_GYP_CMD_TEMPLATE, moduleDirectory, versionString);
         }
 
-        private static void BuildModule(string moduleDirectory, VsVersions vsVersion)
+        private static void BuildModule(string moduleDirectory, VsVersions vsVersion, bool verbose)
         {
             string cmd = CreateBuildCmd(moduleDirectory, vsVersion);
-            bool result = ExecuteCommand(cmd);
+            bool result = ExecuteCommand(cmd, verbose);
 
             if (!result)
                 throw new Exception("Failed to build project");
         }
 
-        private static bool ExecuteCommand(string cmd)
+        private static bool ExecuteCommand(string cmd, bool verbose)
         {
-            ProcessStartInfo ProcessInfo = new ProcessStartInfo("cmd.exe", "/c " + cmd);
-            ProcessInfo.CreateNoWindow = true;
-            ProcessInfo.UseShellExecute = false;
-            ProcessInfo.LoadUserProfile = true;
+            Process process = new Process();
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.Arguments = "/c " + cmd;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.LoadUserProfile = true;
 
-            if (ProcessInfo.EnvironmentVariables.ContainsKey("VisualStudioDir"))
-                ProcessInfo.EnvironmentVariables.Remove("VisualStudioDir");
-            if (ProcessInfo.EnvironmentVariables.ContainsKey("VisualStudioEdition"))
-                ProcessInfo.EnvironmentVariables.Remove("VisualStudioEdition");
-            if (ProcessInfo.EnvironmentVariables.ContainsKey("VisualStudioVersion"))
-                ProcessInfo.EnvironmentVariables.Remove("VisualStudioVersion");
-            
-            Process process;
+            if (process.StartInfo.EnvironmentVariables.ContainsKey("VisualStudioDir"))
+                process.StartInfo.EnvironmentVariables.Remove("VisualStudioDir");
+            if (process.StartInfo.EnvironmentVariables.ContainsKey("VisualStudioEdition"))
+                process.StartInfo.EnvironmentVariables.Remove("VisualStudioEdition");
+            if (process.StartInfo.EnvironmentVariables.ContainsKey("VisualStudioVersion"))
+                process.StartInfo.EnvironmentVariables.Remove("VisualStudioVersion");
 
-            process = Process.Start(ProcessInfo);
-            
+            if (verbose)
+            {
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                
+                Action<object, DataReceivedEventArgs> actionWrite = (sender, e) =>
+                {
+                    Console.WriteLine(e.Data);
+                };
+
+                process.ErrorDataReceived += (sender, e) => actionWrite(sender, e);
+                process.OutputDataReceived += (sender, e) => actionWrite(sender, e);
+            }
+
+            process.Start();
+
+            if (verbose)
+            {
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+            }
+
             process.WaitForExit();
             bool success = (process.ExitCode == 0);
 
