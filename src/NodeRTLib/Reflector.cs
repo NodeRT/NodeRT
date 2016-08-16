@@ -105,8 +105,26 @@ namespace NodeRTLib
             return types;
         }
 
+        private static bool VerifyNamespaceInAssembly(Assembly assembly, string winRTNamespace)
+        {
+            foreach (var t in assembly.ExportedTypes)
+            {
+                if (t.Namespace.Equals(winRTNamespace, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static dynamic GenerateModel(Assembly assembly, string winRTNamespace)
         {
+            if (!VerifyNamespaceInAssembly(assembly, winRTNamespace))
+            {
+                throw new Exception(String.Format("The namespace {0} is not defined in the given WinMD file.", winRTNamespace));
+            }
+               
             dynamic mainModel = new DynamicDictionary();
             TX.MainModel = mainModel;
 

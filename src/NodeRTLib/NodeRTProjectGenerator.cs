@@ -23,15 +23,63 @@ namespace NodeRTLib
         Vs2015
     }
 
+    public enum WinVersions
+    {
+        v8,
+        v8_1,
+        v10
+    }
+
     public class NodeRTProjectGenerator
     {
+        private WinVersions _winVersion;
         private VsVersions _vsVersion;
         private bool _isGenerateDef;
 
-        public NodeRTProjectGenerator(VsVersions vsVersion, bool isGenerateDef)
+        public NodeRTProjectGenerator(WinVersions winVersion, VsVersions vsVersion, bool isGenerateDef)
         {
+            _winVersion = winVersion;
             _vsVersion = vsVersion;
             _isGenerateDef = isGenerateDef;
+        }
+
+        public static bool TryParseWinVersion(string winVerString, out WinVersions winVer)
+        {
+            switch(winVerString)
+            {
+                case "8":
+                    winVer = WinVersions.v8;
+                    return true;
+                case "8.1":
+                    winVer = WinVersions.v8_1;
+                    return true;
+                case "10":
+                    winVer = WinVersions.v10;
+                    return true;
+                default:
+                    // set to some default value
+                    winVer = 0;
+                    return false;
+            }
+        }
+
+        public static bool VerifyVsAndWinVersions(WinVersions winVersion, VsVersions vsVersion, out string errorMessage)
+        {
+            errorMessage = null;
+           
+            if (vsVersion == VsVersions.Vs2013 && winVersion == WinVersions.v10)
+            {
+                errorMessage = "VS 2013 does not support building Windows 10 modules";
+                return false;
+            }
+
+            if (vsVersion == VsVersions.Vs2012 && (winVersion == WinVersions.v8_1 || winVersion == WinVersions.v10))
+            {
+                errorMessage = "VS 2012 only supports building Windows 8 modules";
+                return false;
+            }
+
+            return true;
         }
 
         public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, dynamic mainModel)
@@ -91,15 +139,15 @@ namespace NodeRTLib
         {
             string directoryName = Path.GetDirectoryName(winrtFile).ToLower();
 
-            if (_vsVersion == VsVersions.Vs2012)
+            if (_winVersion == WinVersions.v8)
             {
                 bindingFileText.Replace("{WinVer}", "v8.0");
             }
-            else if (_vsVersion == VsVersions.Vs2013)
+            else if (_winVersion == WinVersions.v8_1)
             {
                 bindingFileText.Replace("{WinVer}", "v8.1");
             }
-            else if (_vsVersion == VsVersions.Vs2015)
+            else if (_winVersion == WinVersions.v10)
             {
                 bindingFileText.Replace("{WinVer}", "v10");
             }

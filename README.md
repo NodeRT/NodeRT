@@ -115,7 +115,9 @@ The following is the list of options that the tool supports:
  --outdir [path]             The output dir in which the compiled NodeRT module
                              will be created in
 
- --vs [Vs2015|Vs2013|Vs2012]  Optional, VS version to use, default is Vs2015
+ --vs [Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2015
+ 
+ --winver [10|8.1|8]         Optional, Windows SDK version to use, default is 10
  
  --nodefgen                  Optional, specifying this option will reult in
                              skipping the generation of TypeScript and
