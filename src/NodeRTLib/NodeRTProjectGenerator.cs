@@ -63,6 +63,25 @@ namespace NodeRTLib
             }
         }
 
+        public static bool VerifyVsAndWinVersions(WinVersions winVersion, VsVersions vsVersion, out string errorMessage)
+        {
+            errorMessage = null;
+           
+            if (vsVersion == VsVersions.Vs2013 && winVersion == WinVersions.v10)
+            {
+                errorMessage = "VS 2013 does not support building Windows 10 modules";
+                return false;
+            }
+
+            if (vsVersion == VsVersions.Vs2012 && (winVersion == WinVersions.v8_1 || winVersion == WinVersions.v10))
+            {
+                errorMessage = "VS 2012 only supports building Windows 8 modules";
+                return false;
+            }
+
+            return true;
+        }
+
         public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, dynamic mainModel)
         {
             string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");
@@ -183,9 +202,9 @@ namespace NodeRTLib
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
             packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces));
             
-            if (_winVersion == VsVersions.Vs2012)
+            if (_vsVersion == VsVersions.Vs2012)
                 packageJsonFileText.Replace("{VSVersion}", "2012");
-            else if (_winVersion == VsVersions.Vs2013)
+            else if (_vsVersion == VsVersions.Vs2013)
                 packageJsonFileText.Replace("{VSVersion}", "2013");
             else
                 packageJsonFileText.Replace("{VSVersion}", "2015");

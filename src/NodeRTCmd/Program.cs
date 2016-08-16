@@ -57,18 +57,38 @@ namespace NodeRTCmd
             string customWinMdDir = ValueOrNull(argsDictionary, "customwinmddir");
 
             VsVersions vsVersion = VsVersions.Vs2015;
-
-            string nodeSrcDir = ValueOrNull(argsDictionary, "nodesrcdir");
+            WinVersions winVersion = WinVersions.v10;
 
             if (argsDictionary.ContainsKey("vs"))
             {
-                Enum.TryParse<VsVersions>(argsDictionary["vs"], true, out vsVersion);
+                if (!Enum.TryParse<VsVersions>(argsDictionary["vs"], true, out vsVersion))
+                {
+                    Console.WriteLine("Unssuported VS version. Supported options are: VS2015, VS2013, VS2012");
+                    Environment.Exit(1);
+                }
+            }
+
+            if (argsDictionary.ContainsKey("winver"))
+            {
+                if (!NodeRTProjectGenerator.TryParseWinVersion(argsDictionary["winver"], out winVersion))
+                {
+                    Console.WriteLine("Unssuported Windows version. Supported options are: 10, 8.1, 8");
+                    Environment.Exit(1);
+                }
+            }
+
+            String errorMessage = null;
+            if (!NodeRTProjectGenerator.VerifyVsAndWinVersions(winVersion, vsVersion, out errorMessage))
+            {
+                Console.WriteLine("Unssuported Windows and VS versions combination.");
+                Console.WriteLine(errorMessage);
+                Environment.Exit(1);
             }
 
             // generate specific namespace
             if (!String.IsNullOrEmpty(ns))
             {
-                GenerateAndBuildNamespace(ns,vsVersion, winmd, outDir, noDefGen, noBuild, verbose);
+                GenerateAndBuildNamespace(ns, vsVersion, winVersion, winmd, outDir, noDefGen, noBuild, verbose);
             }
             else // try to generate & build all namespaces in winmd file
             {
@@ -77,7 +97,7 @@ namespace NodeRTCmd
                 foreach (string winRtNamespace in Reflector.GetNamespaces(winmd, customWinMdDir))
                 {
                     if (!GenerateAndBuildNamespace(winRtNamespace,
-                          vsVersion, winmd,
+                          vsVersion, winVersion, winmd,
                           outDir, noDefGen, noBuild, verbose))
                     {
                         failedList.Add(winRtNamespace);
@@ -121,7 +141,7 @@ namespace NodeRTCmd
         }
 
         static bool GenerateAndBuildNamespace(string ns, 
-            VsVersions vsVersion, string winmd, string outDir, bool noDefGen, bool noBuild, bool verbose)
+            VsVersions vsVersion, WinVersions winVersion,string winmd, string outDir, bool noDefGen, bool noBuild, bool verbose)
         {
             string moduleOutDir = Path.Combine(outDir, ns.ToLower());
 
@@ -130,7 +150,7 @@ namespace NodeRTCmd
                 Directory.CreateDirectory(moduleOutDir);
             }
 
-            var generator = new NodeRTProjectGenerator(vsVersion, !noDefGen);
+            var generator = new NodeRTProjectGenerator(winVersion, vsVersion, !noDefGen);
             
             Console.WriteLine("Generating code for: {0}...", ns);
 
@@ -186,32 +206,34 @@ namespace NodeRTCmd
         static void PrintHelp()
         {
             Console.WriteLine();
-            Console.WriteLine("    --winmd [path]           File path to winmd file from which the module");
-            Console.WriteLine("                             will be generated");
+            Console.WriteLine("  --winmd [path]               File path to winmd file from which the module");
+            Console.WriteLine("                               will be generated");
             Console.WriteLine();
-            Console.WriteLine("    --namespaces             Lists all of the namespaces in the winmd file");
-            Console.WriteLine("                             (only needs --winmd)");
+            Console.WriteLine("  --namespaces                 Lists all of the namespaces in the winmd file");
+            Console.WriteLine("                               (only needs --winmd)");
             Console.WriteLine();
-            Console.WriteLine("    --namespace [namespace]  The namespace to generate from the winmd when");
-            Console.WriteLine("                             not specified , all namespaces will be generated");
+            Console.WriteLine("  --namespace [namespace]      The namespace to generate from the winmd when");
+            Console.WriteLine("                               not specified , all namespaces will be generated");
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine("    --outdir [path]          The output dir in which the NodeRT module");
-            Console.WriteLine("                             will be created in");
+            Console.WriteLine("  --outdir [path]              The output dir in which the NodeRT module");
+            Console.WriteLine("                               will be created in");
             Console.WriteLine();
-            Console.WriteLine("    --vs [Vs2015|Vs2013|Vs2012]     Optional, VS version to use, default is Vs2015");
+            Console.WriteLine("  --vs [Vs2015|Vs2013|Vs2012]  Optional, VS version to use, default is Vs2015");
             Console.WriteLine();
-            Console.WriteLine("    --nodefgen               Optional, specifying this option will reult in");
-            Console.WriteLine("                             skipping the generation of TypeScript and");
-            Console.WriteLine("                             JavaScript definition files");
+            Console.WriteLine("  --winver [10|8.1|8]          Optional, Windows SDK version to use, default is 10");
             Console.WriteLine();
-            Console.WriteLine("    --nobuild                Optional, specifying this option will result in");
-            Console.WriteLine("                             skipping the build process for the NodeRT module");
+            Console.WriteLine("  --nodefgen                   Optional, specifying this option will reult in");
+            Console.WriteLine("                               skipping the generation of TypeScript and");
+            Console.WriteLine("                               JavaScript definition files");
             Console.WriteLine();
-            Console.WriteLine("    --verbose                Optional, specifying this option will result in");
-            Console.WriteLine("                             verbose output for the module build operation");
+            Console.WriteLine("  --nobuild                    Optional, specifying this option will result in");
+            Console.WriteLine("                               skipping the build process for the NodeRT module");
             Console.WriteLine();
-            Console.WriteLine("    --help                   Print this help screen");
+            Console.WriteLine("  --verbose                    Optional, specifying this option will result in");
+            Console.WriteLine("                               verbose output for the module build operation");
+            Console.WriteLine();
+            Console.WriteLine("  --help                       Print this help screen");
             Console.WriteLine();
         }
 

@@ -49,13 +49,13 @@ namespace NodeRTUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int VsProjectComboSelection {
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int VsVersionComboSelection {
             get {
-                return ((int)(this["VsProjectComboSelection"]));
+                return ((int)(this["VsVersionComboSelection"]));
             }
             set {
-                this["VsProjectComboSelection"] = value;
+                this["VsVersionComboSelection"] = value;
             }
         }
         
@@ -92,6 +92,18 @@ namespace NodeRTUI.Properties {
             }
             set {
                 this["BuildModuleChk"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int WinVersionComboSelection {
+            get {
+                return ((int)(this["WinVersionComboSelection"]));
+            }
+            set {
+                this["WinVersionComboSelection"] = value;
             }
         }
     }

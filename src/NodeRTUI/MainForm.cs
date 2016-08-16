@@ -60,7 +60,8 @@ namespace NodeRTUI
                 chkDefGen.Checked = Properties.Settings.Default.GenerateDefsChk;
                 txtFilename.Text = Properties.Settings.Default.LastWinMDPath;
                 txtFilter.Text = Properties.Settings.Default.LastFilter;
-                cmbTargetWindows.SelectedIndex = Properties.Settings.Default.VsProjectComboSelection;
+                cmbVsVersion.SelectedIndex = Properties.Settings.Default.VsVersionComboSelection;
+                cmbWindowsVersion.SelectedIndex = Properties.Settings.Default.WinVersionComboSelection;
                 chkBuildModule.Checked = Properties.Settings.Default.BuildModuleChk;
 
                 if (String.IsNullOrEmpty(Properties.Settings.Default.OutputDirPath))
@@ -87,7 +88,7 @@ namespace NodeRTUI
         {
             Properties.Settings.Default.LastWinMDPath = "";
             Properties.Settings.Default.LastFilter = "";
-            Properties.Settings.Default.VsProjectComboSelection = 2;
+            Properties.Settings.Default.VsVersionComboSelection = 2;
             Properties.Settings.Default.OutputDirPath = GetDefaultOutputDir();
             Properties.Settings.Default.GenerateDefsChk = true;
             Properties.Settings.Default.Save();
@@ -96,7 +97,8 @@ namespace NodeRTUI
             txtFilename.Text = "";
             txtFilter.Text = "";
             txtOutputDirectory.Text = Properties.Settings.Default.OutputDirPath;
-            cmbTargetWindows.SelectedIndex = 2;
+            cmbWindowsVersion.SelectedIndex = 2;
+            cmbVsVersion.SelectedIndex = 2;
             chkDefGen.Checked = true;
             chkBuildModule.Checked = true;
             namespaceList.Items.Clear();
@@ -193,9 +195,19 @@ namespace NodeRTUI
 
             var winMdFile = txtFilename.Text;
             var winRTNamespace = namespaceList.SelectedItem.ToString();
-            VsVersions vsVersion = (VsVersions)cmbTargetWindows.SelectedIndex;
+            VsVersions vsVersion = (VsVersions)cmbVsVersion.SelectedIndex;
+            WinVersions winVersion = (WinVersions)cmbWindowsVersion.SelectedIndex;
             string outputFolder = Path.Combine(txtOutputDirectory.Text, winRTNamespace.ToLower());
-            var generator = new NodeRTProjectGenerator(vsVersion, chkDefGen.Checked);
+
+            string errorMessage;
+            if (!NodeRTProjectGenerator.VerifyVsAndWinVersions(winVersion, vsVersion, out errorMessage))
+            {
+                MessageBox.Show("Unsupported Windows and VS combination:\n" + errorMessage, "Unssuported options", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnGenerate.Enabled = true;
+                return;
+            }
+
+            var generator = new NodeRTProjectGenerator(winVersion, vsVersion, chkDefGen.Checked);
             bool buildModule = chkBuildModule.Checked;
 
             btnGenerate.Text = "Generating code...";
@@ -294,9 +306,15 @@ namespace NodeRTUI
             }
         }
 
-        private void cmbTargetWindows_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbVsVersion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.VsProjectComboSelection = cmbTargetWindows.SelectedIndex;
+            Properties.Settings.Default.VsVersionComboSelection = cmbVsVersion.SelectedIndex;
+            Properties.Settings.Default.Save();
+        }
+
+        private void cmbWindowsVersion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.WinVersionComboSelection = cmbWindowsVersion.SelectedIndex;
             Properties.Settings.Default.Save();
         }
     }
