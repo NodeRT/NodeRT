@@ -118,7 +118,13 @@ The following is the list of options that the tool supports:
  --vs [Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2015
  
  --winver [10|8.1|8]         Optional, Windows SDK version to use, default is 10
- 
+
+ --npmscope                  Optional, the scope that will be specified for the generated
+                             npm package
+
+ --npmversion                Optional, the version that will be specified for the generated
+                             npm package
+							   
  --nodefgen                  Optional, specifying this option will reult in
                              skipping the generation of TypeScript and
                              JavaScript definition files

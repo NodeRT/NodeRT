@@ -219,7 +219,7 @@ namespace NodeRTUI
                 try
                 {
                     modulePath = Reflector.GenerateProject(winMdFile, winRTNamespace, outputFolder,
-                        generator, null);
+                        generator, null, null, null);
                 }
                 catch (Exception ex)
                 {

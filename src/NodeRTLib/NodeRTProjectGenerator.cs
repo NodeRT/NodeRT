@@ -82,7 +82,7 @@ namespace NodeRTLib
             return true;
         }
 
-        public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, dynamic mainModel)
+        public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, string npmPackageName, string npmPackageVersion, dynamic mainModel)
         {
             string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");
 
@@ -130,7 +130,17 @@ namespace NodeRTLib
 
             CopyProjectFiles(destinationFolder);
 
-            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, mainModel);
+            if (String.IsNullOrEmpty(npmPackageName))
+            {
+                npmPackageName = winRTNamespace.ToLower();
+            }
+
+            if (String.IsNullOrEmpty(npmPackageVersion))
+            {
+                npmPackageVersion = "0.1.0";
+            }
+
+            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, npmPackageName, npmPackageVersion, mainModel);
 
             return destinationFolder;
         }
@@ -166,7 +176,7 @@ namespace NodeRTLib
             }
         }
 
-        private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, dynamic mainModel)
+        private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, string npmPackageName, string npmPackageVersion, dynamic mainModel)
         {
             string libDirPath = Path.Combine(destinationFolder, "lib");
             if (!Directory.Exists(libDirPath))
@@ -198,7 +208,8 @@ namespace NodeRTLib
             // write the package.json file:
             StringBuilder packageJsonFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json")));
             packageJsonFileText.Replace("{Namespace}", winRTNamespace);
-            packageJsonFileText.Replace("{PackageName}", winRTNamespace.ToLower());
+            packageJsonFileText.Replace("{PackageName}", npmPackageName);
+            packageJsonFileText.Replace("{PackageVersion}", npmPackageVersion);
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
             packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces));
             
