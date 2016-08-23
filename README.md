@@ -28,6 +28,8 @@ locator.getGeopositionAsync( function(err, res) {
 });
 ```
 
+In general, any WinRT/UWP API that can be called by a desktop app can by called by node.js/Electron using NodeRT. For more details about of desktop supported WinRT/UWP APIs, please visit <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/mt695951(v=vs.85).aspx">this page</a>.
+
 For more examples of what NodeRT can do, check out our <a href="/samples">samples section</a>.
 
 ----------
