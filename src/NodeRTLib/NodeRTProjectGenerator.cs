@@ -82,9 +82,35 @@ namespace NodeRTLib
             return true;
         }
 
-        public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, dynamic mainModel)
+        private string VsVersionToString(VsVersions vsVersion)
         {
-            string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");
+            switch (vsVersion)
+            {
+                case VsVersions.Vs2012:
+                    return "2012";
+                case VsVersions.Vs2013:
+                    return "2013";
+                default:
+                    return "2015";
+            }
+        }
+
+        private string WinVersionToString(WinVersions winVersion)
+        {
+            switch (winVersion)
+            {
+                case WinVersions.v8:
+                    return "8";
+                case WinVersions.v8_1:
+                    return "8.1";
+                default:
+                    return "10";
+            }
+        }
+
+        public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, string npmPackageName, string npmPackageVersion, dynamic mainModel)
+        {
+            string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");            
 
             if (!Directory.Exists(destinationFolder))
             {
@@ -130,7 +156,18 @@ namespace NodeRTLib
 
             CopyProjectFiles(destinationFolder);
 
-            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, mainModel);
+            if (String.IsNullOrEmpty(npmPackageName))
+            {
+                npmPackageName = winRTNamespace.ToLower();
+            }
+
+            if (String.IsNullOrEmpty(npmPackageVersion))
+            {
+                npmPackageVersion = "0.1.0";
+            }
+
+            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, npmPackageName, 
+                npmPackageVersion, WinVersionToString(_winVersion), VsVersionToString(_vsVersion), mainModel);
 
             return destinationFolder;
         }
@@ -166,7 +203,7 @@ namespace NodeRTLib
             }
         }
 
-        private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, dynamic mainModel)
+        private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, string npmPackageName, string npmPackageVersion, string winVersion, string vsVersion, dynamic mainModel)
         {
             string libDirPath = Path.Combine(destinationFolder, "lib");
             if (!Directory.Exists(libDirPath))
@@ -193,12 +230,17 @@ namespace NodeRTLib
             StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md")));
             readmeFileText.Replace("{Namespace}", winRTNamespace);
             readmeFileText.Replace("{ModuleName}", winRTNamespace.ToLowerInvariant());
+            readmeFileText.Replace("{PackageName}", npmPackageName);
+            readmeFileText.Replace("{WinVersion}", winVersion);
+            readmeFileText.Replace("{VSVersion}", vsVersion);
+            
             File.WriteAllText(Path.Combine(destinationFolder, "README.md"), readmeFileText.ToString());
 
             // write the package.json file:
             StringBuilder packageJsonFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json")));
             packageJsonFileText.Replace("{Namespace}", winRTNamespace);
-            packageJsonFileText.Replace("{PackageName}", winRTNamespace.ToLower());
+            packageJsonFileText.Replace("{PackageName}", npmPackageName);
+            packageJsonFileText.Replace("{PackageVersion}", npmPackageVersion);
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
             packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces));
             

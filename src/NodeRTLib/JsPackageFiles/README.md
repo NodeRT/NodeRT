@@ -1,7 +1,7 @@
-{ModuleName}
+{PackageName}
 =====
 
-A Node.js wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/{Namespace}.aspx" target="_blank">{Namespace}</a> WinRT namespace, compatible with Windows 8.1.
+A Node.js wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/{Namespace}.aspx" target="_blank">{Namespace}</a> WinRT namespace, compatible with Windows {WinVersion} APIs.
 
 Using this module, you'll be able to consume the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/{Namespace}.aspx" target="_blank">{Namespace}</a> API directly from Node.js.
 
@@ -16,20 +16,30 @@ This module also contains TypeScript definition files for the API exposed by the
 
 Prequisites:
 ============
-* Visual Studio 2013, or <a href="http://www.microsoft.com/en-gb/download/details.aspx?id=40787" target="_blank">VS 2013 Express for Windows Desktop</a>.
-* <a href="https://github.com/TooTallNate/node-gyp" target="_blank">node-gyp</a>. (Make sure to also have python installed).
+* Visual Studio version {VSVersion} and above. (Express Desktop versions also work!)
+* <b>Important:</b> Updated versions of npm and node-gyp. (Note that the ones that are bundled with node might not be up to date). In order to install latest npm, run:
+```
+npm install -g npm
+```
+
+In order to install latest node-gyp run:
+```
+npm install -g node-gyp
+```
 
 Installation:
 =============
 In order to install this module, run npm install:
 
 ```
-npm install {ModuleName}
+npm install {PackageName}
 ```
 
-If you wish to rebuild this module using node-gyp, make sure to use the --msvs_version=2013 flag:
+If you wish to rebuild this module using node-gyp, make sure to use the appropriate VS version using --msvs_version=2012/2013/2015 flag:
+
+For example:
 
 ```
 cd [module folder path]
-node-gyp rebuild --msvs_version=2013
+node-gyp rebuild --msvs_version={VSVersion}
 ```

@@ -1,6 +1,6 @@
 {
   "name": "{PackageName}",
-  "version": "0.1.7",
+  "version": "{PackageVersion}",
   "description": "Use the {Namespace} UWP API directly from Node.js",
   "main": "lib/main.js",
   "scripts" : {
@@ -14,9 +14,6 @@
   ], 
   "dependencies" : {
   	  "nan" : "latest"
-  },
-  "optionalDependencies" : {
-    {Dependencies}
   },
   "repository": {
     "type": "git",

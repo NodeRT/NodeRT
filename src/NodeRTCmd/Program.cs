@@ -44,6 +44,7 @@ namespace NodeRTCmd
 
             string winmd = argsDictionary["winmd"];
             string outDir = argsDictionary["outdir"];
+            
             bool noDefGen = argsDictionary.ContainsKey("nodefgen");
             bool noBuild = argsDictionary.ContainsKey("nobuild");
             bool verbose = argsDictionary.ContainsKey("verbose");
@@ -77,6 +78,19 @@ namespace NodeRTCmd
                 }
             }
 
+            string npmPackageVersion = null;
+
+            if (argsDictionary.ContainsKey("npmversion"))
+            {
+                npmPackageVersion = argsDictionary["npmversion"];
+            }
+
+            string npmPackageScope = null;
+            if (argsDictionary.ContainsKey("npmscope"))
+            {
+                npmPackageScope = argsDictionary["npmscope"];
+            }
+
             String errorMessage = null;
             if (!NodeRTProjectGenerator.VerifyVsAndWinVersions(winVersion, vsVersion, out errorMessage))
             {
@@ -88,7 +102,9 @@ namespace NodeRTCmd
             // generate specific namespace
             if (!String.IsNullOrEmpty(ns))
             {
-                GenerateAndBuildNamespace(ns, vsVersion, winVersion, winmd, outDir, noDefGen, noBuild, verbose);
+                GenerateAndBuildNamespace(ns, vsVersion, winVersion, winmd,
+                    CreateNpmPackageName(ns, npmPackageScope), npmPackageVersion, 
+                    outDir, noDefGen, noBuild, verbose);
             }
             else // try to generate & build all namespaces in winmd file
             {
@@ -97,7 +113,8 @@ namespace NodeRTCmd
                 foreach (string winRtNamespace in Reflector.GetNamespaces(winmd, customWinMdDir))
                 {
                     if (!GenerateAndBuildNamespace(winRtNamespace,
-                          vsVersion, winVersion, winmd,
+                          vsVersion, winVersion, winmd, 
+                          CreateNpmPackageName(winRtNamespace, npmPackageScope),npmPackageVersion,
                           outDir, noDefGen, noBuild, verbose))
                     {
                         failedList.Add(winRtNamespace);
@@ -118,6 +135,16 @@ namespace NodeRTCmd
                     Console.WriteLine("Finished!");
                 }
             }
+        }
+
+        private static string CreateNpmPackageName(String namepsace, String npmScope)
+        {
+            if (String.IsNullOrWhiteSpace(npmScope))
+            {
+                return namepsace.ToLowerInvariant();
+            }
+
+            return String.Format("@{0}/{1}", npmScope, namepsace.ToLowerInvariant());
         }
 
         static void PrintNamespaces(Dictionary<string, string> args)
@@ -141,7 +168,8 @@ namespace NodeRTCmd
         }
 
         static bool GenerateAndBuildNamespace(string ns, 
-            VsVersions vsVersion, WinVersions winVersion,string winmd, string outDir, bool noDefGen, bool noBuild, bool verbose)
+            VsVersions vsVersion, WinVersions winVersion,string winmd,
+            string npmPackageName, string npmPackageVersion, string outDir, bool noDefGen, bool noBuild, bool verbose)
         {
             string moduleOutDir = Path.Combine(outDir, ns.ToLower());
 
@@ -156,7 +184,7 @@ namespace NodeRTCmd
 
             try
             {
-                Reflector.GenerateProject(winmd, ns, moduleOutDir, generator, null);
+                Reflector.GenerateProject(winmd, ns, moduleOutDir, generator, npmPackageName, npmPackageVersion, null);
             }
             catch (Exception e)
             {
@@ -222,6 +250,12 @@ namespace NodeRTCmd
             Console.WriteLine("  --vs [Vs2015|Vs2013|Vs2012]  Optional, VS version to use, default is Vs2015");
             Console.WriteLine();
             Console.WriteLine("  --winver [10|8.1|8]          Optional, Windows SDK version to use, default is 10");
+            Console.WriteLine();
+            Console.WriteLine("  --npmscope                   Optional, the scope that will be specified for the generated");
+            Console.WriteLine("                               npm package");
+            Console.WriteLine();
+            Console.WriteLine("  --npmversion                 Optional, the version that will be specified for the generated");
+            Console.WriteLine("                               npm package");
             Console.WriteLine();
             Console.WriteLine("  --nodefgen                   Optional, specifying this option will reult in");
             Console.WriteLine("                               skipping the generation of TypeScript and");
