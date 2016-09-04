@@ -18,13 +18,18 @@
             argsPtr[i] = info[i];
           }
 
-          info.GetReturnValue().Set(Nan::CallAsConstructor(Nan::GetFunction(localRef).ToLocalChecked(), info.Length(), constructorArgs.get()).ToLocalChecked());
-	    	  return;
-        }
-        else
-        {
-          info.GetReturnValue().Set(Nan::CallAsConstructor(Nan::GetFunction(localRef).ToLocalChecked(), info.Length(), nullptr).ToLocalChecked());
-		       return;
+		  info.GetReturnValue().Set(Nan::CallAsConstructor(Nan::GetFunction(localRef).ToLocalChecked(), info.Length(), constructorArgs.get()).ToLocalChecked());
+		  return;
+		}
+		else
+		{
+          MaybeLocal<Value> res = Nan::CallAsConstructor(Nan::GetFunction(localRef).ToLocalChecked(), info.Length(), nullptr);
+          if (res.IsEmpty())
+          {
+            return;
+          }
+          info.GetReturnValue().Set(res.ToLocalChecked());
+          return;
         }
       }
       
