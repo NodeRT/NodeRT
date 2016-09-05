@@ -29,6 +29,7 @@
             ref new @(TX.ToWinRT(Model.EventInfo.EventHandlerType,false))(
             [callbackObjPtr](@foreachArg("{1} arg{2}, ", 2)) {
               NodeUtils::Async::RunOnMain([callbackObjPtr @foreachArg(", arg{2}", 0)]() {
+           	    HandleScope scope;
                 TryCatch tryCatch;
               
                 Local<Value> error;

@@ -48,15 +48,20 @@
 		return;
       }
 
-      Local<Object> tokenMap = Nan::To<Object>(NodeRT::Utils::GetHiddenValue(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked())).ToLocalChecked();
-                
-      if (tokenMap.IsEmpty() || Nan::Equals(tokenMap,Undefined()).FromMaybe(false))
+      Local<Value> tokenMapVal = NodeRT::Utils::GetHiddenValue(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
+      Local<Object> tokenMap;
+
+      if (tokenMapVal.IsEmpty() || Nan::Equals(tokenMapVal, Undefined()).FromMaybe(false))
       {
-		  tokenMap = Nan::New<Object>();
-		  NodeRT::Utils::SetHiddenValueWithObject(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked(), tokenMap);
+        tokenMap = Nan::New<Object>();
+        NodeRT::Utils::SetHiddenValueWithObject(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked(), tokenMap);
+      }
+      else
+      {
+        tokenMap = Nan::To<Object>(tokenMapVal).ToLocalChecked();
       }
 
-      Nan::Set(tokenMap, info[1], CreateOpaqueWrapper(::Windows::Foundation::PropertyValue::CreateInt64(registrationToken.Value)));
+      Nan::Set(tokenMap, info[0], CreateOpaqueWrapper(::Windows::Foundation::PropertyValue::CreateInt64(registrationToken.Value)));
     }
 
     static void RemoveListener(Nan::NAN_METHOD_ARGS_TYPE info)
@@ -86,7 +91,7 @@
         return;
       }
 
-      Local<Value> opaqueWrapperObj =  Nan::Get(Nan::To<Object>(tokenMap).ToLocalChecked(), info[1]).ToLocalChecked();
+      Local<Value> opaqueWrapperObj =  Nan::Get(Nan::To<Object>(tokenMap).ToLocalChecked(), info[0]).ToLocalChecked();
 
       if (opaqueWrapperObj.IsEmpty() || Nan::Equals(opaqueWrapperObj,Undefined()).FromMaybe(false))
       {
