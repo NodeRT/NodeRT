@@ -1,4 +1,7 @@
 {
+	'variables' : {
+		'node_shared': 'true'
+	},
     'target_defaults': {
         'default_configuration': 'Release',
         'configurations': {
