@@ -275,7 +275,7 @@ capture.initializeAsync(function (err, res) {
 
 Since some WinRT classes inherit from other classes, you might need to cast an object of a certain type to another type.
 
-In order to do so, each NodeRT object has a static method named "castFrom" which accepts another object and tries to cast it to the class' type.
+In order to do so, each NodeRT object has a static method named <b>castFrom</b> which accepts another object and tries to cast it to the class' type.
 
 The following example casts an [IXmlNode](https://msdn.microsoft.com/en-gb/library/windows/apps/windows.data.xml.dom.ixmlnode.aspx) object to an [XmlElement](https://msdn.microsoft.com/en-gb/library/windows/apps/windows.data.xml.dom.xmlelement.aspx):
 
