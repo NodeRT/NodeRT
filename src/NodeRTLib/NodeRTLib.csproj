@@ -58,6 +58,9 @@
     <Compile Include="ExternalTypesHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CppTemplates\CastFrom.cpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="CppTemplates\Constructor.cpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

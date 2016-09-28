@@ -83,11 +83,13 @@ using namespace concurrency;
 
 NAN_MODULE_INIT(init)
 {
-  if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
-  {
+  // we ignore failures for now since it probably means that the initialization already happened for STA, and that's cool
+  CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+  //if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+  /*{
     Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
     return;
-  }
+  }*/
   
   @{
     var namespacePrefix = "";

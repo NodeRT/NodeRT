@@ -271,6 +271,31 @@ capture.initializeAsync(function (err, res) {
 });
 ```
 
+<b>Class inheritance and objects casting</b>
+
+Since some WinRT classes inherit from other classes, you might need to cast an object of a certain type to another type.
+
+In order to do so, each NodeRT object has a static method named <b>castFrom</b> which accepts another object and tries to cast it to the class' type.
+
+The following example casts an [IXmlNode](https://msdn.microsoft.com/en-gb/library/windows/apps/windows.data.xml.dom.ixmlnode.aspx) object to an [XmlElement](https://msdn.microsoft.com/en-gb/library/windows/apps/windows.data.xml.dom.xmlelement.aspx):
+
+```javascript
+var xml = require('windows.data.xml.dom');
+
+...
+
+// obtain a list of nodes:
+var nodesList = ....
+
+var xmlNode = nodesList.getAt(0);
+
+// cast xmlNode to XmlElement
+var xmlEle = xml.XmlElement.castFrom(xmlNode);
+
+// we can now use XmlElement functions
+xmlEle.setAttribute('attr', 'value')
+```
+
 <b>Using WinRT streams in node.js</b>
 
 In order to support the use of WinRT streams in node.js, we have created the <a href="/modules/nodert-streams">nodert-streams</a> module, which bridges between WinRT streams and node.js streams.

@@ -213,7 +213,15 @@ namespace NodeRT { namespace Utils {
       return scope.Escape(opaqueWrapper);
     }
 
-    Local<Object> nsObject = Nan::To<Object>(Nan::Get(winRtObj, nsSymbol).ToLocalChecked()).ToLocalChecked();
+	Local<Value> nsObjectValue = Nan::Get(winRtObj, nsSymbol).ToLocalChecked();
+
+	if (Nan::Equals(nsObjectValue, Undefined()).FromMaybe(false))
+	{
+		Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Failed to obtain external namespace object")));
+		return Undefined();
+	}
+
+	Local<Object> nsObject = Nan::To<Object>(nsObjectValue).ToLocalChecked();
 
     Local<String> objectNameSymbol = Nan::New<String>(objectName).ToLocalChecked();
     if (!Nan::Has(nsObject, objectNameSymbol).FromMaybe(false))
@@ -223,7 +231,7 @@ namespace NodeRT { namespace Utils {
 
     Local<Function> objectFunc = Nan::Get(nsObject, objectNameSymbol).ToLocalChecked().As<Function>();
     Local<Value> args[] = {opaqueWrapper};
-    return scope.Escape(Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked());
+    return Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked();
   }
 
   bool IsWinRtWrapper(Local<Value> value)

@@ -47,6 +47,7 @@
       }}
       
       Local<Object> constructor = Nan::To<Object>(Nan::GetFunction(localRef).ToLocalChecked()).ToLocalChecked();
+	  Nan::SetMethod(constructor, "castFrom", CastFrom);
 
       @{
         if(Model.StaticSyncMethods.Length > 0) {

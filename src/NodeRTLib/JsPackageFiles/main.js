@@ -45,10 +45,12 @@ if (externalReferencedNamespaces.length > 0) {
 
     for (var i in externalReferencedNamespaces) {
         var ns = externalReferencedNamespaces[i];
-        Object.defineProperty(namespaceRegistry, ns, {
-            configurable: true,
-            enumerable: true,
-            get: requireNamespace.bind(null, ns)
-        });
+        if (!namespaceRegistry.hasOwnProperty(ns)) {
+            Object.defineProperty(namespaceRegistry, ns, {
+                configurable: true,
+                enumerable: true,
+                get: requireNamespace.bind(null, ns)
+            });
+        }
     }
 }
