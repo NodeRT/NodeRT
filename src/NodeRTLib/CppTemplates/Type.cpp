@@ -16,6 +16,8 @@
     
     @TX.CppTemplates.Constructor(Model)
 
+	@TX.CppTemplates.CastFrom(Model)
+
   @foreach(var methodInfo in Model.MemberAsyncMethods) { 
       @TX.CppTemplates.MemberASyncMethod(methodInfo)
   }
