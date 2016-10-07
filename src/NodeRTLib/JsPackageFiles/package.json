@@ -6,6 +6,9 @@
   "scripts" : {
     "install" : "node-gyp rebuild --msvs_version={VSVersion}"
   },
+  "os": [
+    "win32"
+  ],
   "keywords": [
     {Keywords},
     "NodeRT",
