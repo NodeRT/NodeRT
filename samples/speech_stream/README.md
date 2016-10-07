@@ -12,7 +12,7 @@ Install edge.js by running:
 npm install edge
 ```
 
-This sample uses the nodert-streams module which could be found in the NodeRT modules directory.
+This sample uses the <a href="https://github.com/NodeRT/nodert-streams">nodert-streams</a> module. 
 In order to use it - clone it to your machine to a node_modules directory near the script, then build the native bindings of nodert-streams by running the following command from inside the nodert-streams directory:
 
 ```

@@ -298,7 +298,7 @@ xmlEle.setAttribute('attr', 'value')
 
 <b>Using WinRT streams in node.js</b>
 
-In order to support the use of WinRT streams in node.js, we have created the <a href="/modules/nodert-streams">nodert-streams</a> module, which bridges between WinRT streams and node.js streams.
+In order to support the use of WinRT streams in node.js, we have created the <a href="https://github.com/NodeRT/nodert-streams">nodert-streams</a> module, which bridges between WinRT streams and node.js streams.
 
 This bridge enable the conversion of WinRT streams to node.js streams, such that WinRT streams could be used just as regular node.js streams.
 
