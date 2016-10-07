@@ -4,7 +4,7 @@
   "description": "Use the {Namespace} UWP API directly from Node.js",
   "main": "lib/main.js",
   "scripts" : {
-    "install" : "node-gyp rebuild --msvs_version={VSVersion}"
+    "install" : "node-gyp build --msvs_version={VSVersion}"
   },
   "os": [
     "win32"
