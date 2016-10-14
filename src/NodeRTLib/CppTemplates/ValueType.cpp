@@ -31,7 +31,7 @@
     
     if (!value->IsObject())
     {
-      Nan::ThrowError(Nan::TypeError(NodeRT::Utils::NewString(L"Unexpected type, expected an object")));
+      Nan::ThrowError(Nan::TypeError(NodeRT::Utils::NewString("Unexpected type, expected an object")));
       return returnValue;
     }
 

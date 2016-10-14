@@ -25,7 +25,7 @@
       }
       else 
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 		return;
       }
     }

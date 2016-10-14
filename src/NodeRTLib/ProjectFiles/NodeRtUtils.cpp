@@ -121,12 +121,21 @@ namespace NodeRT { namespace Utils {
     return wrapper->GetObjectInstance();
   }
 
-  Local<String> NewString(const wchar_t* str)
+  Local<String> NewString(const char* str)
   {
 #ifdef WCHART_NOT_BUILTIN_IN_NODE
     return Nan::New<String>(reinterpret_cast<const uint16_t*>(str)).ToLocalChecked();
 #else
     return Nan::New<String>(str).ToLocalChecked();
+#endif
+  }
+
+  Local<String> NewString(const wchar_t* str)
+  {
+#ifdef WCHART_NOT_BUILTIN_IN_NODE
+	return Nan::New<String>(reinterpret_cast<const uint16_t*>(str)).ToLocalChecked();
+#else
+	return Nan::New<String>(str).ToLocalChecked();
 #endif
   }
 
@@ -168,10 +177,21 @@ namespace NodeRT { namespace Utils {
   // compares 2 strings using a case insensitive comparison
   bool CaseInsenstiveEquals(const wchar_t* str1, const uint16_t* str2)
   {
-    int maxCount = static_cast<int>(min(wcslen(str1), wcslen(reinterpret_cast<const wchar_t*>(str2))));
-    return (_wcsnicmp(str1, reinterpret_cast<const wchar_t*>(str2), maxCount) == 0);
+	const wchar_t* str2Casted = reinterpret_cast<const wchar_t*>(str2);
+
+	int maxCount = static_cast<int>(min(wcslen(str1), wcslen(str2Casted)));
+	return (_wcsnicmp(str1, str2Casted, maxCount) == 0);
   }
 #endif
+
+  bool CaseInsenstiveEquals(const char* str1, const uint16_t* str2)
+  {
+	  const char* str2Casted = reinterpret_cast<const char*>(str2);
+
+	  int maxCount = static_cast<int>(min(strlen(str1), strlen(str2Casted)));
+	  return (_strnicmp(str1, str2Casted, maxCount) == 0);
+  }
+
 
   // compares 2 strings using a case insensitive comparison
   bool CaseInsenstiveEquals(const wchar_t* str1, const wchar_t* str2)
@@ -217,7 +237,7 @@ namespace NodeRT { namespace Utils {
 
 	if (Nan::Equals(nsObjectValue, Undefined()).FromMaybe(false))
 	{
-		Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Failed to obtain external namespace object")));
+		Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Failed to obtain external namespace object")));
 		return Undefined();
 	}
 
@@ -343,7 +363,7 @@ namespace NodeRT { namespace Utils {
   {
     OLECHAR* bstrGuid;
     StringFromCLSID(guid, &bstrGuid);
-    
+
     Local<String> strVal = NewString(bstrGuid);
     CoTaskMemFree(bstrGuid);
     return strVal;
@@ -367,7 +387,7 @@ namespace NodeRT { namespace Utils {
     ::Windows::UI::Color retVal = ::Windows::UI::Colors::Black;
     if (!value->IsObject())
     {
-      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Value to set is of unexpected type")));
       return retVal;
     }
 
@@ -450,7 +470,7 @@ namespace NodeRT { namespace Utils {
 
     if (!value->IsObject())
     {
-      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Value to set is of unexpected type")));
       return rect;
     }
 
@@ -529,7 +549,7 @@ namespace NodeRT { namespace Utils {
 
     if (!value->IsObject())
     {
-      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Value to set is of unexpected type")));
       return point;
     }
 
@@ -587,7 +607,7 @@ namespace NodeRT { namespace Utils {
 
     if (!value->IsObject())
     {
-      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Value to set is of unexpected type")));
+      Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Value to set is of unexpected type")));
       return size;
     }
 
@@ -648,11 +668,11 @@ namespace NodeRT { namespace Utils {
     return retVal;
   }
 
-  Local<String> JsStringFromChar(wchar_t value)
+  Local<String> JsStringFromChar(char value)
   {
-    wchar_t str[2];
+    char str[2];
     str[0] = value;
-    str[1] = L'\0';
+    str[1] = '\0';
 
     return NewString(str);
   }

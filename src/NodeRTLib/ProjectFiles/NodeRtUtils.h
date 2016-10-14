@@ -35,7 +35,8 @@ namespace NodeRT {
     // }
     v8::Local<v8::Value> CallCallbackInDomain(v8::Local<v8::Object> callbackObject, int argc, v8::Local<v8::Value> argv []);
 
-    v8::Local<v8::String> NewString(const wchar_t* str);
+    v8::Local<v8::String> NewString(const char* str);
+	v8::Local<v8::String> NewString(const wchar_t* str);
 
     const wchar_t* StringToWchar(v8::String::Value& str);
 
@@ -45,6 +46,9 @@ namespace NodeRT {
     // compares 2 strings using a case insensitive comparison
     bool CaseInsenstiveEquals(const wchar_t* str1, const uint16_t* str2);
 #endif
+
+	// compares 2 strings using a case insensitive comparison
+	bool CaseInsenstiveEquals(const char* str1, const uint16_t* str2);
 
     // compares 2 strings using a case insensitive comparison
     bool CaseInsenstiveEquals(const wchar_t* str1, const wchar_t* str2);
