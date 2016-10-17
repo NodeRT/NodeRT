@@ -231,7 +231,25 @@ namespace NodeRT { namespace Utils {
 
     Local<Function> objectFunc = Nan::Get(nsObject, objectNameSymbol).ToLocalChecked().As<Function>();
     Local<Value> args[] = {opaqueWrapper};
-    return Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked();
+
+	Nan::TryCatch try_catch;
+
+    MaybeLocal<Object> external_obj = Nan::NewInstance(objectFunc, _countof(args), args);
+	
+	// an issue occured when trying to create external object, assuming the called function
+	// raised an error, just bail out and return undefined
+
+	if (try_catch.HasCaught()) {
+		try_catch.ReThrow();
+		return Undefined();
+	}
+
+	if (external_obj.IsEmpty()) {
+		Nan::ThrowError("Failed to create external object wrapper");
+		return Undefined();
+	}
+
+	return external_obj.ToLocalChecked();
   }
 
   bool IsWinRtWrapper(Local<Value> value)
