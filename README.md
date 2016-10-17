@@ -1,6 +1,6 @@
 NodeRT
 ======
-<H4><b>[New!] NodeRT modules are now available as npm packages under the <a href="https://www.npmjs.com/~nodert-win10">@nodert-win10</a> scope!</b></H4>
+<H4><b>[New!] NodeRT modules are now available as npm packages under the <a href="https://www.npmjs.com/~nodert-win10">nodert-win10</a> scope!</b></H4>
 
 <H4><b>[New!] Now supporting Windows 10 and latest versions of node.js + Electron!</b></H4>
 
