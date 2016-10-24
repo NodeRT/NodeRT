@@ -213,7 +213,14 @@ namespace NodeRT { namespace Utils {
       return scope.Escape(opaqueWrapper);
     }
 
-	Local<Value> nsObjectValue = Nan::Get(winRtObj, nsSymbol).ToLocalChecked();
+	v8::MaybeLocal<Value> maybeLocalRef = Nan::Get(winRtObj, nsSymbol);
+
+	if (maybeLocalRef.IsEmpty())
+	{
+		return scope.Escape(opaqueWrapper);
+	}
+
+	Local<Value> nsObjectValue = maybeLocalRef.ToLocalChecked();
 
 	if (Nan::Equals(nsObjectValue, Undefined()).FromMaybe(false))
 	{
@@ -231,25 +238,7 @@ namespace NodeRT { namespace Utils {
 
     Local<Function> objectFunc = Nan::Get(nsObject, objectNameSymbol).ToLocalChecked().As<Function>();
     Local<Value> args[] = {opaqueWrapper};
-
-	Nan::TryCatch try_catch;
-
-    MaybeLocal<Object> external_obj = Nan::NewInstance(objectFunc, _countof(args), args);
-	
-	// an issue occured when trying to create external object, assuming the called function
-	// raised an error, just bail out and return undefined
-
-	if (try_catch.HasCaught()) {
-		try_catch.ReThrow();
-		return Undefined();
-	}
-
-	if (external_obj.IsEmpty()) {
-		Nan::ThrowError("Failed to create external object wrapper");
-		return Undefined();
-	}
-
-	return external_obj.ToLocalChecked();
+    return Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked();
   }
 
   bool IsWinRtWrapper(Local<Value> value)
