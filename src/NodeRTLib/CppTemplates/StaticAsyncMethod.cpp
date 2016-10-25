@@ -106,8 +106,13 @@
             @:if (arg1.IsEmpty()) arg1 = Undefined();
 
             @:Local<Value> args[] = {error, arg1};
+			@:// TODO: this is ugly! Needed due to the possibility of expception occuring inside object convertors
+			@:// can be fixed by wrapping the conversion code in a function and calling it on the fly
+			@:// we must clear the try catch block here so the invoked inner method exception won't get swollen (issue #52) 
+			@:tryCatch.~TryCatch();
               }
             }
+	  	    
             invokeCallback(_countof(args), args);
           });
         }
