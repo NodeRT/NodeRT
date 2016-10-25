@@ -11,7 +11,6 @@
 
 #include <v8.h>
 #include "nan.h"
-#include <TlHelp32.h>
 
 #include <functional>
 #include <memory>
@@ -230,17 +229,8 @@ namespace NodeUtils
 
     static void __cdecl RunOnMain(std::function<void ()> func)
     {
-      static unsigned int uvMainThreadId = GetMainThreadId();
-      
-      if (uvMainThreadId == (unsigned int)uv_thread_self()) 
-      {
-        func();
-      }
-      else
-      {
         uv_async_t *async = GetAsyncToken();
         RunOnMain(async, func);
-      }
     }
 
     static void __cdecl RunCallbackOnMain(
@@ -407,34 +397,6 @@ namespace NodeUtils
       Token->func();
       uv_close((uv_handle_t*)handle, AyncCloseCb);
       delete Token;
-    }
-
-    // Attributes goes to http://stackoverflow.com/a/1982200/1060807 (etan)
-    static unsigned int __cdecl GetMainThreadId()
-    {
-      const std::shared_ptr<void> hThreadSnapshot(
-        CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0), CloseHandle);
-
-      if (hThreadSnapshot.get() == INVALID_HANDLE_VALUE)
-      {
-        return 0;
-      }
-
-      THREADENTRY32 tEntry;
-      tEntry.dwSize = sizeof(THREADENTRY32);
-      DWORD result = 0;
-      DWORD currentPID = GetCurrentProcessId();
-
-      for (BOOL success = Thread32First(hThreadSnapshot.get(), &tEntry);
-        !result && success && GetLastError() != ERROR_NO_MORE_FILES;
-        success = Thread32Next(hThreadSnapshot.get(), &tEntry))
-      {
-        if (tEntry.th32OwnerProcessID == currentPID) 
-        {
-          result = tEntry.th32ThreadID;
-        }
-      }
-      return result;
     }
 
     NODEASYNC_IDLE_WORK_CB(onNextTick)
