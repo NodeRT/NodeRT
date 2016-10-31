@@ -9,6 +9,8 @@
 var path = require('path');
 var fs = require('fs');
 
+var npmScope = '{NpmScope}';
+
 try {
   // this little trick makes node.js Tools for VS load intellisense for the module
   if (fs.existsSync(path.join(__dirname, '{ProjectName}.d.js)'))) {
@@ -37,7 +39,12 @@ if (externalReferencedNamespaces.length > 0) {
     }
 
     function requireNamespace(namespace) {
-        var m = require(namespace.toLowerCase());
+        var moduleName = namespace.toLowerCase();
+        if (npmScope) {
+            moduleName = '@' + npmScope + '/' + moduleName;
+        }
+
+        var m = require(moduleName);
         delete namespaceRegistry[namespace];
         namespaceRegistry[namespace] = m;
         return m;

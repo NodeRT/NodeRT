@@ -103,7 +103,7 @@ namespace NodeRTCmd
             if (!String.IsNullOrEmpty(ns))
             {
                 GenerateAndBuildNamespace(ns, vsVersion, winVersion, winmd,
-                    CreateNpmPackageName(ns, npmPackageScope), npmPackageVersion, 
+                    npmPackageVersion, npmPackageScope,
                     outDir, noDefGen, noBuild, verbose);
             }
             else // try to generate & build all namespaces in winmd file
@@ -114,8 +114,7 @@ namespace NodeRTCmd
                 {
                     if (!GenerateAndBuildNamespace(winRtNamespace,
                           vsVersion, winVersion, winmd, 
-                          CreateNpmPackageName(winRtNamespace, npmPackageScope),npmPackageVersion,
-                          outDir, noDefGen, noBuild, verbose))
+                          npmPackageVersion, npmPackageScope, outDir, noDefGen, noBuild, verbose))
                     {
                         failedList.Add(winRtNamespace);
                     }
@@ -135,16 +134,6 @@ namespace NodeRTCmd
                     Console.WriteLine("Finished!");
                 }
             }
-        }
-
-        private static string CreateNpmPackageName(String namepsace, String npmScope)
-        {
-            if (String.IsNullOrWhiteSpace(npmScope))
-            {
-                return namepsace.ToLowerInvariant();
-            }
-
-            return String.Format("@{0}/{1}", npmScope, namepsace.ToLowerInvariant());
         }
 
         static void PrintNamespaces(Dictionary<string, string> args)
@@ -169,7 +158,7 @@ namespace NodeRTCmd
 
         static bool GenerateAndBuildNamespace(string ns, 
             VsVersions vsVersion, WinVersions winVersion,string winmd,
-            string npmPackageName, string npmPackageVersion, string outDir, bool noDefGen, bool noBuild, bool verbose)
+            string npmPackageVersion, string npmScope, string outDir, bool noDefGen, bool noBuild, bool verbose)
         {
             string moduleOutDir = Path.Combine(outDir, ns.ToLower());
 
@@ -184,7 +173,7 @@ namespace NodeRTCmd
 
             try
             {
-                Reflector.GenerateProject(winmd, ns, moduleOutDir, generator, npmPackageName, npmPackageVersion, null);
+                Reflector.GenerateProject(winmd, ns, moduleOutDir, generator, npmPackageVersion, npmScope, null);
             }
             catch (Exception e)
             {

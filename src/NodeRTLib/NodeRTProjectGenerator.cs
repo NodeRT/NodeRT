@@ -108,7 +108,7 @@ namespace NodeRTLib
             }
         }
 
-        public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, string npmPackageName, string npmPackageVersion, dynamic mainModel)
+        public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, string npmPackageVersion, string npmScope, dynamic mainModel)
         {
             string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");            
 
@@ -156,20 +156,25 @@ namespace NodeRTLib
 
             CopyProjectFiles(destinationFolder);
 
-            if (String.IsNullOrEmpty(npmPackageName))
-            {
-                npmPackageName = winRTNamespace.ToLower();
-            }
-
             if (String.IsNullOrEmpty(npmPackageVersion))
             {
                 npmPackageVersion = "0.1.0";
             }
 
-            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, npmPackageName, 
-                npmPackageVersion, WinVersionToString(_winVersion), VsVersionToString(_vsVersion), mainModel);
+            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, 
+                npmPackageVersion, npmScope, WinVersionToString(_winVersion), VsVersionToString(_vsVersion), mainModel);
 
             return destinationFolder;
+        }
+
+        private static string CreateNpmPackageName(String namepsace, String npmScope)
+        {
+            if (String.IsNullOrWhiteSpace(npmScope))
+            {
+                return namepsace.ToLowerInvariant();
+            }
+
+            return String.Format("@{0}/{1}", npmScope, namepsace.ToLowerInvariant());
         }
 
         protected void ResolveWinrtDirsAndCompiler(StringBuilder bindingFileText, string winrtFile)
@@ -203,8 +208,9 @@ namespace NodeRTLib
             }
         }
 
-        private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, string npmPackageName, string npmPackageVersion, string winVersion, string vsVersion, dynamic mainModel)
+        private void CopyAndGenerateJsPackageFiles(string destinationFolder, string winRTNamespace, string projectName, string npmPackageVersion, string npmScope, string winVersion, string vsVersion, dynamic mainModel)
         {
+            string npmPackageName = CreateNpmPackageName(winRTNamespace, npmScope);
             string libDirPath = Path.Combine(destinationFolder, "lib");
             if (!Directory.Exists(libDirPath))
             {
@@ -214,6 +220,11 @@ namespace NodeRTLib
             // write the main.js file:
             StringBuilder mainJsFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\main.js")));
             mainJsFileText.Replace("{ProjectName}", projectName);
+            if (npmScope == null)
+            {
+                npmScope = "";
+            }
+            mainJsFileText.Replace("{NpmScope}", npmScope);
             StringBuilder referencedNamespacesListBuilder = new StringBuilder();
             foreach (string ns in mainModel.ExternalReferencedNamespaces)
             {
@@ -242,7 +253,7 @@ namespace NodeRTLib
             packageJsonFileText.Replace("{PackageName}", npmPackageName);
             packageJsonFileText.Replace("{PackageVersion}", npmPackageVersion);
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
-            packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces));
+            packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces, npmScope, npmPackageVersion));
             
             if (_vsVersion == VsVersions.Vs2012)
                 packageJsonFileText.Replace("{VSVersion}", "2012");
@@ -288,15 +299,17 @@ namespace NodeRTLib
             return keywordsBuilder.ToString();
         }
 
-        private string GeneratePackageDependencies(List<String> externalReferencedNamespaces)
+        private string GeneratePackageDependencies(List<String> externalReferencedNamespaces, string npmScope, string npmVersion)
         {
+            if (npmVersion == null)
+                npmVersion = "*";
             StringBuilder depsBuilder = new StringBuilder();
 
             foreach (string ns in externalReferencedNamespaces)
             {
                 if (depsBuilder.Length > 0)
                     depsBuilder.Append(",\r\n    ");
-                depsBuilder.Append("\"" + ns.ToLowerInvariant() + "\" : \"*\"");
+                depsBuilder.Append("\"" + CreateNpmPackageName(ns, npmScope) + "\" : \"" + npmVersion + "\"");
             }
 
             return depsBuilder.ToString();

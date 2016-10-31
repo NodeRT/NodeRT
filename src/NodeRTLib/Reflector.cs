@@ -270,11 +270,11 @@ namespace NodeRTLib
         }
 
         public static string GenerateProject(string winmdFile, string winRTNamespace, string destinationFolder, NodeRTProjectGenerator generator, 
-            string npmPackageName, string npmPackageVersion, string baseWinMDDir)
+            string npmPackageVersion, string npmScope, string baseWinMDDir)
         {
             string ns = ResolveNamespaceCasing(winmdFile, winRTNamespace, baseWinMDDir);
             var mainModel = GenerateModel(winmdFile, ns, baseWinMDDir);
-            return generator.GenerateProject(ns, destinationFolder, winmdFile, npmPackageName, npmPackageVersion, mainModel);
+            return generator.GenerateProject(ns, destinationFolder, winmdFile, npmPackageVersion, npmScope, mainModel);
         }
     }
 
