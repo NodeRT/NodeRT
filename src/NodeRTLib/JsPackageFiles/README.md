@@ -17,6 +17,7 @@ This module also contains TypeScript definition files for the API exposed by the
 Prequisites:
 ============
 * Visual Studio version {VSVersion} and above. (Express Desktop versions also work!)
+* Python 2.7 (for node-gyp)
 * <b>Important:</b> Updated versions of npm and node-gyp. (Note that the ones that are bundled with node might not be up to date). In order to install latest npm, run:
 ```
 npm install -g npm
