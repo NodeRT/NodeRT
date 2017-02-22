@@ -60,6 +60,10 @@ First, in order to use WinRT you must be running on a Windows environment that s
 
 In order to use NodeRT, make sure you have the following installed:<br>
 * Visual Studio 2015, or <a href="https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx">VS 2015 Express for Windows Desktop</a>, for generating Windows 10 compatible modules, or Visual Studio 2013/2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
+* Windows SDK for the version of Windows your are using:
+	- [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
+	- [Windows 8.1 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk)
+	- [Windows 8](https://developer.microsoft.com/en-us/windows/downloads/windows-8-sdk)
 * node.js (version > 10.*) - from <a href="https://nodejs.org/en/">nodejs.org</a><br>
 * node-gyp - make sure to get the latest version from npm by running:
 ```
@@ -134,7 +138,10 @@ The following is the list of options that the tool supports:
                              JavaScript definition files
 
  --nobuild                   Optional, specifying this option will result in
-                             skipping the build process for the NodeRT module
+                             skipping the build process for the NodeRT module	
+			     
+ --verbose                   Optional, specifying this option will result in
+                             verbose output for the module build operation
 
  --help                      Print this help screen
 
