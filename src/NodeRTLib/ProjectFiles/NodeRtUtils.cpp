@@ -238,7 +238,7 @@ namespace NodeRT { namespace Utils {
 
     Local<Function> objectFunc = Nan::Get(nsObject, objectNameSymbol).ToLocalChecked().As<Function>();
     Local<Value> args[] = {opaqueWrapper};
-    return Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked();
+    return scope.Escape(Nan::NewInstance(objectFunc, _countof(args), args).ToLocalChecked());
   }
 
   bool IsWinRtWrapper(Local<Value> value)
