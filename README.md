@@ -1,7 +1,7 @@
 NodeRT
 ======
 
-<H4><b>[New!] Watch the MS Build 2017 talk about NodeRT here: <a href="https://channel9.msdn.com/Events/Build/2017/T6976">"NodeRT: Using native Windows features from Node.js and Electron"</a>.</b></H4>
+<H4><b>[New!] You can now learn about NodeRT by watching the MS Build 2017 talk: <a href="https://channel9.msdn.com/Events/Build/2017/T6976">"NodeRT: Using native Windows features from Node.js and Electron"</a>.</b></H4>
 
 <H4><b>[New!] NodeRT modules are now available as npm packages under the <a href="https://www.npmjs.com/~nodert-win10">nodert-win10</a> scope!</b></H4>
 
