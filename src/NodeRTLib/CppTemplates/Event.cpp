@@ -4,7 +4,7 @@
 
       if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction())
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"wrong arguments, expected arguments are eventName(string),callback(function)")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("wrong arguments, expected arguments are eventName(string),callback(function)")));
 		return;
       }
 
@@ -14,13 +14,13 @@
       Local<Function> callback = info[1].As<Function>();
       
       ::Windows::Foundation::EventRegistrationToken registrationToken;
-      if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[0].EventInfo.Name)", str))
+      if (NodeRT::Utils::CaseInsenstiveEquals("@TX.Uncap(Model.Events[0].EventInfo.Name)", str))
       {
         @if (!Model.Events[0].IsStatic)
         {
         @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
         @:{
-        @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The caller of this method isn't of the expected type or internal WinRt object was disposed")));
+        @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("The caller of this method isn't of the expected type or internal WinRt object was disposed")));
 		@:  return;
         @:}
         @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(info.This());
@@ -28,13 +28,13 @@
       @TX.CppTemplates.RegisterEventWithWinRT(Model.Events[0])
       }
       @for(var i=1; i<Model.Events.Length; i++) {
-      @:else if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[i].EventInfo.Name)", str))
+      @:else if (NodeRT::Utils::CaseInsenstiveEquals("@TX.Uncap(Model.Events[i].EventInfo.Name)", str))
       @:{
         @if (!Model.Events[i].IsStatic)
         {
         @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
         @:{
-        @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The caller of this method isn't of the expected type or internal WinRt object was disposed")));
+        @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("The caller of this method isn't of the expected type or internal WinRt object was disposed")));
 		@:  return;
         @:}
         @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(info.This());
@@ -44,7 +44,7 @@
       }
       else 
       {
-        Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
+        Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString("given event name isn't supported: "), info[0].As<String>())));
 		return;
       }
 
@@ -70,16 +70,16 @@
 
       if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction())
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"wrong arguments, expected a string and a callback")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("wrong arguments, expected a string and a callback")));
         return;
       }
 
       String::Value eventName(info[0]);
       auto str = *eventName;
 
-      if (@TX.ForEachEvent(Model.Events ,"(NodeRT::Utils::CaseInsenstiveEquals(L\"{1}\", str)) &&", 3))
+      if (@TX.ForEachEvent(Model.Events ,"(NodeRT::Utils::CaseInsenstiveEquals(\"{1}\", str)) &&", 3))
       {
-        Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
+        Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString("given event name isn't supported: "), info[0].As<String>())));
         return;
       }
 
@@ -106,13 +106,13 @@
         
       try 
       {
-        if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[0].EventInfo.Name)", str))
+        if (NodeRT::Utils::CaseInsenstiveEquals("@TX.Uncap(Model.Events[0].EventInfo.Name)", str))
         {
           @if (!Model.Events[0].IsStatic)
           {
           @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
           @:{
-          @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The caller of this method isn't of the expected type or internal WinRt object was disposed")));
+          @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("The caller of this method isn't of the expected type or internal WinRt object was disposed")));
           @:  return;
           @:}
           @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(info.This());
@@ -124,13 +124,13 @@
           }
         }
         @for(var i=1; i<Model.Events.Length; i++) {
-        @:else if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[i].EventInfo.Name)", str))
+        @:else if (NodeRT::Utils::CaseInsenstiveEquals("@TX.Uncap(Model.Events[i].EventInfo.Name)", str))
         @:{
           @if (!Model.Events[i].IsStatic)
           {
           @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
           @:{
-          @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The caller of this method isn't of the expected type or internal WinRt object was disposed")));
+          @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("The caller of this method isn't of the expected type or internal WinRt object was disposed")));
           @:  return;
           @:}
           @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(info.This());

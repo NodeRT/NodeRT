@@ -9,7 +9,7 @@
 
       if (info.Length() == 0 || !info[info.Length() -1]->IsFunction())
       {
-          Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: No callback was given")));
+          Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: No callback was given")));
           return;
       }
 
@@ -61,7 +61,7 @@
       }
       else 
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
         return;
       }
     

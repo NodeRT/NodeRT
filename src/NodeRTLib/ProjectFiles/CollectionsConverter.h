@@ -177,7 +177,7 @@ namespace NodeRT {
 
       if (!checkValueTypeFunc(value))
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Received array with unexpected value type")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Received array with unexpected value type")));
         return false;
       }
 
@@ -206,7 +206,7 @@ namespace NodeRT {
 
       if (!curr->IsObject())
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Array elements are expected to be javascript objects")));
         return false;
       }
 
@@ -214,7 +214,7 @@ namespace NodeRT {
 
       if (!obj->Has(g_keyProp) || !obj->Has(g_valueProp))
       {
-		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array elements are expected to be javascript objects with \'key\' and \'value\' properties")));
+		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Array elements are expected to be javascript objects with \'key\' and \'value\' properties")));
         return false;
       }
 
@@ -223,13 +223,13 @@ namespace NodeRT {
 
       if (!checkKeyTypeFunc(key))
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid key type")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Array element has invalid key type")));
         return false;
       }
 
       if (!checkValueTypeFunc(value))
       {
-		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Array element has invalid value type")));
+		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Array element has invalid value type")));
         return false;
       }
 
@@ -255,7 +255,7 @@ namespace NodeRT {
       Local<Value> value = Nan::Get(obj, key).ToLocalChecked();
       if (!checkValueTypeFunc(value))
       {
-		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Received object with unexpected value type")));
+		    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Received object with unexpected value type")));
         return false;
       }
       stdMap.insert(std::pair<::Platform::String^, V>(convertToKeyTypeFunc(key), convertToValueTypeFunc(value)));

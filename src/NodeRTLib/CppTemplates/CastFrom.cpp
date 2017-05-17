@@ -4,7 +4,7 @@
 		HandleScope scope;
 		if (info.Length() < 1 || !NodeRT::Utils::IsWinRtWrapperOf<@TX.ToWinRT(Model.Type)>(info[0]))
 		{
-			Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Invalid arguments, no object provided, or given object could not be casted to requested type")));
+			Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Invalid arguments, no object provided, or given object could not be casted to requested type")));
 			return;
 		}
 

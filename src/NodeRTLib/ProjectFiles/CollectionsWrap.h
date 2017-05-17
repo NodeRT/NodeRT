@@ -169,13 +169,13 @@ namespace NodeRT {
 
 				if (wrapper->_checkTypeFunc && !wrapper->_checkTypeFunc(value))
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The argument to set isn't of the expected type or internal WinRt object was disposed")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("The argument to set isn't of the expected type or internal WinRt object was disposed")));
 					return;
 				}
 
 				if (wrapper->_instance->Length <= index)
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Given index exceeded array length")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Given index exceeded array length")));
 					return;
 				}
 
@@ -305,7 +305,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -314,7 +314,7 @@ namespace NodeRT {
 			static void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
-				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
+				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Not implemented")));
 				return;
 			}
 
@@ -472,7 +472,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -635,7 +635,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -645,7 +645,7 @@ namespace NodeRT {
 			static void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
-				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
+				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Not implemented")));
 				return;
 			}
 
@@ -674,7 +674,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -695,7 +695,7 @@ namespace NodeRT {
 
 				if (wrapper->_convertToTypeFunc == nullptr || wrapper->_checkTypeFunc == nullptr)
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Method isn't supported")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Method isn't supported")));
 					return;
 				}
 
@@ -721,7 +721,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -887,7 +887,7 @@ namespace NodeRT {
 
 				if (!wrapper->_checkTypeFunc(value))
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The value to set isn't of the expected type")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("The value to set isn't of the expected type")));
 					return;
 				}
 
@@ -934,7 +934,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -967,7 +967,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -977,7 +977,7 @@ namespace NodeRT {
 			static void GetMany(Nan::NAN_METHOD_ARGS_TYPE info)
 			{
 				HandleScope scope;
-				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Not implemented")));
+				Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Not implemented")));
 				return;
 			}
 
@@ -1011,7 +1011,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1047,7 +1047,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1080,7 +1080,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1111,7 +1111,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1144,7 +1144,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1186,7 +1186,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1227,7 +1227,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1260,7 +1260,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1281,7 +1281,7 @@ namespace NodeRT {
 
 				if (wrapper->_convertToTypeFunc == nullptr || wrapper->_checkTypeFunc == nullptr)
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Method isn't supported")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Method isn't supported")));
 					return;
 				}
 
@@ -1307,7 +1307,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1583,7 +1583,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1623,7 +1623,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1660,7 +1660,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1702,7 +1702,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1870,7 +1870,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -1906,7 +1906,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1941,7 +1941,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -1978,7 +1978,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -2014,7 +2014,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 
@@ -2052,7 +2052,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}
@@ -2083,7 +2083,7 @@ namespace NodeRT {
 				}
 				else
 				{
-					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
+					Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Bad arguments: no suitable overload found")));
 					return;
 				}
 			}

@@ -87,7 +87,7 @@ NAN_MODULE_INIT(init)
   CoInitializeEx(nullptr, COINIT_MULTITHREADED);
   //if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
   /*{
-    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
+    Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("error in CoInitializeEx()")));
     return;
   }*/
   

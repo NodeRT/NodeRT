@@ -95,7 +95,7 @@
       }
       else
       {
-        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Invalid arguments, no suitable constructor found")));
+        Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString("Invalid arguments, no suitable constructor found")));
 	    	return;
       }
 
