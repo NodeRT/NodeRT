@@ -1,21 +1,30 @@
-NodeRT
-======
+# NodeRT
+#### Consume WinRT modules from Node.js, Electron, and NW.js.
+
+## :package: Installation of WinRT Modules
+If you just want to consume modules, you can install them directly from npm.
+
+:computer: Example
+```
+npm install --save @nodert-win10-au/windows.applicationmodel
+npm install --save @nodert-win10-au/windows.web.http
+```
+
+| SDK | Windows Version | npm Scope |
+| --- | --- | --- |
+| Windows 10, Build 10586 (Threshold 2) | 1511 | [npmjs.com/~nodert-win10](https://www.npmjs.com/~nodert-win10) |
+| Windows 10, Build 14393 (Anniversary Update) | 1607 | [npmjs.com/org/nodert-win10-au](https://www.npmjs.com/org/nodert-win10-au) |
+| Windows 10, Build 15063 (Creators Update) | 1703 | [npmjs.com/org/nodert-win10-cu](https://www.npmjs.com/org/nodert-win10-cu) |
+| Windows 10, Build 16xxx (Fall Creators Update) | -- | (Not released yet) |
 
 <H4><b>[New!] You can now learn about NodeRT by watching the MS Build 2017 talk: <a href="https://channel9.msdn.com/Events/Build/2017/T6976">"NodeRT: Using native Windows features from Node.js and Electron"</a>.</b></H4>
 
-<H4><b>[New!] NodeRT modules are now available as npm packages under the <a href="https://www.npmjs.com/~nodert-win10">nodert-win10</a> scope!</b></H4>
 
-<H4><b>[New!] Now supporting Windows 10 and latest versions of node.js + Electron!</b></H4>
-
-<H3>WinRT modules generator for node.js</H3>
-
-
+## :wrench: Creation of WinRT Modules
 NodeRT is a tool that automatically generates node.js Native add-on wrappers for <a href="http://en.wikipedia.org/wiki/Windows_Runtime">UWP/WinRT APIs</a>.
 
-NodeRT automatically exposes Microsoft’s UWP/WinRT APIs to the node.js environment by generating node modules. This enables node.js developers to write code that consumes native Windows capabilities. The generated modules' APIs are (almost) the same as the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx">UWP/WinRT APIs listed in MSDN</a>.
-NodeRT can be used to generate node.js modules both from command line (NodeRTCmd) and from its UI tool (NodeRTUI).
-
-NodeRT is developed and released by a group of node.js enthusiasts at Microsoft.
+NodeRT automatically exposes Microsoft’s UWP/WinRT APIs to the Node.js environment by generating Node modules. This enables Node.js developers to write code that consumes native Windows capabilities. The generated modules' APIs are (almost) the same as the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx">UWP/WinRT APIs listed in MSDN</a>.
+NodeRT can be used to generate Node modules both from command line (NodeRTCmd) and from its UI tool (NodeRTUI). NodeRT is developed and released by a group of Node.js enthusiasts at Microsoft.
 
 Here is an example of using NodeRT <a href="http://msdn.microsoft.com/library/windows/apps/br225603">windows.devices.geolocation</a> module to retrieve the current location:
 
@@ -37,8 +46,7 @@ In general, any WinRT/UWP API that can be called by a desktop app can by called 
 
 For more examples of what NodeRT can do, check out our <a href="/samples">samples section</a>.
 
-----------
-<H3>Documentation</H3>
+## :books: Documentation
 
 <a href="#Prerequisites">NodeRT Prerequisites</a>
 
