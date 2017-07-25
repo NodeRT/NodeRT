@@ -29,37 +29,32 @@
             ref new @(TX.ToWinRT(Model.EventInfo.EventHandlerType,false))(
             [callbackObjPtr](@foreachArg("{1} arg{2}, ", 2)) {
               NodeUtils::Async::RunOnMain([callbackObjPtr @foreachArg(", arg{2}", 0)]() {
-           	    HandleScope scope;
-                TryCatch tryCatch;
-              
-                Local<Value> error;
-                @{var j = 0;}
+                HandleScope scope;
+
+                @{var k = 0;}
                 @foreach (var type in eventArgs)
                 {
-                 var jsConversionInfo = Converter.ToJS(type, TX.MainModel.Types.ContainsKey(type)); 
-                @:Local<Value> wrappedArg@(j) = @(string.Format(jsConversionInfo[1], String.Format("arg{0}",j )));
-                  j++;
+                @:Local<Value> wrappedArg@(k);
+                  k++;
                 }
 
-                if (tryCatch.HasCaught())
                 {
-                  error = Nan::To<Object>(tryCatch.Exception()).ToLocalChecked();
-                }
-                else 
-                {
-                  error = Undefined();
-                }
+                  TryCatch tryCatch;
 
-				// TODO: this is ugly! Needed due to the possibility of expception occuring inside object convertors
-				// can be fixed by wrapping the conversion code in a function and calling it on the fly
-				// we must clear the try catch block here so the invoked inner method exception won't get swollen (issue #52) 
-				tryCatch.~TryCatch();
+                  @{var j = 0;}
+                  @foreach (var type in eventArgs)
+                  {
+                    var jsConversionInfo = Converter.ToJS(type, TX.MainModel.Types.ContainsKey(type)); 
+                  @:wrappedArg@(j) = @(string.Format(jsConversionInfo[1], String.Format("arg{0}", j)));
+                    j++;
+                  }
 
-                @{var i = 0;}
-                @foreach (var type in eventArgs)
-                {
-                @:if (wrappedArg@(i).IsEmpty()) wrappedArg@(i) = Undefined();
-                  i++;
+                  @{var i = 0;}
+                  @foreach (var type in eventArgs)
+                  {
+                  @:if (wrappedArg@(i).IsEmpty()) wrappedArg@(i) = Undefined();
+                    i++;
+                  }
                 }
 
                 @if (eventArgs.Length > 0)
