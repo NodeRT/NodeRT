@@ -89,30 +89,31 @@
               }
               else
               {
-                  var jsConversionInfo = Converter.ToJS(taskReturnType, TX.MainModel.Types.ContainsKey(taskReturnType)); 
-            @:TryCatch tryCatch;
+                var jsConversionInfo = Converter.ToJS(taskReturnType, TX.MainModel.Types.ContainsKey(taskReturnType));
+
             @:Local<Value> error; 
-            @:Local<Value> arg1 = @string.Format(jsConversionInfo[1], "result");
+            @:Local<Value> arg1;
 
-            @:if (tryCatch.HasCaught())
             @:{
-            @:  error = Nan::To<Object>(tryCatch.Exception()).ToLocalChecked();
-            @:}
-            @:else 
-            @:{
-            @:  error = Undefined();
-            @:}
+              @:TryCatch tryCatch;
+              @:arg1 = @string.Format(jsConversionInfo[1], "result");
 
-            @:if (arg1.IsEmpty()) arg1 = Undefined();
+              @:if (tryCatch.HasCaught())
+              @:{
+              @:  error = Nan::To<Object>(tryCatch.Exception()).ToLocalChecked();
+              @:}
+              @:else 
+              @:{
+              @:  error = Undefined();
+              @:}
+
+              @:if (arg1.IsEmpty()) arg1 = Undefined();
+            @:}
 
             @:Local<Value> args[] = {error, arg1};
-			@:// TODO: this is ugly! Needed due to the possibility of expception occuring inside object convertors
-			@:// can be fixed by wrapping the conversion code in a function and calling it on the fly
-			@:// we must clear the try catch block here so the invoked inner method exception won't get swollen (issue #52) 
-			@:tryCatch.~TryCatch();
               }
             }
-	  	    
+
             invokeCallback(_countof(args), args);
           });
         }
