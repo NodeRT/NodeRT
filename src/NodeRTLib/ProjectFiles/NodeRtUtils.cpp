@@ -316,9 +316,7 @@ namespace NodeRT { namespace Utils {
     }
 
     v8::String::Value stringVal(value);
-    std::wstring guidStr( L"{" );
-    guidStr += StringToWchar(stringVal);
-    guidStr += L"}" ;
+    std::wstring guidStr = StringToWchar(stringVal);
 
     HRESULT hr = CLSIDFromString( guidStr.c_str(), guid );
     if( FAILED( hr ) )
