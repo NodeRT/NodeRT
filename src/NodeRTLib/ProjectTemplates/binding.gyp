@@ -63,7 +63,8 @@
        ],
       'msvs_settings': {
         'VCCLCompilerTool': {
-            'AdditionalOptions': [ '/ZW'] 
+            'AdditionalOptions': [ '/ZW'],
+            'DisableSpecificWarnings': [4609]
         }
       }
      }
