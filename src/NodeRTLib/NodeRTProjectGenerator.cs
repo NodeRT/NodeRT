@@ -199,7 +199,9 @@ namespace NodeRTLib
                 !directoryName.EndsWith(@"windows kits\8.0\references\commonconfiguration\neutral") &&
                 !directoryName.EndsWith(@"windows kits\10\unionmetadata"))
             {
-                bindingFileText.Replace("{AdditionalWinmdPath}", Path.GetDirectoryName(winrtFile));
+                var winmdModulePath = Path.GetDirectoryName(winrtFile);
+                var winmdModuleUri = new System.Uri(winmdModulePath).AbsolutePath;
+                bindingFileText.Replace("{AdditionalWinmdPath}", winmdModuleUri);
                 bindingFileText.Replace("{UseAdditionalWinmd}", "true");
             }
             else
