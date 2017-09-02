@@ -82,16 +82,16 @@
           if (!Model.HasMemberEvents)
           {
       @:Local<Function> addListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(AddListener)).ToLocalChecked();
-          }
       @:Nan::Set(constructor, Nan::New<String>("addListener").ToLocalChecked(), addListenerFunc);
       @:Nan::Set(constructor, Nan::New<String>("on").ToLocalChecked(), addListenerFunc);
+          }
             
           if (!Model.HasMemberEvents)
           {
       @:Local<Function> removeListenerFunc = Nan::GetFunction(Nan::New<FunctionTemplate>(RemoveListener)).ToLocalChecked();
-          }         
       @:Nan::Set(constructor, Nan::New<String>("removeListener").ToLocalChecked(), removeListenerFunc);
       @:Nan::Set(constructor, Nan::New<String>("off").ToLocalChecked(), removeListenerFunc);
+          }         
         }
       }
       Nan::Set(exports, Nan::New<String>("@(Model.Name)").ToLocalChecked(), constructor);
