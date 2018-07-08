@@ -6,16 +6,15 @@ If you just want to consume modules, you can install them directly from npm.
 
 :computer: Example
 ```
-npm install --save @nodert-win10-au/windows.applicationmodel
-npm install --save @nodert-win10-au/windows.web.http
+npm install --save @nodert-win10-rs4/windows.ui.notifications
 ```
 
 | SDK | Windows Version | npm Scope |
 | --- | --- | --- |
-| Windows 10, Build 10586 (Threshold 2) | 1511 | [npmjs.com/~nodert-win10](https://www.npmjs.com/~nodert-win10) |
-| Windows 10, Build 14393 (Anniversary Update) | 1607 | [npmjs.com/org/nodert-win10-au](https://www.npmjs.com/org/nodert-win10-au) |
-| Windows 10, Build 15063 (Creators Update) | 1703 | [npmjs.com/org/nodert-win10-cu](https://www.npmjs.com/org/nodert-win10-cu) |
-| Windows 10, Build 16xxx (Fall Creators Update) | -- | (Not released yet) |
+| Windows 10, Build 17134 | Redstone 4 | 1803 | [npmjs.com/org/nodert-win10-rs4](https://www.npmjs.com/org/nodert-win10-rs4) |
+| Windows 10, Build 15063 | Creators Update | 1703 | [npmjs.com/org/nodert-win10-cu](https://www.npmjs.com/org/nodert-win10-cu) |
+| Windows 10, Build 14393 | Anniversary Update | 1607 | [npmjs.com/org/nodert-win10-au](https://www.npmjs.com/org/nodert-win10-au) |
+| Windows 10, Build 10586 | Threshold 2 | 1511 | [npmjs.com/~nodert-win10](https://www.npmjs.com/~nodert-win10) |
 
 <H4><b>[New!] You can now learn about NodeRT by watching the MS Build 2017 talk: <a href="https://channel9.msdn.com/Events/Build/2017/T6976">"NodeRT: Using native Windows features from Node.js and Electron"</a>.</b></H4>
 
