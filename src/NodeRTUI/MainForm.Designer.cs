@@ -251,7 +251,8 @@ namespace NodeRTUI
             this.cmbVsVersion.Items.AddRange(new object[] {
             "VS 2012 Project",
             "VS 2013 Project",
-            "VS 2015 Project"});
+            "VS 2015 Project",
+            "VS 2017 Project"});
             this.cmbVsVersion.Location = new System.Drawing.Point(193, 306);
             this.cmbVsVersion.Name = "cmbVsVersion";
             this.cmbVsVersion.Size = new System.Drawing.Size(343, 21);

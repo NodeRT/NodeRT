@@ -70,7 +70,8 @@ For more examples of what NodeRT can do, check out our <a href="/samples">sample
 First, in order to use WinRT you must be running on a Windows environment that supports WinRT- meaning Windows 10, Windows 8.1, Windows 8, or Windows Server 2012.
 
 In order to use NodeRT, make sure you have the following installed:<br>
-* Visual Studio 2015, or <a href="https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx">VS 2015 Express for Windows Desktop</a>, for generating Windows 10 compatible modules, or Visual Studio 2013/2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
+* Visual Studio 2017 or 2015 for generating Windows 10 compatible modules<br>
+* Visual Studio 2013 or 2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
 * Windows SDK for the version of Windows your are using:
 	- [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
 	- [Windows 8.1 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk)
@@ -134,7 +135,7 @@ The following is the list of options that the tool supports:
  --outdir [path]             The output dir in which the compiled NodeRT module
                              will be created in
 
- --vs [Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2015
+ --vs [Vs2017|Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2017
  
  --winver [10|8.1|8]         Optional, Windows SDK version to use, default is 10
 
