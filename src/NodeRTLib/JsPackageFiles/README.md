@@ -36,7 +36,7 @@ In order to install this module, run npm install:
 npm install {PackageName}
 ```
 
-If you wish to rebuild this module using node-gyp, make sure to use the appropriate VS version using --msvs_version=2012/2013/2015 flag:
+If you wish to rebuild this module using node-gyp, make sure to use the appropriate VS version using --msvs_version=2012/2013/2015/2017 flag:
 
 For example:
 
