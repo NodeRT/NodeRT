@@ -6,16 +6,15 @@ If you just want to consume modules, you can install them directly from npm.
 
 :computer: Example
 ```
-npm install --save @nodert-win10-au/windows.applicationmodel
-npm install --save @nodert-win10-au/windows.web.http
+npm install --save @nodert-win10-rs4/windows.ui.notifications
 ```
 
 | SDK | Windows Version | npm Scope |
 | --- | --- | --- |
-| Windows 10, Build 10586 (Threshold 2) | 1511 | [npmjs.com/~nodert-win10](https://www.npmjs.com/~nodert-win10) |
-| Windows 10, Build 14393 (Anniversary Update) | 1607 | [npmjs.com/org/nodert-win10-au](https://www.npmjs.com/org/nodert-win10-au) |
-| Windows 10, Build 15063 (Creators Update) | 1703 | [npmjs.com/org/nodert-win10-cu](https://www.npmjs.com/org/nodert-win10-cu) |
-| Windows 10, Build 16xxx (Fall Creators Update) | -- | (Not released yet) |
+| Windows 10, Build 17134 | Redstone 4 | 1803 | [npmjs.com/org/nodert-win10-rs4](https://www.npmjs.com/org/nodert-win10-rs4) |
+| Windows 10, Build 15063 | Creators Update | 1703 | [npmjs.com/org/nodert-win10-cu](https://www.npmjs.com/org/nodert-win10-cu) |
+| Windows 10, Build 14393 | Anniversary Update | 1607 | [npmjs.com/org/nodert-win10-au](https://www.npmjs.com/org/nodert-win10-au) |
+| Windows 10, Build 10586 | Threshold 2 | 1511 | [npmjs.com/~nodert-win10](https://www.npmjs.com/~nodert-win10) |
 
 <H4><b>[New!] You can now learn about NodeRT by watching the MS Build 2017 talk: <a href="https://channel9.msdn.com/Events/Build/2017/T6976">"NodeRT: Using native Windows features from Node.js and Electron"</a>.</b></H4>
 
@@ -70,7 +69,8 @@ For more examples of what NodeRT can do, check out our <a href="/samples">sample
 First, in order to use WinRT you must be running on a Windows environment that supports WinRT- meaning Windows 10, Windows 8.1, Windows 8, or Windows Server 2012.
 
 In order to use NodeRT, make sure you have the following installed:<br>
-* Visual Studio 2015, or <a href="https://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx">VS 2015 Express for Windows Desktop</a>, for generating Windows 10 compatible modules, or Visual Studio 2013/2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
+* Visual Studio 2017 or 2015 for generating Windows 10 compatible modules<br>
+* Visual Studio 2013 or 2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
 * Windows SDK for the version of Windows your are using:
 	- [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
 	- [Windows 8.1 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk)
@@ -134,7 +134,7 @@ The following is the list of options that the tool supports:
  --outdir [path]             The output dir in which the compiled NodeRT module
                              will be created in
 
- --vs [Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2015
+ --vs [Vs2017|Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2017
  
  --winver [10|8.1|8]         Optional, Windows SDK version to use, default is 10
 
