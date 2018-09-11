@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation
-// All rights reserved. 
+// All rights reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the ""License""); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+// Licensed under the Apache License, Version 2.0 (the ""License""); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
-// THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT. 
+// THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 //
 // See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
 
@@ -163,7 +163,7 @@ namespace NodeRTUI
                 catch (TypeLoadException ex)
                 {
                     MessageBox.Show("Failed to load winmetadata information! \n" +
-                        "Error details: " + ex.Message, "winmd load error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        "Error details: " + ex.Message, "WinMD load error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     ClearSettingsAndUI();
 
                     System.Diagnostics.Process.Start(Application.ExecutablePath);
@@ -171,7 +171,7 @@ namespace NodeRTUI
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error occured when loading WinMD file: \n" +
+                    MessageBox.Show("Error occurred when loading WinMD file: \n" +
                         ex.Message, "Failed to load WinMd file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -202,7 +202,7 @@ namespace NodeRTUI
             string errorMessage;
             if (!NodeRTProjectGenerator.VerifyVsAndWinVersions(winVersion, vsVersion, out errorMessage))
             {
-                MessageBox.Show("Unsupported Windows and VS combination:\n" + errorMessage, "Unssuported options", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unsupported Windows and VS combination:\n" + errorMessage, "Unsupported options", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnGenerate.Enabled = true;
                 return;
             }
@@ -242,11 +242,11 @@ namespace NodeRTUI
                     {
                         MessageBox.Show("IO Error occured after building the project:\n" +
                             ex.Message + "\n" +
-                            "You can access the project files at: " + outputFolder, "IO Error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            "You can access the project files at: " + outputFolder, "IO Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("Failed to build the project from genreated code.\n" +
+                        MessageBox.Show("Failed to build the project from generated code.\n" +
                             "Please try to build the project manually.\n" +
                             "You can access the project files at: " + outputFolder, "Failed to build project", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
