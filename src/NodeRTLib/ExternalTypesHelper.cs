@@ -1,18 +1,22 @@
-﻿// Copyright (c) Microsoft Corporation
+﻿// Copyright (c) The NodeRT Contributors
 // All rights reserved. 
 //
-// Licensed under the Apache License, Version 2.0 (the ""License""); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+// Licensed under the Apache License, Version 2.0 (the ""License""); you may
+// not use this file except in compliance with the License. You may obtain a
+// copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
 //
-// THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT. 
+// THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
+// OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY
+// IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+// MERCHANTABLITY OR NON-INFRINGEMENT. 
 //
-// See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
+// See the Apache Version 2.0 License for specific language governing permissions
+// and limitations under the License.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NodeRTLib
 {
@@ -33,7 +37,7 @@ namespace NodeRTLib
             return type.IsValueType && !type.IsEnum && !type.IsPrimitive && type.Namespace != "System";
         }
 
-        public static void TestAndAddRecursive(Type type,  String declaringTypeNamespace, List<Type> valueTypes, List<String> namespaces)
+        public static void TestAndAddRecursive(Type type, String declaringTypeNamespace, List<Type> valueTypes, List<String> namespaces)
         {
             if (type.IsGenericType)
             {
@@ -47,7 +51,7 @@ namespace NodeRTLib
                 return;
             }
 
-            if (IsValueTypeNoEnumOrPrimitve(type) && !valueTypes.Contains(type) && 
+            if (IsValueTypeNoEnumOrPrimitve(type) && !valueTypes.Contains(type) &&
                 type.Namespace != "System" && type.Namespace != declaringTypeNamespace)
             {
                 valueTypes.Add(type);
@@ -103,14 +107,14 @@ namespace NodeRTLib
         {
             TestAndAddRecursive(info.ReturnType, info.DeclaringType.Namespace, types, namespaces);
 
-            GetExternalReferencedData(info.GetParameters(), info.DeclaringType.Namespace, types,namespaces);
+            GetExternalReferencedData(info.GetParameters(), info.DeclaringType.Namespace, types, namespaces);
         }
 
         public static void GetExternalReferencedData(PropertyInfo info, List<Type> types, List<String> namespaces)
         {
             TestAndAddRecursive(info.PropertyType, info.DeclaringType.Namespace, types, namespaces);
         }
-        
+
         public static void GetExternalReferencedDataFromMethods(dynamic[] methods, List<Type> types, List<String> namespaces)
         {
             foreach (dynamic method in methods)
@@ -123,7 +127,7 @@ namespace NodeRTLib
         }
 
         public static void GetExternalReferencedDataForType(dynamic typeDefinition, List<Type> externalValueTypes, List<String> externalNamespaces)
-        {            
+        {
             foreach (ConstructorInfo ci in typeDefinition.Type.GetConstructors())
             {
                 GetExternalReferencedData(ci.GetParameters(), typeDefinition.Type.Namespace, externalValueTypes, externalNamespaces);
