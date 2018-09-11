@@ -202,18 +202,18 @@ namespace NodeRTLib
                 return ToReadOnlyCollection("Iterator", type.GetGenericArguments()[0]);
             }
 
-            if (type.IsGenericType && type.FullName != null &&  (type.FullName.StartsWith("Windows.Foundation.Collections.IIterable`1") || 
+            if (type.IsGenericType && type.FullName != null && (type.FullName.StartsWith("Windows.Foundation.Collections.IIterable`1") ||
                 type.FullName.StartsWith("System.Collections.Generic.IEnumerable`1")))
             {
                 return ToReadOnlyCollection("Iterable", type.GetGenericArguments()[0]);
             }
 
-            if (type.IsGenericType && type.FullName != null &&  type.FullName.StartsWith("System.Collections.Generic.IReadOnlyList`1"))
+            if (type.IsGenericType && type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IReadOnlyList`1"))
             {
                 return ToCollection("VectorView", type.GetGenericArguments()[0]);
             }
 
-            if (type.IsGenericType && type.FullName != null &&  type.FullName.StartsWith("System.Collections.Generic.IList`1"))
+            if (type.IsGenericType && type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IList`1"))
             {
                 return ToCollection("Vector", type.GetGenericArguments()[0]);
             }
@@ -223,7 +223,7 @@ namespace NodeRTLib
                 return ToReadOnlyKeyValueCollection("MapView", type.GetGenericArguments()[0], type.GetGenericArguments()[1]);
             }
 
-            if (type.IsGenericType && type.FullName != null &&  type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
+            if (type.IsGenericType && type.FullName != null && type.FullName.StartsWith("System.Collections.Generic.IDictionary`2"))
             {
                 return ToKeyValueCollection("Map", type.GetGenericArguments()[0], type.GetGenericArguments()[1]);
             }
@@ -247,7 +247,7 @@ namespace NodeRTLib
             // optimization
             if (type == typeof(Object))
             {
-                return new[] {"Value", "CreateOpaqueWrapper({0})"};
+                return new[] { "Value", "CreateOpaqueWrapper({0})" };
             }
 
             if (type.Namespace == "System" && type.Name == "Uri")
@@ -270,7 +270,7 @@ namespace NodeRTLib
             string checkType = TypeCheck(elementType, TX.MainModel.Types.ContainsKey(elementType));
             string[] jsToElementType = ToWinRT(elementType, TX.MainModel.Types.ContainsKey(elementType));
             // note that double curl braces here are used because String.Format will 
-            string creatorFunction = "NodeRT::Collections::"+ collectionName + "Wrapper<" + elementRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
+            string creatorFunction = "NodeRT::Collections::" + collectionName + "Wrapper<" + elementRtType + ">::Create" + collectionName + "Wrapper({0}, \r\n" +
 "            [](" + elementRtType + " val) -> Local<Value> {{\r\n" +
 "              return " + ReplaceBracketsWithDoubleBrackets(String.Format(elementTypeToJs[1], "val")) + ";\r\n" +
 "            }},\r\n" +
@@ -405,14 +405,14 @@ namespace NodeRTLib
                 checkType = TypeCheck(type, TX.MainModel.Types.ContainsKey(type));
             }
 
-            return 
+            return
 "                 [](Local<Value> value) -> bool {{\r\n" +
 "                   return " + ReplaceBracketsWithDoubleBrackets(String.Format(checkType, "value")) + ";\r\n" +
 "                 }},\r\n" +
 "                 [](Local<Value> value) -> " + rtType + " {{\r\n" +
 "                   return " + ReplaceBracketsWithDoubleBrackets(String.Format(jsToElementType[1], "value")) + ";\r\n" +
 "                 }}";
-      }
+        }
 
 
 
@@ -423,13 +423,13 @@ namespace NodeRTLib
 
             string templateVals = (keyType == typeof(String)) ? "<" + valueRtType + ">" : "<" + keyRtType + ", " + valueRtType + ">";
 
-            return new[] { templateVals, 
+            return new[] { templateVals,
                 GetTypeCheckerAndConverterLambdas(keyType) + ",\r\n" + GetTypeCheckerAndConverterLambdas(valueType) + "\r\n"};
         }
 
         public static string[] GetValueTypeAndLambdas(Type valueType)
         {
-            return new[] { "<" + TX.ToWinRT(valueType) + ">", GetTypeCheckerAndConverterLambdas(valueType) + "\r\n"};
+            return new[] { "<" + TX.ToWinRT(valueType) + ">", GetTypeCheckerAndConverterLambdas(valueType) + "\r\n" };
         }
 
         public static string JsToWinrtCollection(Type type, string jsType, string winrtFullType, bool typeIsInNameSpace)
@@ -656,7 +656,8 @@ namespace NodeRTLib
 
 
             string jsType;
-            if (IsWinrtCollection(type, out jsType)) {
+            if (IsWinrtCollection(type, out jsType))
+            {
                 return new[] { winrtFullType, JsToWinrtCollection(type, jsType, winrtFullType, typeIsInNameSpace) };
             }
 
@@ -782,9 +783,9 @@ namespace NodeRTLib
             // The primitive types are Boolean, Byte, SByte, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Char, Double, and Single.
             if (type.IsPrimitive)
             {
-                if (type == typeof(Byte) || type == typeof(SByte) || type == typeof(Int16) || 
-                    type == typeof(UInt16) || type == typeof(Int32) || type == typeof(UInt32) || 
-                    type == typeof(Int64) || type == typeof(IntPtr) || type == typeof(UIntPtr) || 
+                if (type == typeof(Byte) || type == typeof(SByte) || type == typeof(Int16) ||
+                    type == typeof(UInt16) || type == typeof(Int32) || type == typeof(UInt32) ||
+                    type == typeof(Int64) || type == typeof(IntPtr) || type == typeof(UIntPtr) ||
                     type == typeof(Single) || type == typeof(Double))
                 {
                     return "number";
