@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation
-// All rights reserved. 
+// All rights reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the ""License""); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+// Licensed under the Apache License, Version 2.0 (the ""License""); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
-// THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT. 
+// THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 //
 // See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
 
@@ -61,8 +61,7 @@ using namespace concurrency;
 
 @foreach(var name in Model.Namespaces) @("namespace " + name + " { ")
 
-
-@TX.CppTemplates.TypeWrapperForwardDecleration(Model)
+@TX.CppTemplates.TypeWrapperForwardDeclaration(Model)
 
 @foreach(var en in Model.Enums) {
   @TX.CppTemplates.Enum(en);
@@ -71,51 +70,54 @@ using namespace concurrency;
 @foreach(var vt in Model.ValueTypes) {
   @TX.CppTemplates.ValueType(vt);
 }
+
 @foreach(var vt in Model.ExternalReferencedValueTypes) {
   @TX.CppTemplates.ValueType(vt);
 }
-  
+
 @foreach(var t in Model.Types.Values) {
   @TX.CppTemplates.Type(t);
 }
+
 @foreach(var name in Model.Namespaces) @("} ")
 
 
-NAN_MODULE_INIT(init)
-{
-  // we ignore failures for now since it probably means that the initialization already happened for STA, and that's cool
+NAN_MODULE_INIT(init) {
+  // We ignore failures for now since it probably means that
+  // the initialization already happened for STA, and that's cool
+
   CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-  //if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
-  /*{
+
+  /*
+  if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED))) {
     Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"error in CoInitializeEx()")));
     return;
-  }*/
-  
+  }
+  */
+
   @{
     var namespacePrefix = "";
-    foreach(var name in Model.Namespaces)
-    {
+    foreach(var name in Model.Namespaces) {
       namespacePrefix += name + "::";
     }
-  
-    foreach(var en in Model.Enums) 
-    {
-  @:@(namespacePrefix)Init@(en.Name)Enum(target);
-    }
-  
-    foreach(var t in Model.Types.Values)
-    {
-  @:@(namespacePrefix)Init@(t.Name)(target);
+
+    foreach(var en in Model.Enums) {
+      @:@(namespacePrefix)Init@(en.Name)Enum(target);
     }
 
+    foreach(var t in Model.Types.Values) {
+      @:@(namespacePrefix)Init@(t.Name)(target);
+    }
   }
+
   NodeRT::Utils::RegisterNameSpace("@(Model.WinRTNamespace)", target);
 }
+
 @{
   var moduleName = Model.Namespaces[0];
   var counter = 0;
-  for (var i=1; i< Model.Namespaces.Count; i++)
-  {
+
+  for (var i=1; i< Model.Namespaces.Count; i++) {
     moduleName += "_" + Model.Namespaces[i];
   }
 }
