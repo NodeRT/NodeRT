@@ -149,3 +149,6 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+
+# VS2017
+src/.vs/NodeRT/v15
