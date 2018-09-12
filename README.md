@@ -6,7 +6,7 @@ If you just want to consume modules, you can install them directly from npm.
 
 :computer: Example
 ```
-npm install --save @nodert-win10-rs4/windows.ui.notifications
+npm install --save @nodert-win10-rs3/windows.ui.notifications
 ```
 
 | SDK | Known As | Windows Version | npm Scope |
