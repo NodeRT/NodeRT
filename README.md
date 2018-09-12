@@ -1,8 +1,4 @@
-# NodeRT
-#### Consume WinRT modules from Node.js, Electron, and NW.js.
-
-## :package: Installation of WinRT Modules
-If you just want to consume modules, you can install them directly from npm.
+# NodeRT: Use WinRT in Node, Electron, and NW.js
 
 :computer: Example
 ```
@@ -17,329 +13,285 @@ npm install --save @nodert-win10-rs3/windows.ui.notifications
 | Windows 10, Build 14393 | Anniversary Update (Redstone 1) | 1607 | [npmjs.com/org/nodert-win10-au](https://www.npmjs.com/org/nodert-win10-au) |
 | Windows 10, Build 10586 | Threshold 2 | 1511 | [npmjs.com/~nodert-win10](https://www.npmjs.com/~nodert-win10) |
 
-<H4><b>[New!] You can now learn about NodeRT by watching the MS Build 2017 talk: <a href="https://channel9.msdn.com/Events/Build/2017/T6976">"NodeRT: Using native Windows features from Node.js and Electron"</a>.</b></H4>
+For an in-depth overview, [check out our `//build` talk][talk].
 
+In general, any WinRT/UWP API that can be called by a desktop app can by called by
+Node.js or Electron using NodeRT. There are notable exceptions, but UWP APIs
+are [generally callable from desktop applications][desktop-callable].
 
-## :wrench: Creation of WinRT Modules
-NodeRT is a tool that automatically generates node.js Native add-on wrappers for <a href="http://en.wikipedia.org/wiki/Windows_Runtime">UWP/WinRT APIs</a>.
-
-NodeRT automatically exposes Microsoft’s UWP/WinRT APIs to the Node.js environment by generating Node modules. This enables Node.js developers to write code that consumes native Windows capabilities. The generated modules' APIs are (almost) the same as the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx">UWP/WinRT APIs listed in MSDN</a>.
-NodeRT can be used to generate Node modules both from command line (NodeRTCmd) and from its UI tool (NodeRTUI). NodeRT is developed and released by a group of Node.js enthusiasts at Microsoft.
-
-Here is an example of using NodeRT <a href="http://msdn.microsoft.com/library/windows/apps/br225603">windows.devices.geolocation</a> module to retrieve the current location:
-
-```javascript
-var geolocation = require('windows.devices.geolocation');
-var locator = new geolocation.Geolocator();
-
-locator.getGeopositionAsync( function(err, res) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  console.info('(', res.coordinate.longitude, ',',  res.coordinate.latitude, ')');
-});
-```
-
-In general, any WinRT/UWP API that can be called by a desktop app can by called by node.js/Electron using NodeRT. For more details about of desktop supported WinRT/UWP APIs, please visit <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/mt695951(v=vs.85).aspx">this page</a>.
-
-For more examples of what NodeRT can do, check out our <a href="/samples">samples section</a>.
+For more examples of what NodeRT can do, check out the [samples](./samples).
 
 ## :books: Documentation
 
-<a href="#Prerequisites">NodeRT Prerequisites</a>
+We've split the documentation up into two parts. If you want to use NodeRT modules,
+read on. If you want to use NodeRT to compile your own WinRT modules, [see
+the module creation guide](./MODULE_CREATION.md).
 
-<a href="#GeneratingWithUI">Generating a NodeRT module using the UI</a>
+ * [Using NodeRT modules](#using-nodert-modules)
+ * [Naming and Properties](#nodert-modules-naming-and-properties)
+ * [Namespaces](#namespaces)
+ * [Class inheritance and object casting](#class-inheritance-and-object-casting)
+ * [Using WinRT streams in Node.js](#using-winrt-streams-in-node.js)
+ * [Building and Consuming in Electron](#nodert-and-electron)
+ * [License](#license)
+ * [Attributions](#attributions)
+ * [Contribute](#contribute)
 
-<a href="#GeneratingWithCmd">Generating a NodeRT module using the cmd line interface</a>
 
-<a href="#BuildingForElectron">Building for Electron</a>
+### Using NodeRT Modules
 
-<a href="#ConsumingNodeRT">Consuming a NodeRT module in node.js/Electron</a>
+NodeRT automatically exposes Microsoft’s UWP/WinRT APIs to the Node.js environment
+by generating Node modules for all Windows namespaces. This enables Node.js developers
+to write code that consumes native Windows capabilities. The generated modules' APIs
+are (almost) the same as the [WinRT APIs listed on MSDN][uwp-namespaces].
 
-<a href="#License">License</a>
+As an example, let's check out the `Windows.Devices.Geolocation` namespace to
+locate the user from Node.js.
 
-<a href="#Attributions">Attributions</a>
+:one: First, ensure that you have the Windows 10 SDK installed. In this example,
+we're using the [Fall Creators Update SDK][sdk-archive].
+:two: Then, install `@nodert-win10-rs3/windows.devices.geolocation`. The npm
+organization denotes the used SDK version - in this case, it's the Fall Creators
+Update, which has the codename "Redstone 3".
 
-<a href="#Contribute">Contribute</a>
-
------------
-<a name="Prerequisites"></a> 
-<H3>NodeRT Prerequisites</H3>
-First, in order to use WinRT you must be running on a Windows environment that supports WinRT- meaning Windows 10, Windows 8.1, Windows 8, or Windows Server 2012.
-
-In order to use NodeRT, make sure you have the following installed:<br>
-* Visual Studio 2017 or 2015 for generating Windows 10 compatible modules<br>
-* Visual Studio 2013 or 2012 for generating Windows 8.1/8 compatible modules repsectively.<br>
-* Windows SDK for the version of Windows your are using:
-	- [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
-	- [Windows 8.1 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk)
-	- [Windows 8](https://developer.microsoft.com/en-us/windows/downloads/windows-8-sdk)
-* node.js (version > 10.*) - from <a href="https://nodejs.org/en/">nodejs.org</a><br>
-* node-gyp - make sure to get the latest version from npm by running:
-```
-npm install -g node-gyp
-```
-
-Next, download the latest NodeRT release from <a href="https://github.com/NodeRT/NodeRT/releases">here</a>, or clone this repository to your machine and build the NodeRT solution using Visual Studio.
-
------------
-<a name="GeneratingWithUI"></a> 
-<H3>Generating a NodeRT module using the UI</H3>
-First, launch the UI tool by running NodeRTUI.exe:<br>
-
-![Alt Windows.Devices.Geolocation NodeRT module contents](/doc/images/nodert_screenshot.png)
-
-Then, follow this short list of steps in order to create a NodeRT module:<br>
-* Choose a WinMD file: <br>
-    - For Windows 10 SDK: <br>
-    ```
-    c:\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd
-    ```
-    - For Windows 8.1 SDK: <br>
-    ```
-    c:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd
-    ```
-    - For Windows 8.0 SDK: <br>
-    ```
-    c:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral\Windows.winmd
-    ```
-* Choose a namespace to generate from the list of namespaces.<br>
-* Select whether you are generating a Windows 10 compatible module using VS 015, Windows 8.1 compatible module using VS2013 or a Windows 8.0 compatible module using VS2012.<br>
-* Choose the output directory in which the module will be created, or just stick with the default ones.
-* You're good to go, hit the Generate & Build button! A message box with (hopefully) a success message should appear shortly.<br>
-
------------
-<a name="GeneratingWithCmd"></a> 
-<H3>Generating a NodeRT module using the cmd line interface</H3>
-NodeRT modules generation is available via a cmd-line interface using the NodeRTCmd tool.
-
-An example of generating the Windows.Devices.Geolocation namespace from the Windows 10 Windows.winmd:
-```
-NodeRTCmd.exe --winmd "c:\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd" --codegendir c:\NodeRT\codegen --outdir c:\NodeRT\output --namespace Windows.Devices.Geolocation
-```
-Note that omitting the --namespace option will generate all of the namespaces in the Winmd file.
-
-The following is the list of options that the tool supports:
-```
- --winmd [path]              File path to winmd file from which the module
-                             will be generated
-
- --namespaces                Lists all of the namespaces in the winmd file
-                             (only needs --winmd)
-
- --namespace [namespace]     The namespace to generate from the winmd when
-                             not specified , all namespaces will be generated
-
- --outdir [path]             The output dir in which the compiled NodeRT module
-                             will be created in
-
- --vs [Vs2017|Vs2015|Vs2013|Vs2012] Optional, VS version to use, default is Vs2017
- 
- --winver [10|8.1|8]         Optional, Windows SDK version to use, default is 10
-
- --npmscope                  Optional, the scope that will be specified for the generated
-                             npm package
-
- --npmversion                Optional, the version that will be specified for the generated
-                             npm package
-							   
- --nodefgen                  Optional, specifying this option will reult in
-                             skipping the generation of TypeScript and
-                             JavaScript definition files
-
- --nobuild                   Optional, specifying this option will result in
-                             skipping the build process for the NodeRT module	
-			     
- --verbose                   Optional, specifying this option will result in
-                             verbose output for the module build operation
-
- --help                      Print this help screen
-
+```sh
+npm i --save @nodert-win10-rs3/windows.devices.geolocation
 ```
 
------------
-<a name="BuildingForElectron"></a>
-<H3>Building for Electron</H3>
-In order to build the generated NodeRT module for Electron, you can follow the instructions in <a href="https://github.com/electron/electron/blob/master/docs/tutorial/using-native-node-modules.md#installing-modules-and-rebuilding-for-electron">here</a>. 
+Once you've installed the module, you're ready to use your computer's geolocation
+features. In this example, we're creating a new `Geolocator` and are calling
+its instance method [`getGeopositionAsync()`][getgeopositionasync].
 
-The easiest way to build the module for Electron, is probably to run node-gyp directly from the module folder with the appropriate cmd-line arguments.
+```js
+const { Geolocator } = require('windows.devices.geolocation')
+const locator = new Geolocator()
 
-For example, opening the cmd-line, cd-ing to the generated module directory and running:
+locator.getGeopositionAsync((error, result) => {
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  const { coordinate } = result
+  const { longitude, latitude } = coordinate
+
+  console.info(longitude, latitude)
+})
 ```
-node-gyp rebuild --target=1.3.1 --arch=x64 --dist-url=https://atom.io/download/atom-shell
-```
 
-Just make sure to use the correct Electron version for the "target" argument (here we used 1.3.1).
+Let's take a closer look at the whole module:
 
-After rebuilding the module - you can copy it to your Electron app node_modules directory (in case you havn't done that already) and use it like every other node.js/Electron module.
+![Windows.Devices.Geolocation NodeRT module contents](/doc/images/object_contents.png)
 
+As you can see, you can create new WinRT objects using the `new` operator. In
+order to inspect the method and properties of the object, you can inspect
+its prototype. For example, a new `Geolocator` object looks like this:
 
------------
-<a name="ConsumingNodeRT"></a> 
-<H3>Consuming a NodeRT module in node.js/Electron</H3>
-
-Requiring a generated NodeRT module is just like requiring any other node.js module - if for example, you've just generated Windows.Devices.Geolocation, copy the generated windows.devices.geolocation directory from the output folder to a node_modules folder near you (or use a full path), and run:
 ```javascript
-var geolocation = require('windows.devices.geolocation');
-```
-
-If you are working in the node console (AKA REPL),
-then entering <i>geolocation</i> will result in printing the contents of the namespace:
-
-![Alt Windows.Devices.Geolocation NodeRT module contents](/doc/images/object_contents.png)
-
-Creating a new WinRT object is done with the new operator. In order to inspect the method and properties of the object, you can print its prototype:
-For example, creating a new Geolocator object in REPL:
-```javascript
-var locator = new geolocation.Geolocator();
-//print the prototype
-locator.__proto__
+console.log(new geolocation.Geolocator().__proto__)
 ```
 And the output will be:
 
-![Alt Geolocator prototype contents](/doc/images/golocation__proto.png)
+![Geolocator prototype contents](/doc/images/golocation__proto.png)
 
-(Note that property values are fetched on the fly, and hence have undefined values when printing the prototype)
+> :memo: Note that property values are fetched on the fly, and hence have `undefined`
+> values when printing the prototype.
 
-<b>Classes and fields naming</b>
+### Naming and Properties
 
-We use the same convention used for WinRT javascript applications:
+NodeRT uses the same JavaScript conventions as Microsoft does for
+JavaScript-based UWP applications.
 
-* Class/Enum names have the first letter in upper-case
+ * Class/Enum names have the first letter in upper-case
+ * Class/Enum fields (properties, methods, and events) always start with a
+   lower-case letter. The remainder of the name is identical to what you'd
+   find on MSDN.
+ * Enums are JavaScript objects with keys corresponding to the enum
+   fields and values to the enum field's numeric values.
 
-* Class/Enum fields, that is properties, methods, and events, both member and static have the first letter in lower-case, the rest of the name is according to MSDN. 
+#### Properties
 
-* Enums are just javascript objects with keys corresponding to the enum fields and values to the enum fields numeric values.
+Properties on WinRT objects behave like JavaScript properties.
 
-<b>Properties</b>
-
-Using Properties of an object is just straight-forward javascript, for example:
-```javascript
-locator.reportInterval = 2000;
-console.info(locator.reportInterval);
-```
-<b>Synchronous methods</b>
-
-Again, straight-forward javascript, just make the call with the appropriate arguments. If there are several WinRT overloads for the method, make the call with the right set of arguments and the correct overload of the method will be called:
-```javascript
-var xml = require('windows.data.xml.dom');
-var xmlDoc = new xml.XmlDocument();
-toastXml.loadXml('<node>some text here</node>');
+```js
+locator.reportInterval = 2000
+console.info(locator.reportInterval)
 ```
 
-<b>Asynchronous methods</b>
+#### Synchronous methods
 
-Each async method accepts the same variables as are listed in the MSDN, with the addition of a completion callback as the last argument.<br>
-This callback will be called when the function has finished, and will receive an error as the first argument, and the result as the second argument:
-```javascript
-locator.getGeopositionAsync( function(err, res) {
-  // result is of type geoposition
-  if (err) {
-    console.error(err);
-    return;
+Straight-forward JavaScript: Make the call with the appropriate arguments
+and don't even worry about the fact that you're calling native code. If
+there are several WinRT overloads for the method, make the call with the
+right set of arguments and the correct overload of the method will be
+called:
+
+```js
+const { XmlDocument }  = require('windows.data.xml.dom')
+
+const xmlDoc = new xml.XmlDocument();
+xmlDoc.loadXml('<node>some text here</node>')
+```
+
+#### Asynchronous methods
+
+Asynchronous method accepts the same variables as listed on MSDN - with the
+addition of a completion callback as the last argument.
+
+This callback will be called when the function has finished, and will receive
+an error as the first argument, and the result as the second argument:
+
+```js
+locator.getGeopositionAsync((err, result) => {
+  if (error) {
+    console.error(error)
+    return
   }
 
-  console.info('(',res.coordinate.longitude, res.coordinate.latitude, ')');
-});
+  // Result is of type "Geoposition"
+  const { coordinate } = result
+  const { longitude, latitude } = coordinate
+
+  console.info(longitude, latitude)
+})
 ```
 
-<b>Events</b>
+#### Events
 
-Registering to events is done using the class' <i>on</i> method (which is equivalent to <i>addListener</i>), which receives the event name (case insensitive) and the event handler function.
+Registering to events is done using the class' `on` method (which is equivalent
+to `addListener`), which receives the event name (case insensitive) and the
+event handler function.
+
 For example:
-```javascript
-var handler = function handler(sender, eventArgs) {
-  console.info('status is:', eventArgs.status); 
-};
-locator.on('statusChanged', handler);
+
+```js
+const handler = (sender, eventArgs) => {
+  console.info('status is:', eventArgs.status)
+}
+
+locator.on('statusChanged', handler)
 ```
-Unregistering from an event is done the same way, using the class's <i>off</i> or <i>removeListener</i> methods. 
-Just make sure to store the event handler in order to be able to use it.
-```javascript
-// using same event handler as in the example above
+
+Unregistering from an event is done the same way, using the class's `off` or
+`removeListener` methods.
+
+```js
+// Using same event handler as in the example above
 locator.off('statusChanged', handler);
 ```
 
-<b>Separation into namespaces and cross namespace usage</b>
+### Namespaces
 
-Each NodeRT module represents a single namespace. <br>
-For instance, windows.storage will have a NodeRT module, and windows.storage.streams will have another NodeRT module.<br>
-The reason for this separation is strictly due to performance considerations.<br>
-(We didn't want to have a huge NodeRT module that will cause the memory of node.js to blow up while most of the namespaces probably won't be used in each script).
+Each NodeRT module represents a single namespace. For instance, `windows.storage`
+is its own NodeRT module - and `windows.storage.streams` is another NodeRT module.
 
-This architecture means that in case you are using a NodeRT module which contains a function, property, or event which returns an object from another namespace, then you will need to require that namespace **before** calling that function/property/event.
+The reason for this separation is strictly due to performance considerations.
+Separating the code allows you to load only the code you actually intend to
+use, meaning that Node.js won't fill the machine's memory.
+
+This architecture means that in case you are using a NodeRT module which
+contains a function, property, or event which returns an object from another
+namespace, then you will need to require that namespace **before** calling
+that function/property/event.
 
 For example:
-```javascript
-var capture = require('windows.media.capture');
-// we also require this module in order to be able to access device controller properties
-var devices = require('windows.media.devices');
 
-var capture = new capture.MediaCapture();
-capture.initializeAsync(function (err, res) {
-  if (err) {
-    return console.info(err);
+```js
+const capture = require('windows.media.capture')
+
+// We also require this module in order to be able to access
+// device controller properties
+const devices = require('windows.media.devices')
+
+const capture = new capture.MediaCapture()
+
+capture.initializeAsync((error, result) => {
+  if (error) {
+    return console.error(error);
   }
-  
-  // get the device controller, its type (VideoDeviceController) is defined in the 
-  // windows.media.devices namespace -  so, we had to require that namespace as well
-  var deviceController = capture.videoDeviceController;
-  
-  // we can now use the VideoDeviceController regularly
-  deviceController.brightness.trySetValue(-1);
-});
+
+  // Get the device controller, its type (VideoDeviceController) is defined in
+  // the windows.media.devices namespace. That's why we had to load
+  // windows.media.devices before calling this method.
+  const deviceController = capture.videoDeviceController
+
+  // We can now use the VideoDeviceController regularly
+  deviceController.brightness.trySetValue(-1)
+})
 ```
 
-<b>Class inheritance and objects casting</b>
+### Class inheritance and object casting
 
-Since some WinRT classes inherit from other classes, you might need to cast an object of a certain type to another type.
+Since some WinRT classes inherit from other classes. You might also need to cast an
+object of a certain type to another type.
 
-In order to do so, each NodeRT object has a static method named <b>castFrom</b> which accepts another object and tries to cast it to the class' type.
+In order to do so, each NodeRT object has a static method named <b>castFrom</b>
+which accepts another object and tries to cast it to the class' type. Magical, right?
 
-The following example casts an [IXmlNode](https://msdn.microsoft.com/en-gb/library/windows/apps/windows.data.xml.dom.ixmlnode.aspx) object to an [XmlElement](https://msdn.microsoft.com/en-gb/library/windows/apps/windows.data.xml.dom.xmlelement.aspx):
+The following example casts an [IXmlNode][IXmlNode] object to an
+[XmlElement][XmlElement]:
 
-```javascript
-var xml = require('windows.data.xml.dom');
+```js
+const xml = require('windows.data.xml.dom')
 
 ...
 
-// obtain a list of nodes:
-var nodesList = ....
+// Obtain a list of nodes:
+const nodesList = ....
+const xmlNode = nodesList.getAt(0)
 
-var xmlNode = nodesList.getAt(0);
+// Cast xmlNode to XmlElement
+const xmlElement = xml.XmlElement.castFrom(xmlNode)
 
-// cast xmlNode to XmlElement
-var xmlEle = xml.XmlElement.castFrom(xmlNode);
-
-// we can now use XmlElement functions
-xmlEle.setAttribute('attr', 'value')
+// We can now use XmlElement functions
+xmlElement.setAttribute('attr', 'value')
 ```
 
-<b>Using WinRT streams in node.js</b>
+### Using WinRT streams in Node.js
 
-In order to support the use of WinRT streams in node.js, we have created the <a href="https://github.com/NodeRT/nodert-streams">nodert-streams</a> module, which bridges between WinRT streams and node.js streams.
+In order to support the use of WinRT streams in Node.js, we have created the
+[`nodert-streams`][streams] module, which bridges between WinRT streams and
+Node.js streams.
 
-This bridge enable the conversion of WinRT streams to node.js streams, such that WinRT streams could be used just as regular node.js streams.
+This bridge enable the conversion of WinRT streams to Node.js streams, such
+that WinRT streams could be used just as regular Node.js streams.
 
------------
-<a name="License"></a> 
-<H3>License</H3>
-NodeRT is released under the Apache 2.0 license. 
+### NodeRT and Electron
+
+NodeRT modules are native Node addons. As such, you'll need to compile
+them for usage with Electron. If you're using an Electron boilerplate
+or CLI (like `electron-forge` or `electron-builder`), the embedded tools
+will automatically compile the native code correctly.
+
+If you are not using a boilerplate or are having trouble correctly compiling
+NodeRT modules, see Electron's documentation for [how to use native Node addons
+in Electron](https://electronjs.org/docs/tutorial/using-native-node-modules).
+
+## License
+
+NodeRT is released under the Apache 2.0 license.
 For more information, please take a look at the <a href="./LICENSE">license</a> file.
 
------------
-<a name="Attributions"></a> 
-<H3>Attributions</H3>
+## Attributions
+
 In order to build NodeRT we used these 2 great libraries:
 * RazorTemplates - https://github.com/volkovku/RazorTemplates
 * RX.NET - https://github.com/Reactive-Extensions/Rx.NET/
 
------------
-<a name="Contribute"></a> 
-<H3>Contribute</H3>
-You are welcome to send us any bugs you may find, suggestions, or any other comments.
-Before sending anything, please go over the repository issues list, just to make sure that it isn't already there.
+## Contribute
+You are welcome to send us any bugs you may find, suggestions, or any other
+comments. Before sending anything, please go over the repository issues list,
+just to make sure that it isn't already there.
 
-You are more than welcome to fork this repository and send us a pull request if you feel that what you've done should be included. 
+You are more than welcome to fork this repository and send us a pull request
+if you feel that what you've done should be included.
+
+[talk]: https://channel9.msdn.com/Events/Build/2017/T6976
+[desktop-callable]: https://docs.microsoft.com/en-us/windows/desktop/apiindex/uwp-apis-callable-from-a-classic-desktop-app
+[uwp-namespaces]: http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx
+[geolocation]: http://msdn.microsoft.com/library/windows/apps/br225603
+[sdk-archive]: https://developer.microsoft.com/en-us/windows/downloads/sdk-archive
+[getgeopositionasync]: https://docs.microsoft.com/en-us/uwp/api/windows.devices.geolocation.geolocator.getgeopositionasync
+[IXmlNode]: https://docs.microsoft.com/en-us/uwp/api/Windows.Data.Xml.Dom.IXmlNode
+[XmlElement]: https://docs.microsoft.com/en-us/uwp/api/Windows.Data.Xml.Dom.XmlElement
+[streams]: https://github.com/NodeRT/nodert-streams
