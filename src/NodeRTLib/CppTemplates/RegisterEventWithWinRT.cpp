@@ -6,11 +6,10 @@
     return TX.ForEachType(eventArgs, format, len);
   });
 }
-        try
-        {
+        try {
           Persistent<Object>* perstPtr = new Persistent<Object>();
           perstPtr->Reset(NodeRT::Utils::CreateCallbackObjectInDomain(callback));
-          std::shared_ptr<Persistent<Object>> callbackObjPtr(perstPtr, 
+          std::shared_ptr<Persistent<Object>> callbackObjPtr(perstPtr,
             [] (Persistent<Object> *ptr ) {
               NodeUtils::Async::RunOnMain([ptr]() {
                 ptr->Reset();
@@ -21,9 +20,7 @@
           @if (Model.IsStatic)
           {
           @:registrationToken = @(TX.ToWinRT(Model.EventInfo.DeclaringType, false))::@(Model.EventInfo.Name)::add(
-          }
-          else
-          {
+          } else {
           @:registrationToken = wrapper->_instance->@(Model.EventInfo.Name)::add(
           }
             ref new @(TX.ToWinRT(Model.EventInfo.EventHandlerType,false))(
@@ -44,7 +41,7 @@
                   @{var j = 0;}
                   @foreach (var type in eventArgs)
                   {
-                    var jsConversionInfo = Converter.ToJS(type, TX.MainModel.Types.ContainsKey(type)); 
+                    var jsConversionInfo = Converter.ToJS(type, TX.MainModel.Types.ContainsKey(type));
                   @:wrappedArg@(j) = @(string.Format(jsConversionInfo[1], String.Format("arg{0}", j)));
                     j++;
                   }
@@ -57,14 +54,11 @@
                   }
                 }
 
-                @if (eventArgs.Length > 0)
-                {
+                @if (eventArgs.Length > 0) {
                 @:Local<Value> args[] = { @foreachArg("wrappedArg{2}, ", 2) };
                 @:Local<Object> callbackObjLocalRef = Nan::New<Object>(*callbackObjPtr);
                 @:NodeRT::Utils::CallCallbackInDomain(callbackObjLocalRef, _countof(args), args);
-                }
-                else
-                {
+                } else {
                 @:Local<Object> callbackObjLocalRef = Nan::New<Object>(*callbackObjPtr);
                 @:NodeRT::Utils::CallCallbackInDomain(callbackObjLocalRef,0, nullptr);
                 }
@@ -72,8 +66,7 @@
             })
           );
         }
-        catch (Platform::Exception ^exception)
-        {
+        catch (Platform::Exception ^exception) {
           NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
           return;
         }

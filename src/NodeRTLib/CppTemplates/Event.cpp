@@ -1,18 +1,16 @@
-﻿    static void AddListener(Nan::NAN_METHOD_ARGS_TYPE info)
-    {
+﻿    static void AddListener(Nan::NAN_METHOD_ARGS_TYPE info) {
       HandleScope scope;
 
-      if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction())
-      {
+      if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction()) {
         Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"wrong arguments, expected arguments are eventName(string),callback(function)")));
-		return;
+        return;
       }
 
       String::Value eventName(info[0]);
       auto str = *eventName;
-      
+
       Local<Function> callback = info[1].As<Function>();
-      
+
       ::Windows::Foundation::EventRegistrationToken registrationToken;
       if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[0].EventInfo.Name)", str))
       {
@@ -21,7 +19,7 @@
         @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
         @:{
         @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The caller of this method isn't of the expected type or internal WinRt object was disposed")));
-		@:  return;
+    @:  return;
         @:}
         @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(info.This());
         }
@@ -35,41 +33,34 @@
         @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
         @:{
         @:  Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"The caller of this method isn't of the expected type or internal WinRt object was disposed")));
-		@:  return;
+    @:  return;
         @:}
         @:@(Model.Name) *wrapper = @(Model.Name)::Unwrap<@(Model.Name)>(info.This());
         }
       @:@TX.CppTemplates.RegisterEventWithWinRT(Model.Events[i])
       @:}
-      }
-      else 
-      {
+      } else  {
         Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
-		return;
+        return;
       }
 
       Local<Value> tokenMapVal = NodeRT::Utils::GetHiddenValue(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
       Local<Object> tokenMap;
 
-      if (tokenMapVal.IsEmpty() || Nan::Equals(tokenMapVal, Undefined()).FromMaybe(false))
-      {
+      if (tokenMapVal.IsEmpty() || Nan::Equals(tokenMapVal, Undefined()).FromMaybe(false)) {
         tokenMap = Nan::New<Object>();
         NodeRT::Utils::SetHiddenValueWithObject(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked(), tokenMap);
-      }
-      else
-      {
+      } else {
         tokenMap = Nan::To<Object>(tokenMapVal).ToLocalChecked();
       }
 
       Nan::Set(tokenMap, info[0], CreateOpaqueWrapper(::Windows::Foundation::PropertyValue::CreateInt64(registrationToken.Value)));
     }
 
-    static void RemoveListener(Nan::NAN_METHOD_ARGS_TYPE info)
-    {
+    static void RemoveListener(Nan::NAN_METHOD_ARGS_TYPE info) {
       HandleScope scope;
 
-      if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction())
-      {
+      if (info.Length() < 2 || !info[0]->IsString() || !info[1]->IsFunction()) {
         Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"wrong arguments, expected a string and a callback")));
         return;
       }
@@ -77,37 +68,32 @@
       String::Value eventName(info[0]);
       auto str = *eventName;
 
-      if (@TX.ForEachEvent(Model.Events ,"(!NodeRT::Utils::CaseInsenstiveEquals(L\"{1}\", str)) &&", 3))
-      {
+      if (@TX.ForEachEvent(Model.Events ,"(!NodeRT::Utils::CaseInsenstiveEquals(L\"{1}\", str)) &&", 3)) {
         Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
         return;
       }
 
       Local<Function> callback = info[1].As<Function>();
       Local<Value> tokenMap = NodeRT::Utils::GetHiddenValue(callback, Nan::New<String>(REGISTRATION_TOKEN_MAP_PROPERTY_NAME).ToLocalChecked());
-                
-      if (tokenMap.IsEmpty() || Nan::Equals(tokenMap, Undefined()).FromMaybe(false))
-      {
+
+      if (tokenMap.IsEmpty() || Nan::Equals(tokenMap, Undefined()).FromMaybe(false)) {
         return;
       }
 
       Local<Value> opaqueWrapperObj =  Nan::Get(Nan::To<Object>(tokenMap).ToLocalChecked(), info[0]).ToLocalChecked();
 
-      if (opaqueWrapperObj.IsEmpty() || Nan::Equals(opaqueWrapperObj,Undefined()).FromMaybe(false))
-      {
+      if (opaqueWrapperObj.IsEmpty() || Nan::Equals(opaqueWrapperObj,Undefined()).FromMaybe(false)) {
         return;
       }
 
       OpaqueWrapper *opaqueWrapper = OpaqueWrapper::Unwrap<OpaqueWrapper>(opaqueWrapperObj.As<Object>());
-            
+
       long long tokenValue = (long long) opaqueWrapper->GetObjectInstance();
       ::Windows::Foundation::EventRegistrationToken registrationToken;
       registrationToken.Value = tokenValue;
-        
-      try 
-      {
-        if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[0].EventInfo.Name)", str))
-        {
+
+      try  {
+        if (NodeRT::Utils::CaseInsenstiveEquals(L"@TX.Uncap(Model.Events[0].EventInfo.Name)", str)) {
           @if (!Model.Events[0].IsStatic)
           {
           @:if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Type,true))>(info.This()))
@@ -142,9 +128,7 @@
           }
         @:}
         }
-      }
-      catch (Platform::Exception ^exception)
-      {
+      } catch (Platform::Exception ^exception) {
         NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
       }
 

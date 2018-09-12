@@ -1,9 +1,7 @@
-﻿    static void @(TX.CSharpMethodToCppMethod(Model.Name))(Nan::NAN_METHOD_ARGS_TYPE info)
-    {
+﻿    static void @(TX.CSharpMethodToCppMethod(Model.Name))(Nan::NAN_METHOD_ARGS_TYPE info) {
       HandleScope scope;
 
-      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(info.This()))
-      {
+      if (!NodeRT::Utils::IsWinRtWrapperOf<@(TX.ToWinRT(Model.Overloads[0].DeclaringType,true))>(info.This())) {
         return;
       }
 
@@ -20,7 +18,7 @@
         bool methodHasOutParams = false;
         foreach (var paramInfo in overload.GetParameters())
         {
-          if (!paramInfo.IsOut) 
+          if (!paramInfo.IsOut)
             inParamsCount++;
           else
             methodHasOutParams = true;
@@ -40,72 +38,54 @@
           int parameterCounter = 0;
           foreach (var paramInfo in overload.GetParameters())
           {
-          var winrtConversionInfo = Converter.ToWinRT(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType));   
-          
-          if (paramInfo.ParameterType.IsByRef)
-          {
-            winrtConversionInfo = Converter.ToWinRT(paramInfo.ParameterType.GetElementType(), TX.MainModel.Types.ContainsKey(paramInfo.ParameterType.GetElementType()));   
+          var winrtConversionInfo = Converter.ToWinRT(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType));
+
+          if (paramInfo.ParameterType.IsByRef) {
+            winrtConversionInfo = Converter.ToWinRT(paramInfo.ParameterType.GetElementType(), TX.MainModel.Types.ContainsKey(paramInfo.ParameterType.GetElementType()));
           }
 
-          if (paramInfo.IsOut)
-          {
-            if (paramInfo.ParameterType.IsArray)
-            {
+          if (paramInfo.IsOut) {
+            if (paramInfo.ParameterType.IsArray) {
               string sizeStr;
-              if (TX.IsArrayAsOut(overload, out sizeStr))
-              {
+              if (TX.IsArrayAsOut(overload, out sizeStr)) {
           @:@(winrtConversionInfo[0]) arg@(parameterCounter) = ref new ::Platform::Array<@(TX.ToWinRT(paramInfo.ParameterType.GetElementType()))>(@(sizeStr));
-              }
-              else
-              {
+              } else {
           @:#error please initialize array below with ...=ref new ::Platform::Array<...>(size);
           @:@(winrtConversionInfo[0]) arg@(parameterCounter);  @if (paramInfo.ParameterType.IsArray) {@("// = ref new ::Platform::Array<" + TX.ToWinRT(paramInfo.ParameterType.GetElementType()) + ">(size);")}
               }
-            }
-            else
-            {
+            } else {
           @:@(winrtConversionInfo[0]) arg@(parameterCounter);
             }
-          }
-          else
-          {
+          } else {
           @:@(winrtConversionInfo[0]) arg@(parameterCounter) = @(string.Format(winrtConversionInfo[1], "info[" +parameterCounter + "]" ));
           }
           parameterCounter++;
           }
-          
-          if (overload.GetParameters().Length > 0)
-          {
+
+          if (overload.GetParameters().Length > 0) {
           @:
           }
-          if (overload.ReturnType == typeof(void))
-          {
+          if (overload.ReturnType == typeof(void)) {
           @:wrapper->_instance->@(TX.CSharpMethodToCppMethod(overload.Name))(@{int j=0;foreach(var paramInfo in overload.GetParameters()){if(j>0)@(", "); if (paramInfo.ParameterType.IsByRef){@("&")} @("arg" + j.ToString()); j++;}});
-          }
-          else
-          {
-            var winrtConversionInfo = Converter.ToWinRT(overload.ReturnType, TX.MainModel.Types.ContainsKey(overload.ReturnType)); 
+          } else {
+            var winrtConversionInfo = Converter.ToWinRT(overload.ReturnType, TX.MainModel.Types.ContainsKey(overload.ReturnType));
           @:@(winrtConversionInfo[0]) result;
-            var jsConversionInfo = Converter.ToJS(overload.ReturnType, TX.MainModel.Types.ContainsKey(overload.ReturnType)); 
+            var jsConversionInfo = Converter.ToJS(overload.ReturnType, TX.MainModel.Types.ContainsKey(overload.ReturnType));
           @:result = wrapper->_instance->@(TX.CSharpMethodToCppMethod(overload.Name))(@{int j=0;foreach(var paramInfo in overload.GetParameters()){if(j>0)@(", "); if (paramInfo.IsOut && paramInfo.ParameterType.IsByRef){@("&")} @("arg" + j.ToString()); j++;}});
           }
 
-          if (methodHasOutParams)
-          {
+          if (methodHasOutParams) {
           @:Local<Object> resObj = Nan::New<Object>();
-          
-            if (Model.Overloads[0].ReturnType != typeof(void))
-            {
+
+            if (Model.Overloads[0].ReturnType != typeof(void)) {
             var jsConversionInfo = Converter.ToJS(overload.ReturnType, TX.MainModel.Types.ContainsKey(overload.ReturnType));
-          
+
           @:Nan::Set(resObj, Nan::New<String>("@(Converter.ToOutParameterName(overload.ReturnType))").ToLocalChecked(), @(string.Format(jsConversionInfo[1], "result")));
             }
             parameterCounter = 0;
-            foreach (var paramInfo in overload.GetParameters())
-            {
-              if (paramInfo.IsOut)
-              {
-                var paramJsConversionInfo = Converter.ToJS(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType)); 
+            foreach (var paramInfo in overload.GetParameters()) {
+              if (paramInfo.IsOut) {
+                var paramJsConversionInfo = Converter.ToJS(paramInfo.ParameterType, TX.MainModel.Types.ContainsKey(paramInfo.ParameterType));
           @:Nan::Set(resObj, Nan::New<String>("@(paramInfo.Name)").ToLocalChecked(), @(string.Format(paramJsConversionInfo[1], "arg" + parameterCounter.ToString())));
               }
               parameterCounter++;
@@ -113,32 +93,24 @@
 
           @:info.GetReturnValue().Set(resObj);
           @:return;
-          }
-          else
-          {
-            if (Model.Overloads[0].ReturnType != typeof(void))
-            {
-              var jsConversionInfo = Converter.ToJS(Model.Overloads[0].ReturnType, TX.MainModel.Types.ContainsKey(Model.Overloads[0].ReturnType)); 
+          } else {
+            if (Model.Overloads[0].ReturnType != typeof(void)) {
+              var jsConversionInfo = Converter.ToJS(Model.Overloads[0].ReturnType, TX.MainModel.Types.ContainsKey(Model.Overloads[0].ReturnType));
           @:info.GetReturnValue().Set(@string.Format(jsConversionInfo[1], "result"));
           @:return;
             }
-            else
-            {
-          @:return;   
+            else {
+          @:return;
             }
           }
 
-        @:}
-        @:catch (Platform::Exception ^exception)
-        @:{
+        @:} catch (Platform::Exception ^exception) {
           @:NodeRT::Utils::ThrowWinRtExceptionInJs(exception);
           @:return;
         @:}
       @:}
         c++;
-      }
-      else 
-      {
+      } else {
         Nan::ThrowError(Nan::Error(NodeRT::Utils::NewString(L"Bad arguments: no suitable overload found")));
         return;
       }
