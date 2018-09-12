@@ -10,9 +10,10 @@
     "include_dirs": [
       "<!(node -e \"require('nan')\")"
     ],
-    "libraries": ["-lruntimeobject.lib"],
+    "libraries": [],
     "conditions": [
       ["OS=='win'", {
+        "libraries": ["-lruntimeobject.lib"],
         "sources": [
           "_nodert_generated.cpp",
           "NodeRtUtils.cpp",
