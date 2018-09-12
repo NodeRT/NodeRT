@@ -1,14 +1,14 @@
 ﻿// Copyright (c) The NodeRT Contributors
-// All rights reserved. 
+// All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the ""License""); you may
 // not use this file except in compliance with the License. You may obtain a
-// copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+// copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 //
 // THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
 // OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY
 // IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-// MERCHANTABLITY OR NON-INFRINGEMENT. 
+// MERCHANTABLITY OR NON-INFRINGEMENT.
 //
 // See the Apache Version 2.0 License for specific language governing permissions
 // and limitations under the License.
@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 
 namespace NodeRTLib
 {
@@ -50,7 +51,7 @@ namespace NodeRTLib
 
         public static bool TryParseWinVersion(string winVerString, out WinVersions winVer)
         {
-            switch(winVerString)
+            switch (winVerString)
             {
                 case "8":
                     winVer = WinVersions.v8;
@@ -71,7 +72,7 @@ namespace NodeRTLib
         public static bool VerifyVsAndWinVersions(WinVersions winVersion, VsVersions vsVersion, out string errorMessage)
         {
             errorMessage = null;
-           
+
             if (vsVersion == VsVersions.Vs2013 && winVersion == WinVersions.v10)
             {
                 errorMessage = "VS 2013 does not support building Windows 10 modules";
@@ -117,7 +118,7 @@ namespace NodeRTLib
 
         public string GenerateProject(string winRTNamespace, string destinationFolder, string winRtFile, string npmPackageVersion, string npmScope, dynamic mainModel)
         {
-            string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");            
+            string projectName = "NodeRT_" + winRTNamespace.Replace(".", "_");
 
             if (!Directory.Exists(destinationFolder))
             {
@@ -168,7 +169,7 @@ namespace NodeRTLib
                 npmPackageVersion = "0.1.0";
             }
 
-            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName, 
+            CopyAndGenerateJsPackageFiles(destinationFolder, winRTNamespace, projectName,
                 npmPackageVersion, npmScope, WinVersionToString(_winVersion), VsVersionToString(_vsVersion), mainModel);
 
             return destinationFolder;
@@ -201,14 +202,27 @@ namespace NodeRTLib
                 bindingFileText.Replace("{WinVer}", "v10");
             }
 
-            // resolve the x64 dirs using the sdk we use:
+            // We need to find the _actual_ directory.
             if (!directoryName.EndsWith(@"windows kits\8.1\references\commonconfiguration\neutral") &&
                 !directoryName.EndsWith(@"windows kits\8.0\references\commonconfiguration\neutral") &&
                 !directoryName.EndsWith(@"windows kits\10\unionmetadata"))
             {
                 var winmdDirectory = Path.GetDirectoryName(winrtFile);
                 var additionalWinmdPath = winmdDirectory.Replace('\\', '/');
-                bindingFileText.Replace("{AdditionalWinmdPath}", additionalWinmdPath);
+
+                // If the winmd file is in "%ProgramFiles%/Windows Kits/10/UnionMetadata/10.0.17134.0/,
+                // we want the "10.0.17134.0" portion
+                var winVer = new DirectoryInfo(winmdDirectory).Name;
+
+                var additionalPaths = new[]
+                {
+                    "%ProgramFiles%/Windows Kits/10/UnionMetadata/" + winVer,
+                    "%ProgramFiles%/Windows Kits/10/Include/" + winVer + "/um",
+                    "%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata/" + winVer,
+                    "%ProgramFiles(x86)%/Windows Kits/10/Include/" + winVer + "/um",
+                }.Select(p => "\"" + p + "\"").Aggregate((current, next) => current + ",\n              " + next);
+
+                bindingFileText.Replace("{AdditionalWinmdPaths}", additionalPaths);
                 bindingFileText.Replace("{UseAdditionalWinmd}", "true");
             }
             else
@@ -253,7 +267,7 @@ namespace NodeRTLib
             readmeFileText.Replace("{PackageName}", npmPackageName);
             readmeFileText.Replace("{WinVersion}", winVersion);
             readmeFileText.Replace("{VSVersion}", vsVersion);
-            
+
             File.WriteAllText(Path.Combine(destinationFolder, "README.md"), readmeFileText.ToString());
 
             // write the package.json file:
@@ -263,7 +277,7 @@ namespace NodeRTLib
             packageJsonFileText.Replace("{PackageVersion}", npmPackageVersion);
             packageJsonFileText.Replace("{Keywords}", GeneratePackageKeywords(mainModel, winRTNamespace));
             packageJsonFileText.Replace("{Dependencies}", GeneratePackageDependencies(mainModel.ExternalReferencedNamespaces, npmScope, npmPackageVersion));
-            
+
             if (_vsVersion == VsVersions.Vs2012)
                 packageJsonFileText.Replace("{VSVersion}", "2012");
             else if (_vsVersion == VsVersions.Vs2013)
