@@ -3,9 +3,6 @@
   "version": "{PackageVersion}",
   "description": "Use the {Namespace} UWP API directly from Node.js",
   "main": "lib/main.js",
-  "scripts" : {
-    "install" : "node-gyp rebuild --msvs_version={VSVersion}"
-  },
   "keywords": [
     {Keywords},
     "NodeRT",
