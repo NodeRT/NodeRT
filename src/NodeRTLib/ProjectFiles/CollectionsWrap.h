@@ -34,7 +34,6 @@ using Nan::True;
 using Nan::Undefined;
 using v8::Boolean;
 using v8::FunctionTemplate;
-using v8::Handle;
 using v8::Integer;
 using v8::Local;
 using v8::String;

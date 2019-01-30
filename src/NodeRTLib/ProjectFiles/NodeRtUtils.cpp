@@ -36,7 +36,7 @@ using v8::Boolean;
 using v8::Date;
 using v8::Function;
 using v8::FunctionTemplate;
-using v8::Handle;
+using v8::Local;
 using v8::Integer;
 using v8::Local;
 using v8::Number;
@@ -221,7 +221,7 @@ Local<Value> CreateExternalWinRTObject(const char* ns,
                                        const char* objectName,
                                        ::Platform::Object ^ instance) {
   EscapableHandleScope scope;
-  Handle<Value> opaqueWrapper = CreateOpaqueWrapper(instance);
+  Local<Value> opaqueWrapper = CreateOpaqueWrapper(instance);
 
   Local<Object> global = Nan::GetCurrentContext()->Global();
   if (!Nan::Has(global,
