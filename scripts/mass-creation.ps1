@@ -75,6 +75,6 @@ if ($reply -match "[yY]") {
     $outDir = New-Item -Path "~/Desktop/NodeRT/$sdk" -ItemType directory;
     Write-Host "Output will be available in $outDir"
 
-    & $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir "C:\Users\felix\Desktop\rs3" --npmscope $sdk --npmversion $npmVersion --nobuild
+    & $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir $outDir --npmscope $sdk --npmversion $npmVersion --nobuild
   }
 }
