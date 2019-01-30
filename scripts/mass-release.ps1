@@ -2,7 +2,7 @@ Function Get-Folder($initialDirectory) {
   [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
 
   $foldername = New-Object System.Windows.Forms.FolderBrowserDialog
-  $foldername.Description = "Select a folder"
+  $foldername.Description = "Select a folder to relase from"
   $foldername.rootfolder = "MyComputer"
 
   if ($foldername.ShowDialog() -eq "OK") {
