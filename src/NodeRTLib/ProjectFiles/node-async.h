@@ -44,14 +44,14 @@ using Nan::Persistent;
 using Nan::Undefined;
 using v8::Exception;
 using v8::Function;
-using v8::Handle;
+using v8::Local;
 using v8::Integer;
 using v8::Local;
 using v8::Object;
 using v8::String;
 using v8::Value;
 
-typedef std::function<void(int, Handle<Value>*)> InvokeCallbackDelegate;
+typedef std::function<void(int, Local<Value>*)> InvokeCallbackDelegate;
 
 class Async {
  public:
@@ -68,7 +68,7 @@ class Async {
 
     Baton() { callback_args_size = 0; }
 
-    void setCallbackArgs(Handle<Value>* argv, int argc) {
+    void setCallbackArgs(Local<Value>* argv, int argc) {
       HandleScope scope;
 
       callback_info.reset(new Persistent<Value>[argc],
@@ -108,8 +108,8 @@ class Async {
       return asyncHandle;
     }
 
-    static uv_async_t* NewAsyncToken(Handle<Function> callback,
-                                     Handle<Value> receiver) {
+    static uv_async_t* NewAsyncToken(Local<Function> callback,
+                                     Local<Value> receiver) {
       uv_async_t* asyncHandle = NewAsyncToken();
       SetHandleCallbackData(asyncHandle->data, callback, receiver);
 
@@ -124,8 +124,8 @@ class Async {
       return idleHandle;
     }
 
-    static uv_idle_t* NewIdleToken(Handle<Function> callback,
-                                   Handle<Value> receiver) {
+    static uv_idle_t* NewIdleToken(Local<Function> callback,
+                                   Local<Value> receiver) {
       uv_idle_t* idleHandle = NewIdleToken();
       SetHandleCallbackData(idleHandle->data, callback, receiver);
 
@@ -140,8 +140,8 @@ class Async {
     }
 
     static void SetHandleCallbackData(void* handleData,
-                                      Handle<Function> callback,
-                                      Handle<Value> receiver) {
+                                      Local<Function> callback,
+                                      Local<Value> receiver) {
       TokenData* Token = static_cast<TokenData*>(handleData);
       Token->callbackData.Reset(CreateCallbackData(callback, receiver));
     }
@@ -160,8 +160,8 @@ class Async {
       std::shared_ptr<TInput> input,
       std::function<void(Baton<TInput, TResult>*)> doWork,
       std::function<void(Baton<TInput, TResult>*)> afterWork,
-      Handle<Function> callback,
-      Handle<Value> receiver = Handle<Value>()) {
+      Local<Function> callback,
+      Local<Value> receiver = Local<Value>()) {
     HandleScope scope;
     Local<Object> callbackData = CreateCallbackData(callback, receiver);
 
@@ -182,16 +182,16 @@ class Async {
   }
 
   static uv_async_t* __cdecl GetAsyncToken(
-      Handle<Function> callback,
-      Handle<Value> receiver = Handle<Value>()) {
+      Local<Function> callback,
+      Local<Value> receiver = Local<Value>()) {
     return TokenData::NewAsyncToken(callback, receiver);
   }
 
   static uv_idle_t* __cdecl GetIdleToken() { return TokenData::NewIdleToken(); }
 
   static uv_idle_t* __cdecl GetIdleToken(
-      Handle<Function> callback,
-      Handle<Value> receiver = Handle<Value>()) {
+      Local<Function> callback,
+      Local<Value> receiver = Local<Value>()) {
     return TokenData::NewIdleToken(callback, receiver);
   }
 
@@ -212,7 +212,7 @@ class Async {
     TokenData* Token = static_cast<TokenData*>(async->data);
 
     InvokeCallbackDelegate invokeCallback = [Token](int argc,
-                                                    Handle<Value>* argv) {
+                                                    Local<Value>* argv) {
       if (!Token->callbackData.IsEmpty()) {
         MakeCallback(New(Token->callbackData),
                      New<String>("callback").ToLocalChecked(), argc, argv);
@@ -248,7 +248,7 @@ class Async {
     TokenData* Token = static_cast<TokenData*>(idler->data);
 
     InvokeCallbackDelegate invokeCallback = [Token](int argc,
-                                                    Handle<Value>* argv) {
+                                                    Local<Value>* argv) {
       if (!Token->callbackData.IsEmpty()) {
         MakeCallback(New(Token->callbackData),
                      New<String>("callback").ToLocalChecked(), argc, argv);
@@ -264,8 +264,8 @@ class Async {
   }
 
  private:
-  static Handle<Object> CreateCallbackData(Handle<Function> callback,
-                                           Handle<Value> receiver) {
+  static Local<Object> CreateCallbackData(Local<Function> callback,
+                                          Local<Value> receiver) {
     EscapableHandleScope scope;
 
     Local<Object> callbackData;
@@ -321,13 +321,13 @@ class Async {
     // typical AfterWorkFunc implementation
     // if (baton->error)
     //{
-    //  Handle<Value> err = Exception::Error(...);
-    //  Handle<Value> argv[] = { err };
+    //  Local<Value> err = Exception::Error(...);
+    //  Local<Value> argv[] = { err };
     //  baton->setCallbackArgs(argv, _countof(argv));
     //}
     // else
     //{
-    //  Handle<Value> argv[] = { Undefined(), ... };
+    //  Local<Value> argv[] = { Undefined(), ... };
     //  baton->setCallbackArgs(argv, _countof(argv));
     //}
 

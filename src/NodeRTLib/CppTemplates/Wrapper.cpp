@@ -41,7 +41,6 @@ const char* REGISTRATION_TOKEN_MAP_PROPERTY_NAME = "__registrationTokenMap__";
 
 using v8::Array;
 using v8::String;
-using v8::Handle;
 using v8::Value;
 using v8::Boolean;
 using v8::Integer;

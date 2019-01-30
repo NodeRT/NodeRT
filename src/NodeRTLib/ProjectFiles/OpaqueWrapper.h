@@ -34,12 +34,12 @@ class OpaqueWrapper : public WrapperBase {
     return _instance;
   }
 
-  static bool IsOpaqueWrapper(v8::Handle<v8::Value> value) {
+  static bool IsOpaqueWrapper(v8::Local<v8::Value> value) {
     if (value.IsEmpty() || !value->IsObject()) {
       return false;
     }
 
-    v8::Handle<v8::Value> hiddenVal = NodeRT::Utils::GetHiddenValue(
+    v8::Local<v8::Value> hiddenVal = NodeRT::Utils::GetHiddenValue(
         value.As<v8::Object>(),
         Nan::New<v8::String>("__winrtOpaqueWrapper__").ToLocalChecked());
 
