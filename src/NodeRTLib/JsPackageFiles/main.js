@@ -13,12 +13,12 @@
 // See the Apache Version 2.0 License for specific language governing permissions
 // and limitations under the License.
 
-var path = require('path');
-var fs = require('fs');
+const path = require('path');
+const fs = require('fs');
 
-var npmScope = '{NpmScope}';
+const npmScope = '{NpmScope}';
 
-// this little trick makes node.js Tools for VS load intellisense for the module
+// This little trick makes Node.js Tools for VS load IntelliSense for the module
 if (fs.existsSync(path.join(__dirname, '{ProjectName}.d.js)'))) {
   module.exports = require('./{ProjectName}.d.js');
 } else {
@@ -32,6 +32,7 @@ if (externalReferencedNamespaces.length > 0) {
 
   if (!namespaceRegistry) {
     namespaceRegistry = {};
+
     Object.defineProperty(global, '__winRtNamespaces__', {
       configurable: true,
       writable: false,

@@ -10,7 +10,7 @@
     "Microsoft"
   ],
   "dependencies" : {
-  	  "nan" : "latest"
+    "nan" : "latest"
   },
   "repository": {
     "type": "git",
