@@ -227,7 +227,14 @@ namespace NodeRTLib
             }
             else
             {
-                bindingFileText.Replace("{UseAdditionalWinmd}", "false");
+                var additionalPaths = new[]
+                {
+                    "%ProgramFiles%/Windows Kits/10/UnionMetadata/",
+                    "%ProgramFiles(x86)%/Windows Kits/10/UnionMetadata/",
+                }.Select(p => "\"" + p + "\"").Aggregate((current, next) => current + ",\n              " + next);
+
+                bindingFileText.Replace("{AdditionalWinmdPaths}", additionalPaths);
+                bindingFileText.Replace("{UseAdditionalWinmd}", "true");
             }
         }
 

@@ -22,7 +22,7 @@ $dirs = dir $dir
 foreach ($d in $dirs) {
   Write-Host "Publishing $d"
 
-  cd $d
+  cd $d.FullName
   npm publish . --access public
   cd $dir
 }
