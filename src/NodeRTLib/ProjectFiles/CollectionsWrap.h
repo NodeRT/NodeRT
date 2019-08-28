@@ -584,7 +584,7 @@ class VectorViewWrapper : NodeRT::WrapperBase {
 
     if (info.Length() == 1 && info[0]->IsUint32()) {
       try {
-        unsigned int index = info[0]->Uint32Value();
+        unsigned int index = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 
         if (index >= wrapper->_instance->Size) {
           return;
@@ -969,7 +969,7 @@ class VectorWrapper : NodeRT::WrapperBase {
     if (info.Length() == 2 && info[0]->IsUint32() &&
         wrapper->_checkTypeFunc(info[1])) {
       try {
-        unsigned int index = info[0]->Uint32Value();
+        unsigned int index = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 
         T value = wrapper->_convertToTypeFunc(info[1]);
         wrapper->_instance->InsertAt(index, value);
@@ -998,7 +998,7 @@ class VectorWrapper : NodeRT::WrapperBase {
 
     if (info.Length() == 1 && info[0]->IsUint32()) {
       try {
-        unsigned int index = info[0]->Uint32Value();
+        unsigned int index = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 
         wrapper->_instance->RemoveAt(index);
         return;
@@ -1083,7 +1083,7 @@ class VectorWrapper : NodeRT::WrapperBase {
 
     if (info.Length() == 1 && info[0]->IsUint32()) {
       try {
-        unsigned int index = info[0]->Uint32Value();
+        unsigned int index = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 
         if (index >= wrapper->_instance->Size) {
           return;
@@ -1121,7 +1121,7 @@ class VectorWrapper : NodeRT::WrapperBase {
     if (info.Length() == 2 && info[0]->IsUint32() &&
         wrapper->_checkTypeFunc(info[1])) {
       try {
-        unsigned int index = info[0]->Uint32Value();
+        unsigned int index = info[0]->Uint32Value(Nan::GetCurrentContext()).FromMaybe(0);
 
         if (index >= wrapper->_instance->Size) {
           return;

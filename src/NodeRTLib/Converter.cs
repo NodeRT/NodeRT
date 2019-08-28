@@ -598,7 +598,7 @@ namespace NodeRTLib
 
             if (type == typeof(String))
             {
-                return new[] { "Platform::String^", "ref new Platform::String(NodeRT::Utils::StringToWchar(v8::String::Value({0})))" };
+                return new[] { "Platform::String^", "ref new Platform::String(NodeRT::Utils::StringToWchar(v8::String::Value(v8::Isolate::GetCurrent(), {0})))" };
             }
 
             if (type == typeof(DateTime) || type == typeof(DateTimeOffset))
