@@ -37,14 +37,12 @@ namespace NodeUtils {
 using Nan::EscapableHandleScope;
 using Nan::GetCurrentContext;
 using Nan::HandleScope;
-using Nan::MakeCallback;
 using Nan::New;
 using Nan::Null;
 using Nan::Persistent;
 using Nan::Undefined;
 using v8::Exception;
 using v8::Function;
-using v8::Local;
 using v8::Integer;
 using v8::Local;
 using v8::Object;
@@ -214,8 +212,9 @@ class Async {
     InvokeCallbackDelegate invokeCallback = [Token](int argc,
                                                     Local<Value>* argv) {
       if (!Token->callbackData.IsEmpty()) {
-        MakeCallback(New(Token->callbackData),
-                     New<String>("callback").ToLocalChecked(), argc, argv);
+        Nan::AsyncResource asyncResource(Nan::New<String>("RunCallbackOnMain").ToLocalChecked());
+        asyncResource.runInAsyncScope(New(Token->callbackData),
+                                      New<String>("callback").ToLocalChecked(), argc, argv);
       }
     };
 
@@ -250,8 +249,9 @@ class Async {
     InvokeCallbackDelegate invokeCallback = [Token](int argc,
                                                     Local<Value>* argv) {
       if (!Token->callbackData.IsEmpty()) {
-        MakeCallback(New(Token->callbackData),
-                     New<String>("callback").ToLocalChecked(), argc, argv);
+        Nan::AsyncResource asyncResource(Nan::New<String>("RunCallbackOnNextTick").ToLocalChecked());
+        asyncResource.runInAsyncScope(New(Token->callbackData),
+                                      New<String>("callback").ToLocalChecked(), argc, argv);
       }
     };
 
@@ -341,9 +341,10 @@ class Async {
         handlesArr.get()[i] = New(baton->callback_info.get()[i]);
       }
 
-      MakeCallback(New(baton->callbackData),
-                   New<String>("callback").ToLocalChecked(), argc,
-                   handlesArr.get());
+      Nan::AsyncResource asyncResource(Nan::New<String>("AsyncAfter").ToLocalChecked());
+      asyncResource.callInAsyncScope(New(baton->callbackData),
+                                     New<String>("callback").ToLocalChecked(), argc,
+                                     handlesArr.get());
     }
 
     baton->callbackData.Reset();

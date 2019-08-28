@@ -123,9 +123,12 @@ Local<v8::Object> CreateCallbackObjectInDomain(Local<v8::Function> callback) {
 Local<Value> CallCallbackInDomain(Local<v8::Object> callbackObject,
                                   int argc,
                                   Local<Value> argv[]) {
-  return Nan::MakeCallback(callbackObject,
-                           Nan::New<String>("callback").ToLocalChecked(), argc,
-                           argv);
+  Nan::AsyncResource asyncResource(Nan::New<String>("CallCallbackInDomain").ToLocalChecked());
+  return asyncResource.runInAsyncScope(
+                          callbackObject,
+                          Nan::New<String>("callback").ToLocalChecked(), argc,
+                          argv)
+      .FromMaybe(v8::Local<v8::Value>());
 }
 
 ::Platform::Object ^
