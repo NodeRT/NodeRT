@@ -269,7 +269,7 @@ class Async {
     EscapableHandleScope scope;
 
     Local<Object> callbackData;
-    if (!callback.IsEmpty() && !callback->Equals(Undefined())) {
+    if (!callback.IsEmpty() && !callback->Equals(Nan::GetCurrentContext(), Undefined()).FromMaybe(true)) {
       callbackData = New<Object>();
 
       if (!receiver.IsEmpty()) {
@@ -287,7 +287,7 @@ class Async {
                                    New<String>("process").ToLocalChecked())
                               .ToLocalChecked())
               .ToLocalChecked();
-      if (!process->Equals(Undefined())) {
+      if (!process->Equals(Nan::GetCurrentContext(), Undefined()).FromMaybe(true)) {
         currentDomain = process->Get(New<String>("domain").ToLocalChecked());
       }
 

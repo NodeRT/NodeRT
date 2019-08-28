@@ -47,7 +47,7 @@ class OpaqueWrapper : public WrapperBase {
       return false;
     }
 
-    return hiddenVal->Equals(Nan::True());
+    return hiddenVal->IsTrue();
   }
 
  private:
