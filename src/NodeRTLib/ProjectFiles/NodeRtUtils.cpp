@@ -123,9 +123,12 @@ Local<v8::Object> CreateCallbackObjectInDomain(Local<v8::Function> callback) {
 Local<Value> CallCallbackInDomain(Local<v8::Object> callbackObject,
                                   int argc,
                                   Local<Value> argv[]) {
-  return Nan::MakeCallback(callbackObject,
-                           Nan::New<String>("callback").ToLocalChecked(), argc,
-                           argv);
+  Nan::AsyncResource asyncResource(Nan::New<String>("CallCallbackInDomain").ToLocalChecked());
+  return asyncResource.runInAsyncScope(
+                          callbackObject,
+                          Nan::New<String>("callback").ToLocalChecked(), argc,
+                          argv)
+      .FromMaybe(v8::Local<v8::Value>());
 }
 
 ::Platform::Object ^
@@ -162,7 +165,7 @@ const wchar_t* StringToWchar(v8::String::Value& str) {
 // Convertor logic
 ::Platform::String ^
     V8StringToPlatformString(Local<Value> value) {
-      v8::String::Value stringVal(value);
+      v8::String::Value stringVal(v8::Isolate::GetCurrent(), value);
 #ifdef WCHART_NOT_BUILTIN_IN_NODE
       return ref new Platform::String(
           reinterpret_cast<const wchar_t*>(*stringVal));
@@ -324,7 +327,7 @@ Local<Value> GetHiddenValue(Local<Object> obj, Local<String> symbol) {
     // 116444736000000000 = The time in 100 nanoseconds between 1/1/1970(UTC) to
     // 1/1/1601(UTC) ux_time = (Current time since 1601 in 100 nano sec
     // units)/10000 - 116444736000000000;
-    time.UniversalTime = value->IntegerValue() * 10000 + 116444736000000000;
+    time.UniversalTime = value->IntegerValue(Nan::GetCurrentContext()).FromMaybe(0) * 10000 + 116444736000000000;
   }
 
   return time;
@@ -343,7 +346,7 @@ bool StrToGuid(Local<Value> value, LPCLSID guid) {
     return false;
   }
 
-  v8::String::Value stringVal(value);
+  v8::String::Value stringVal(v8::Isolate::GetCurrent(), value);
   std::wstring guidStr(L"{");
   guidStr += StringToWchar(stringVal);
   guidStr += L"}";
@@ -692,7 +695,7 @@ wchar_t GetFirstChar(Local<Value> value) {
     return retVal;
   }
 
-  String::Value val(str);
+  String::Value val(v8::Isolate::GetCurrent(), str);
   retVal = (*val)[0];
   return retVal;
 }

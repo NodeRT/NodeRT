@@ -6,7 +6,7 @@
         return;
       }
 
-      String::Value eventName(info[0]);
+      String::Value eventName(v8::Isolate::GetCurrent(), info[0]);
       auto str = *eventName;
 
       Local<Function> callback = info[1].As<Function>();
@@ -40,7 +40,7 @@
       @:@TX.CppTemplates.RegisterEventWithWinRT(Model.Events[i])
       @:}
       } else  {
-        Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
+        Nan::ThrowError(Nan::Error(String::Concat(v8::Isolate::GetCurrent(), NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
         return;
       }
 
@@ -65,11 +65,11 @@
         return;
       }
 
-      String::Value eventName(info[0]);
+      String::Value eventName(v8::Isolate::GetCurrent(), info[0]);
       auto str = *eventName;
 
       if (@TX.ForEachEvent(Model.Events ,"(!NodeRT::Utils::CaseInsenstiveEquals(L\"{1}\", str)) &&", 3)) {
-        Nan::ThrowError(Nan::Error(String::Concat(NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
+        Nan::ThrowError(Nan::Error(String::Concat(v8::Isolate::GetCurrent(), NodeRT::Utils::NewString(L"given event name isn't supported: "), info[0].As<String>())));
         return;
       }
 
