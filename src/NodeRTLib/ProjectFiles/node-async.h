@@ -288,7 +288,7 @@ class Async {
                               .ToLocalChecked())
               .ToLocalChecked();
       if (!process->Equals(Nan::GetCurrentContext(), Undefined()).FromMaybe(true)) {
-        currentDomain = process->Get(New<String>("domain").ToLocalChecked());
+        currentDomain = process->Get(Nan::GetCurrentContext(), New<String>("domain").ToLocalChecked()).ToLocalChecked();
       }
 
       Nan::Set(callbackData, New<String>("domain").ToLocalChecked(),
