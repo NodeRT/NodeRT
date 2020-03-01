@@ -88,7 +88,7 @@ namespace NodeRTUI
         {
             Properties.Settings.Default.LastWinMDPath = "";
             Properties.Settings.Default.LastFilter = "";
-            Properties.Settings.Default.VsVersionComboSelection = 3;
+            Properties.Settings.Default.VsVersionComboSelection = 4;
             Properties.Settings.Default.OutputDirPath = GetDefaultOutputDir();
             Properties.Settings.Default.GenerateDefsChk = true;
             Properties.Settings.Default.Save();
@@ -98,7 +98,7 @@ namespace NodeRTUI
             txtFilter.Text = "";
             txtOutputDirectory.Text = Properties.Settings.Default.OutputDirPath;
             cmbWindowsVersion.SelectedIndex = 2;
-            cmbVsVersion.SelectedIndex = 3;
+            cmbVsVersion.SelectedIndex = 4;
             chkDefGen.Checked = true;
             chkBuildModule.Checked = true;
             namespaceList.Items.Clear();

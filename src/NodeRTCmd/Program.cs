@@ -60,14 +60,14 @@ namespace NodeRTCmd
             string ns = ValueOrNull(argsDictionary, "namespace");
             string customWinMdDir = ValueOrNull(argsDictionary, "customwinmddir");
 
-            VsVersions vsVersion = VsVersions.Vs2017;
+            VsVersions vsVersion = VsVersions.Vs2019;
             WinVersions winVersion = WinVersions.v10;
 
             if (argsDictionary.ContainsKey("vs"))
             {
                 if (!Enum.TryParse<VsVersions>(argsDictionary["vs"], true, out vsVersion))
                 {
-                    Console.WriteLine("Unsupported VS version. Supported options are: VS2017, VS2015, VS2013, VS2012");
+                    Console.WriteLine("Unsupported VS version. Supported options are: VS2019, VS2017, VS2015, VS2013, VS2012");
                     Environment.Exit(1);
                 }
             }
@@ -239,7 +239,7 @@ namespace NodeRTCmd
             Console.WriteLine("  --outdir [path]              The output dir in which the NodeRT module");
             Console.WriteLine("                               will be created in");
             Console.WriteLine();
-            Console.WriteLine("  --vs [Vs2017|Vs2015|Vs2013|Vs2012]  Optional, VS version to use, default is Vs2017");
+            Console.WriteLine("  --vs [Vs2019|Vs2017|Vs2015|Vs2013|Vs2012]  Optional, VS version to use, default is Vs2019");
             Console.WriteLine();
             Console.WriteLine("  --winver [10|8.1|8]          Optional, Windows SDK version to use, default is 10");
             Console.WriteLine();
