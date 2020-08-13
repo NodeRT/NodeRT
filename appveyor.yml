@@ -1,0 +1,4 @@
+image: Visual Studio 2017
+
+after_build:
+  - NodeRTCmd.exe --winmd "c:\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd" --outdir c:\projects\nodert\out
