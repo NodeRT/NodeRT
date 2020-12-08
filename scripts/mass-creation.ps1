@@ -56,6 +56,18 @@ foreach ($d in $unionMetadataDirs) {
   if ($d.Name -eq "10.0.17134.0") {
     $namespace = "nodert-win10-rs4";
   }
+  
+  if ($d.Name -eq "10.0.17763.0") {
+    $namespace = "nodert-win10-rs5";
+  }
+  
+  if ($d.Name -eq "10.0.18362.0") {
+    $namespace = "nodert-win10-19h1";
+  }
+  
+  if ($d.Name -eq "10.0.19041.0") {
+    $namespace = "nodert-win10-20h1";
+  }
 
   if ($namespace -eq "") {
     Write-Host "Found SDK folder $d, but it's unknown. We won't use it.";
