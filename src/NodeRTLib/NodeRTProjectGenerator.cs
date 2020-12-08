@@ -271,7 +271,13 @@ namespace NodeRTLib
             File.WriteAllText(Path.Combine(libDirPath, "main.js"), mainJsFileText.ToString());
 
             // write the README.md file
-            StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md")));
+            string readmeTemplatePath;
+            if (_vsVersion == VsVersions.Vs2019)
+                readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2019.md");
+            else
+                readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md");
+
+            StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(readmeTemplatePath));
             readmeFileText.Replace("{Namespace}", winRTNamespace);
             readmeFileText.Replace("{ModuleName}", winRTNamespace.ToLowerInvariant());
             readmeFileText.Replace("{PackageName}", npmPackageName);
@@ -281,7 +287,13 @@ namespace NodeRTLib
             File.WriteAllText(Path.Combine(destinationFolder, "README.md"), readmeFileText.ToString());
 
             // write the package.json file:
-            StringBuilder packageJsonFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json")));
+            string packageJsonTemplatePath;
+            if (_vsVersion == VsVersions.Vs2019)
+                packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.vs2019.json");
+            else
+                packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json");
+
+            StringBuilder packageJsonFileText = new StringBuilder(File.ReadAllText(packageJsonTemplatePath));
             packageJsonFileText.Replace("{Namespace}", winRTNamespace);
             packageJsonFileText.Replace("{PackageName}", npmPackageName);
             packageJsonFileText.Replace("{PackageVersion}", npmPackageVersion);

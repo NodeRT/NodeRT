@@ -213,6 +213,12 @@
     <None Include="JsPackageFiles\LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="JsPackageFiles\README.vs2019.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="JsPackageFiles\package.vs2019.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="ProjectTemplates\binding.gyp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
