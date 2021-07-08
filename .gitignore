@@ -152,3 +152,6 @@ $RECYCLE.BIN/
 
 # VS2017
 src/.vs/NodeRT/v15
+
+# VS2019
+src/.vs/NodeRT/v16

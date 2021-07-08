@@ -26,7 +26,8 @@ namespace NodeRTLib
         Vs2012,
         Vs2013,
         Vs2015,
-        Vs2017
+        Vs2017,
+        Vs2019
     }
 
     public enum WinVersions
@@ -98,8 +99,10 @@ namespace NodeRTLib
                     return "2013";
                 case VsVersions.Vs2015:
                     return "2015";
-                default:
+                case VsVersions.Vs2017:
                     return "2017";
+                default:
+                    return "2019";
             }
         }
 
@@ -291,8 +294,10 @@ namespace NodeRTLib
                 packageJsonFileText.Replace("{VSVersion}", "2013");
             else if (_vsVersion == VsVersions.Vs2015)
                 packageJsonFileText.Replace("{VSVersion}", "2015");
-            else
+            else if (_vsVersion == VsVersions.Vs2017)
                 packageJsonFileText.Replace("{VSVersion}", "2017");
+            else
+                packageJsonFileText.Replace("{VSVersion}", "2019");
 
             File.WriteAllText(Path.Combine(destinationFolder, "package.json"), packageJsonFileText.ToString());
 
