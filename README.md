@@ -289,7 +289,7 @@ just to make sure that it isn't already there.
 You are more than welcome to fork this repository and send us a pull request
 if you feel that what you've done should be included.
 
-[talk]: https://channel9.msdn.com/Events/Build/2017/T6976
+[talk]: https://www.youtube.com/watch?v=9z5xDyVRh6M
 [desktop-callable]: https://docs.microsoft.com/en-us/windows/desktop/apiindex/uwp-apis-callable-from-a-classic-desktop-app
 [uwp-namespaces]: http://msdn.microsoft.com/en-us/library/windows/apps/br211377.aspx
 [geolocation]: http://msdn.microsoft.com/library/windows/apps/br225603
