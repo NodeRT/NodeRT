@@ -272,6 +272,9 @@ If you are not using a boilerplate or are having trouble correctly compiling
 NodeRT modules, see Electron's documentation for [how to use native Node addons
 in Electron](https://electronjs.org/docs/tutorial/using-native-node-modules).
 
+From Electron v14 on, you'll have to require NodeRT modules in the `main` process.
+See https://github.com/NodeRT/NodeRT/issues/158 for details.
+
 ## License
 
 NodeRT is released under the Apache 2.0 license.
