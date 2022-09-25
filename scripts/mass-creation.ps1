@@ -52,6 +52,7 @@ foreach ($d in $unionMetadataDirs) {
 	"10.0.17763.0" { $namespace = "nodert-win10-rs5"; }
 	"10.0.18362.0" { $namespace = "nodert-win10-19h1"; }
 	"10.0.19041.0" { $namespace = "nodert-win10-20h1"; }
+	"10.0.20348.0" { $namespace = "nodert-win10-21h1"; }
   }
 
   if ($namespace -eq "") {
