@@ -27,7 +27,8 @@ namespace NodeRTLib
         Vs2013,
         Vs2015,
         Vs2017,
-        Vs2019
+        Vs2019,
+		Vs2022
     }
 
     public enum WinVersions
@@ -101,8 +102,10 @@ namespace NodeRTLib
                     return "2015";
                 case VsVersions.Vs2017:
                     return "2017";
-                default:
+				case VsVersions.Vs2019:
                     return "2019";
+                default:
+                    return "2022";
             }
         }
 
@@ -272,6 +275,8 @@ namespace NodeRTLib
 
             // write the README.md file
             string readmeTemplatePath;
+			if (_vsVersion == VsVersions.Vs2022)
+				readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2022.md");
             if (_vsVersion == VsVersions.Vs2019)
                 readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2019.md");
             else
@@ -288,7 +293,9 @@ namespace NodeRTLib
 
             // write the package.json file:
             string packageJsonTemplatePath;
-            if (_vsVersion == VsVersions.Vs2019)
+			if (_vsVersion == VsVersions.Vs2022)
+				packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.vs2022.json");
+            else if (_vsVersion == VsVersions.Vs2019)
                 packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.vs2019.json");
             else
                 packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json");
@@ -308,8 +315,10 @@ namespace NodeRTLib
                 packageJsonFileText.Replace("{VSVersion}", "2015");
             else if (_vsVersion == VsVersions.Vs2017)
                 packageJsonFileText.Replace("{VSVersion}", "2017");
-            else
+			else if (_vsVersion == VsVersions.Vs2019)
                 packageJsonFileText.Replace("{VSVersion}", "2019");
+            else
+                packageJsonFileText.Replace("{VSVersion}", "2022");
 
             File.WriteAllText(Path.Combine(destinationFolder, "package.json"), packageJsonFileText.ToString());
 
