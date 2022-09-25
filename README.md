@@ -7,12 +7,12 @@ npm install --save @nodert-win10-rs3/windows.ui.notifications
 
 | SDK | Known As | Windows Version | npm Scope |
 | --- | --- | --- | --- |
-| Windows 10, Build 19045 | October 2022 Update (22H2) | 22H2 | TBA (2022-10-??) |
-| Windows 10, Build 19044 | November 2021 Update (21H2) | 21H2 | [TODO](https://www.npmjs.com/org/nodert-win10-21h2) * |
-| Windows 10, Build 19043 | May 2021 Update (21H1) | 21H1 | [TODO](https://www.npmjs.com/org/nodert-win10-21h1) * |
-| Windows 10, Build 19042 | October 2020 Update (20H2) | 20H2 | [TODO](https://www.npmjs.com/org/nodert-win10-20h2) * |
+| Windows 10 | October 2022 Update (22H2) | 22H2 | N/A |
+| Windows 10 | November 2021 Update (21H2) | 21H2 | N/A |
+| Windows 10, Build 20348 | May 2021 Update (21H1) | 21H1 | [TODO](https://www.npmjs.com/org/nodert-win10-21h1) * |
+| Windows 10 | October 2020 Update (20H2) | 20H2 | N/A |
 | Windows 10, Build 19041 | May 2020 Update (20H1) | 2004 | [npmjs.com/org/nodert-win10-20h1](https://www.npmjs.com/org/nodert-win10-20h1) * |
-| Windows 10, Build 18363 | November 2019 Update (19H2) | 1909 | N/A |
+| Windows 10 | November 2019 Update (19H2) | 1909 | N/A |
 | Windows 10, Build 18362 | May 2019 Update (19H1) | 1903 | [TODO](https://www.npmjs.com/org/nodert-win10-19h1) * |
 | Windows 10, Build 17763 | October 2018 Update (Redstone 5) | 1809 | [TODO](https://www.npmjs.com/org/nodert-win10-rs5) * |
 | Windows 10, Build 17134 | April 2018 Update (Redstone 4) | 1803 | [npmjs.com/org/nodert-win10-rs4](https://www.npmjs.com/org/nodert-win10-rs4) |
