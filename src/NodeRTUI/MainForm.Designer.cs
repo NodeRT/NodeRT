@@ -269,7 +269,8 @@ namespace NodeRTUI
             "VS 2013 Project",
             "VS 2015 Project",
             "VS 2017 Project",
-            "VS 2019 Project"});
+            "VS 2019 Project",
+            "VS 2022 Project"});
             this.cmbVsVersion.Location = new System.Drawing.Point(386, 588);
             this.cmbVsVersion.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.cmbVsVersion.Name = "cmbVsVersion";
@@ -335,4 +336,3 @@ namespace NodeRTUI
         private System.Windows.Forms.ComboBox cmbVsVersion;
     }
 }
-
