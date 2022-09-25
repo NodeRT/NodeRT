@@ -5,6 +5,12 @@
 npm install --save @nodert-win10-rs3/windows.ui.notifications
 ```
 
+## Windows 11
+| SDK | Known As | Windows Version | npm Scope |
+| --- | --- | --- | --- |
+| Windows 11 | September 2022 Update (22H2) | 22H2	 | N/A |
+| Windows 11, Build 22000 | Original Release (21H2) | 21H2 | [TODO](https://www.npmjs.com/org/nodert-win11) * |
+
 ## Windows 10
 | SDK | Known As | Windows Version | npm Scope |
 | --- | --- | --- | --- |
