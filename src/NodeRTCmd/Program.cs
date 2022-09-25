@@ -76,7 +76,7 @@ namespace NodeRTCmd
             {
                 if (!NodeRTProjectGenerator.TryParseWinVersion(argsDictionary["winver"], out winVersion))
                 {
-                    Console.WriteLine("Unssuported Windows version. Supported options are: 10, 8.1, 8");
+                    Console.WriteLine("Unssuported Windows version. Supported options are: 11, 10, 8.1, 8");
                     Environment.Exit(1);
                 }
             }
