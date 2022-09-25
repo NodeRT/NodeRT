@@ -35,7 +35,8 @@ namespace NodeRTLib
     {
         v8,
         v8_1,
-        v10
+        v10,
+		v11
     }
 
     public class NodeRTProjectGenerator
@@ -63,6 +64,9 @@ namespace NodeRTLib
                     return true;
                 case "10":
                     winVer = WinVersions.v10;
+                    return true;
+				case "11":
+                    winVer = WinVersions.v11;
                     return true;
                 default:
                     // set to some default value
@@ -117,8 +121,10 @@ namespace NodeRTLib
                     return "8";
                 case WinVersions.v8_1:
                     return "8.1";
-                default:
+				case WinVersions.v10:
                     return "10";
+                default:
+                    return "11";
             }
         }
 
@@ -206,6 +212,10 @@ namespace NodeRTLib
             else if (_winVersion == WinVersions.v10)
             {
                 bindingFileText.Replace("{WinVer}", "v10");
+            }
+			else if (_winVersion == WinVersions.v11)
+            {
+                bindingFileText.Replace("{WinVer}", "v11");
             }
 
             // We need to find the _actual_ directory.
