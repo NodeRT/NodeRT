@@ -7,7 +7,7 @@ npm install --save @nodert-win10-rs3/windows.ui.notifications
 
 | SDK | Known As | Windows Version | npm Scope |
 | --- | --- | --- | --- |
-| Windows 10, Build ????? | ??? (22H2) | 22H2 | [npmjs.com/org/nodert-win10-22h2](https://www.npmjs.com/org/nodert-win10-22h2) * |
+| Windows 10, Build 19045 | September 2021 Update (22H2) | 22H2 | [npmjs.com/org/nodert-win10-22h2](https://www.npmjs.com/org/nodert-win10-22h2) * |
 | Windows 10, Build 19044 | November 2021 Update (21H2) | 21H2 | [npmjs.com/org/nodert-win10-21h2](https://www.npmjs.com/org/nodert-win10-21h2) * |
 | Windows 10, Build 19043 | May 2021 Update (21H1) | 21H1 | [npmjs.com/org/nodert-win10-21h1](https://www.npmjs.com/org/nodert-win10-21h1) * |
 | Windows 10, Build 19042 | October 2020 Update (20H2) | 20H2 | [npmjs.com/org/nodert-win10-20h2](https://www.npmjs.com/org/nodert-win10-20h2) * |
