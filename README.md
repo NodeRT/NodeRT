@@ -20,7 +20,7 @@ npm install --save @nodert-win10-rs3/windows.ui.notifications
 | Windows 10 | October 2020 Update (20H2) | 20H2 | N/A |
 | Windows 10, Build 19041 | May 2020 Update (20H1) | 2004 | [npmjs.com/org/nodert-win10-20h1](https://www.npmjs.com/org/nodert-win10-20h1) * |
 | Windows 10 | November 2019 Update (19H2) | 1909 | N/A |
-| Windows 10, Build 18362 | May 2019 Update (19H1) | 1903 | [TODO on 2022-10-24](https://www.npmjs.com/org/nodert-win10-19h1) * |
+| Windows 10, Build 18362 | May 2019 Update (19H1) | 1903 | [https://www.npmjs.com/org/nodert-win10-19h1](https://www.npmjs.com/org/nodert-win10-19h1) * |
 | Windows 10, Build 17763 | October 2018 Update (Redstone 5) | 1809 | [TODO](https://www.npmjs.com/org/nodert-win10-rs5) * |
 | Windows 10, Build 17134 | April 2018 Update (Redstone 4) | 1803 | [npmjs.com/org/nodert-win10-rs4](https://www.npmjs.com/org/nodert-win10-rs4) |
 | Windows 10, Build 16299 | Fall Creators Update (Redstone 3) | 1709 |  [npmjs.com/org/nodert-win10-rs3](https://www.npmjs.com/org/nodert-win10-rs3) |
