@@ -4,7 +4,7 @@ on:
       - 'v*'
 
 jobs:
-  generate-releas:
+  generate-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
