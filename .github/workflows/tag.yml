@@ -1,0 +1,17 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  generate-releas:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: step-security/harden-runner@v1.4.5
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v3
+        with:
+          generate_release_notes: true
