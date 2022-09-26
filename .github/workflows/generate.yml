@@ -1,0 +1,31 @@
+name: Generate new version
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        description: "Version increment"
+        required: true
+        default: patch
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+
+jobs:
+  generate-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@v1.4.5
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Bump version and push tag
+        uses: hennejg/github-tag-action@v4.3.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: ${{ inputs.semver }}
+          release_branches: ${{  github.ref_name }}
