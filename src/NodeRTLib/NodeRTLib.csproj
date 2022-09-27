@@ -219,7 +219,7 @@
     <Content Include="JsPackageFiles\package.vs2019.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="JsPackageFiles\README.vs2022.md">
+    <Content Include="JsPackageFiles\README.vs2022.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="JsPackageFiles\package.vs2022.json">
