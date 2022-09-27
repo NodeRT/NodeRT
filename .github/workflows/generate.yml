@@ -92,6 +92,8 @@ jobs:
       - run: .\automated-mass-creation.ps1  
         shell: pwsh
         working-directory: ./scripts
+        env:
+          npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
   generate-release:
     needs: generate-tag
     permissions:

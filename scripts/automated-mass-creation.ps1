@@ -1,7 +1,7 @@
-Param(
-  [Parameter(Mandatory=$true)]
-  [string]$npmVersion
-)
+# Param(
+#   [Parameter(Mandatory=$true)]
+#   [string]$npmVersion
+# )
 
 Function Get-Folder {
   $description = $args[0]
@@ -76,6 +76,6 @@ if ($reply -match "[yY]") {
     $outDir = New-Item -Path "~/Desktop/NodeRT/$sdk" -ItemType directory;
     Write-Host "Output will be available in $outDir"
 
-    & $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir $outDir --npmscope $sdk --npmversion $npmVersion --nobuild
+    & $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir $outDir --npmscope $sdk --npmversion $Env:npmVersion --nobuild
   }
 }
