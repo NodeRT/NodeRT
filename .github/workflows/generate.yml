@@ -151,7 +151,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
-          path: ./NodeRT-Bindings/${{ matrix.npm-org }}
+          path: NodeRT-Bindings/${{ matrix.npm-org }}
           if-no-files-found: error
   generate-release:
     needs: generate-tag
@@ -202,7 +202,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
-          path: ./NodeRT-Bindings/${{ matrix.npm-org }}
+          path: NodeRT-Bindings/${{ matrix.npm-org }}
       
       # Run script to mass upload modules
       - run: .\scripts\automated-mass-release.ps1
