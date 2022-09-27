@@ -100,10 +100,10 @@ jobs:
           search: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
           replace: ${{ matrix.win-target-ver }}
       - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
-        shell: ${{ matrix.npm-win-desc }}
+        shell: bash
         env:
           search: (?!corresponding\sto\sWindows\s)\d+\sVersion\s(\d{2}[H\d]{2})(?=\s\()
-          replace: replace
+          replace: ${{ matrix.npm-win-desc }}
       - run: cat src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
 
