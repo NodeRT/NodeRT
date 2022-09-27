@@ -76,7 +76,7 @@ jobs:
         with:
           node-version: lts/*
           check-latest: true
-      - run: npm install --global node-gyp
+      - run: npm install --global --fund=false node-gyp
 
       - name: Build
         run: dotnet build NodeRTCmd --configuration Release
