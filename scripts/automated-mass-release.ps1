@@ -28,7 +28,7 @@ foreach ($d in $dirs) {
 	cd $d.FullName
   
 	$dryRun = "false"
-	if (Test-Path env:\npmDryRun -And $Env:npmDryRun -eq "true") {
+	if ((Test-Path env:\npmDryRun) -And ($Env:npmDryRun -eq "true")) {
 		$dryRun = "true"
 	}
 
