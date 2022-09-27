@@ -75,7 +75,8 @@ if ($reply -match "[yY]") {
 		$sdkFolder = $sdks.$sdk;
 		Write-Host "Generating packages for @$sdk using $sdkFolder";
 
-		$outDir = New-Item -Path "~/Desktop/NodeRT/$sdk" -ItemType directory;
+		# $outDir = New-Item -Path "~/Desktop/NodeRT/$sdk" -ItemType directory;
+		$outDir = New-Item -Path "./NodeRT-Bindings/$sdk" -ItemType directory;
 		Write-Host "Output will be available in $outDir"
 
 		& $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir $outDir --npmscope $sdk --npmversion $Env:npmVersion --nobuild
