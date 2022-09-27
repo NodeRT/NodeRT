@@ -32,7 +32,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: ${{ inputs.semver }}
-          release_branches: ${{  github.ref_name }}
+          release_branches: ${{ github.ref_name }}
   build-bindings:
     needs: generate-tag
     strategy:
