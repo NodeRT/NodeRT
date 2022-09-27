@@ -77,32 +77,32 @@ jobs:
       - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          SEARCH: (?!`@)nodert-win\d{2}(-\d{2}[H\d]{2})?(?=`)
+          SEARCH: ":::org:::"
           REPLACE: ${{ matrix.npm-org }}
       - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          SEARCH: (?!\*\*Windows\s)\d{2,}(?=\sSDK)
+          SEARCH: ":::win-major:::"
           REPLACE: ${{ matrix.npm-win-major }}
       - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          SEARCH: (?!SDK,\sversion\s)\d{2}[H\d]{2}(?=\s\(\d+\.)
+          SEARCH: ":::win-minor:::"
           REPLACE: ${{ matrix.npm-win-minor }}
       - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          SEARCH: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
+          SEARCH: ":::target-build-ver:::"
           REPLACE: ${{ matrix.win-target-build-ver }}
       - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          SEARCH: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
+          SEARCH: ":::target-ver:::"
           REPLACE: ${{ matrix.win-target-ver }}
       - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          SEARCH: (?!corresponding\sto\sWindows\s)\d+\sVersion\s(\d{2}[H\d]{2})(?=\s\()
+          SEARCH: ":::win-desc:::"
           REPLACE: ${{ matrix.npm-win-desc }}
       - run: cat src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
