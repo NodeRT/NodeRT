@@ -34,7 +34,7 @@ if ((Test-Path -Path $nodertCmd) -eq $false) {
 }
 
 # $unionMetadataDir = Get-Folder "Select your Windows SDK UnionMetadata folder" "C:\Program Files (x86)\Windows Kits\10\UnionMetadata";
-$unionMetadataDir = "C:\Program Files (x86)\Windows Kits\10\UnionMetadata";
+$unionMetadataDir = "${Env:ProgramFiles(x86)}\Windows Kits\10\UnionMetadata";
 
 # if ($unionMetadataDir -eq $null) {
 #   return;
