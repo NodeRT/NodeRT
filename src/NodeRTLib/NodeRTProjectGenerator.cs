@@ -287,13 +287,10 @@ namespace NodeRTLib
             string readmeTemplatePath;
 			if (_vsVersion == VsVersions.Vs2022)
 				readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2022.md");
-				Console.WriteLine($"1 Detected vs version {_vsVersion} so using {readmeTemplatePath}");
             if (_vsVersion == VsVersions.Vs2019)
                 readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2019.md");
-				Console.WriteLine($"2 Detected vs version {_vsVersion} so using {readmeTemplatePath}");
             else
                 readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md");
-				Console.WriteLine($"3 Detected vs version {_vsVersion} so using {readmeTemplatePath}");
 
             StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(readmeTemplatePath));
             readmeFileText.Replace("{Namespace}", winRTNamespace);
