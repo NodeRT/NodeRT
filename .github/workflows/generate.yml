@@ -37,7 +37,7 @@ jobs:
   build-bindings:
     needs: generate-tag
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [windows-latest]
         win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
