@@ -33,11 +33,12 @@ if ((Test-Path -Path $nodertCmd) -eq $false) {
   return;
 }
 
-$unionMetadataDir = Get-Folder "Select your Windows SDK UnionMetadata folder" "C:\Program Files (x86)\Windows Kits\10\UnionMetadata";
+# $unionMetadataDir = Get-Folder "Select your Windows SDK UnionMetadata folder" "C:\Program Files (x86)\Windows Kits\10\UnionMetadata";
+$unionMetadataDir = "C:\Program Files (x86)\Windows Kits\10\UnionMetadata";
 
-if ($unionMetadataDir -eq $null) {
-  return;
-}
+# if ($unionMetadataDir -eq $null) {
+#   return;
+# }
 
 $unionMetadataDirs = Get-ChildItem -dir $unionMetadataDir -Filter "10.*"
 $sdks = @{};
