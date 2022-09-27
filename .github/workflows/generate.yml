@@ -63,19 +63,19 @@ jobs:
           node-version: lts/*
           check-latest: true
       - run: npm install --global node-gyp
-  generate-release:
-    needs: generate-tag
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: step-security/harden-runner@v1.4.5
-        with:
-          egress-policy: audit
-      - uses: actions/checkout@v3
-      - uses: softprops/action-gh-release@v1
-        with:
-          body: ${{ needs.generate-tag.outputs.changelog }}
-          tag_name: ${{ needs.generate-tag.outputs.tagVersion }}
-          fail_on_unmatched_files: false
-          generate_release_notes: false
+  # generate-release:
+  #   needs: generate-tag
+  #   permissions:
+  #     contents: write
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: step-security/harden-runner@v1.4.5
+  #       with:
+  #         egress-policy: audit
+  #     - uses: actions/checkout@v3
+  #     - uses: softprops/action-gh-release@v1
+  #       with:
+  #         body: ${{ needs.generate-tag.outputs.changelog }}
+  #         tag_name: ${{ needs.generate-tag.outputs.tagVersion }}
+  #         fail_on_unmatched_files: false
+  #         generate_release_notes: false
