@@ -138,7 +138,7 @@ jobs:
         # working directory has to be where *.sln is located
         working-directory: ./src
 
-      - run: .\automated-mass-creation.ps1  
+      - run: .\scripts\automated-mass-creation.ps1  
         shell: pwsh
         env:
           npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
