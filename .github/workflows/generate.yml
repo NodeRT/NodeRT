@@ -44,12 +44,16 @@ jobs:
         include:
           - win-target-ver: 10v1903
             win-target-build-ver: 18362
+            npm-org: nodert-win10-19h1
           - win-target-ver: 10v21H1
             win-target-build-ver: 20348
+            npm-org: nodert-win10-21h1
           - win-target-ver: 11v21H2
             win-target-build-ver: 22000
+            npm-org: nodert-win11
           - win-target-ver: 11v22H2
             win-target-build-ver: 22621
+            npm-org: nodert-win11-22h2
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
