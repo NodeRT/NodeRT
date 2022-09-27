@@ -78,6 +78,10 @@ jobs:
           check-latest: true
       - run: npm install --global --fund=false node-gyp
 
+      - uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+
       - name: Build
         run: dotnet build NodeRTCmd --configuration Release
   generate-release:
