@@ -148,6 +148,7 @@ jobs:
         with:
           name: ${{ matrix.npm-org }}
           path: ./NodeRT-Bindings/${{ matrix.npm-org }}
+          if-no-files-found: error
   generate-release:
     needs: generate-tag
     permissions:
