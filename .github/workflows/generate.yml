@@ -33,7 +33,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: ${{ inputs.semver }}
           release_branches: ${{  github.ref_name }}
-          dry_run: true
   build-bindings:
     needs: generate-tag
     strategy:
@@ -159,11 +158,11 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
-      # - uses: softprops/action-gh-release@v1
-      #   with:
-      #     tag_name: ${{ needs.generate-tag.outputs.tagVersion }}
-      #     fail_on_unmatched_files: false
-      #     generate_release_notes: true
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.generate-tag.outputs.tagVersion }}
+          fail_on_unmatched_files: false
+          generate_release_notes: true
   publish-bindings:
     needs: [build-bindings, generate-release]
     strategy:
