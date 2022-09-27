@@ -85,6 +85,7 @@ jobs:
 
       - name: Build
         run: dotnet build NodeRTCmd --configuration Release
+        working-directory: ./src
   generate-release:
     needs: generate-tag
     permissions:
