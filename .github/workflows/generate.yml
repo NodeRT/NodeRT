@@ -74,32 +74,32 @@ jobs:
       - uses: actions/checkout@v3
 
       # Replace text in files before compiling
-      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
           SEARCH: (?!`@)nodert-win\d{2}(-\d{2}[H\d]{2})?(?=`)
           REPLACE: ${{ matrix.npm-org }}
-      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
           SEARCH: (?!\*\*Windows\s)\d{2,}(?=\sSDK)
           REPLACE: ${{ matrix.npm-win-major }}
-      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
           SEARCH: (?!SDK,\sversion\s)\d{2}[H\d]{2}(?=\s\(\d+\.)
           REPLACE: ${{ matrix.npm-win-minor }}
-      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
           SEARCH: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
           REPLACE: ${{ matrix.win-target-build-ver }}
-      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
           SEARCH: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
           REPLACE: ${{ matrix.win-target-ver }}
-      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i "s/$SEARCH/$REPLACE/g" src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
           SEARCH: (?!corresponding\sto\sWindows\s)\d+\sVersion\s(\d{2}[H\d]{2})(?=\s\()
