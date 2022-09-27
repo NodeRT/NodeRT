@@ -39,7 +39,6 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest]
         win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
         include:
           - win-target-ver: 10v1903
@@ -69,7 +68,7 @@ jobs:
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
 
