@@ -74,36 +74,36 @@ jobs:
       - uses: actions/checkout@v3
 
       # Replace text in files before compiling
-      - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
+      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          search: (?!`@)nodert-win\d{2}(-\d{2}[H\d]{2})?(?=`)
-          replace: ${{ matrix.npm-org }}
-      - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
+          SEARCH: (?!`@)nodert-win\d{2}(-\d{2}[H\d]{2})?(?=`)
+          REPLACE: ${{ matrix.npm-org }}
+      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          search: (?!\*\*Windows\s)\d{2,}(?=\sSDK)
-          replace: ${{ matrix.npm-win-major }}
-      - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
+          SEARCH: (?!\*\*Windows\s)\d{2,}(?=\sSDK)
+          REPLACE: ${{ matrix.npm-win-major }}
+      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          search: (?!SDK,\sversion\s)\d{2}[H\d]{2}(?=\s\(\d+\.)
-          replace: ${{ matrix.npm-win-minor }}
-      - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
+          SEARCH: (?!SDK,\sversion\s)\d{2}[H\d]{2}(?=\s\(\d+\.)
+          REPLACE: ${{ matrix.npm-win-minor }}
+      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          search: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
-          replace: ${{ matrix.win-target-build-ver }}
-      - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
+          SEARCH: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
+          REPLACE: ${{ matrix.win-target-build-ver }}
+      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          search: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
-          replace: ${{ matrix.win-target-ver }}
-      - run: sed -i 's/$search/$replace/g' src/NodeRTLib/JsPackageFiles/README.*.md
+          SEARCH: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
+          REPLACE: ${{ matrix.win-target-ver }}
+      - run: sed -i 's/$SEARCH/$REPLACE/g' src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
         env:
-          search: (?!corresponding\sto\sWindows\s)\d+\sVersion\s(\d{2}[H\d]{2})(?=\s\()
-          replace: ${{ matrix.npm-win-desc }}
+          SEARCH: (?!corresponding\sto\sWindows\s)\d+\sVersion\s(\d{2}[H\d]{2})(?=\s\()
+          REPLACE: ${{ matrix.npm-win-desc }}
       - run: cat src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
 
