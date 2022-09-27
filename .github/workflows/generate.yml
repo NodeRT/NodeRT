@@ -186,6 +186,10 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
