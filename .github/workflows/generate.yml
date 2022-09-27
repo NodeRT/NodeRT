@@ -188,11 +188,8 @@ jobs:
             npm-org: nodert-win11
           - win-target-ver: 11v22H2
             npm-org: nodert-win11-22h2
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-      - uses: step-security/harden-runner@v1.4.5
-        with:
-          egress-policy: audit
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
