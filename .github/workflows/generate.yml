@@ -50,6 +50,9 @@ jobs:
             win-target-build-ver: 22000
           - win-target-ver: 11v22H2
             win-target-build-ver: 22621
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -61,6 +64,10 @@ jobs:
       - name: Debug
         run: ls -lA "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
         shell: bash
+
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '4.5.x'
 
       - uses: actions/setup-node@v3
         with:
