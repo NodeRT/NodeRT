@@ -69,16 +69,16 @@ foreach ($d in $unionMetadataDirs) {
 	}
 }
 
-$reply = Read-Host -Prompt "Continue? [y/n]"
-if ($reply -match "[yY]") {
-	foreach ($sdk in $sdks.keys) {
-		$sdkFolder = $sdks.$sdk;
-		Write-Host "Generating packages for @$sdk using $sdkFolder";
+# $reply = Read-Host -Prompt "Continue? [y/n]"
+# if ($reply -match "[yY]") {
+foreach ($sdk in $sdks.keys) {
+	$sdkFolder = $sdks.$sdk;
+	Write-Host "Generating packages for @$sdk using $sdkFolder";
 
-		# $outDir = New-Item -Path "~/Desktop/NodeRT/$sdk" -ItemType directory;
-		$outDir = New-Item -Path "../NodeRT-Bindings/$sdk" -ItemType directory;
-		Write-Host "Output will be available in $outDir"
+	# $outDir = New-Item -Path "~/Desktop/NodeRT/$sdk" -ItemType directory;
+	$outDir = New-Item -Path "../NodeRT-Bindings/$sdk" -ItemType directory;
+	Write-Host "Output will be available in $outDir"
 
-		& $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir $outDir --npmscope $sdk --npmversion $Env:npmVersion --nobuild
-	}
+	& $nodertCmd --winmd $sdkFolder\Windows.winmd --outdir $outDir --npmscope $sdk --npmversion $Env:npmVersion --nobuild
 }
+# }
