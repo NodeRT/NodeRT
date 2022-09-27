@@ -151,6 +151,9 @@ jobs:
             npm-win-desc: September 2022 Update
     runs-on: ubuntu-latest
     steps:
+      - uses: step-security/harden-runner@v1.4.5
+        with:
+          egress-policy: audit
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
