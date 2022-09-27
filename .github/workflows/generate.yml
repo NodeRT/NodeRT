@@ -34,6 +34,36 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: ${{ inputs.semver }}
           release_branches: ${{  github.ref_name }}tions/checkout@v3
+  build-bindings:
+    needs: generate-tag
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
+        include:
+          - win-target-ver: 10v1903
+            win-target-build-ver: 18362
+          - win-target-ver: 10v21H1
+            win-target-build-ver: 20348
+          - win-target-ver: 11v21H2
+            win-target-build-ver: 22000
+          - win-target-ver: 11v22H2
+            win-target-build-ver: 22621
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.7
+        with:
+          sdk-version: ${{ matrix.win-target-build-ver }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: 'npm'
+      - run: npm install --global node-gyp
   generate-release:
     needs: generate-tag
     permissions:
