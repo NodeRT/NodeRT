@@ -45,15 +45,27 @@ jobs:
           - win-target-ver: 10v1903
             win-target-build-ver: 18362
             npm-org: nodert-win10-19h1
+            npm-win-major: 10
+            npm-win-minor: 1903
+            npm-win-desc: Codename 19H1 / May 2019 Update
           - win-target-ver: 10v21H1
             win-target-build-ver: 20348
             npm-org: nodert-win10-21h1
+            npm-win-major: 10
+            npm-win-minor: 21H1
+            npm-win-desc: May 2021 Update
           - win-target-ver: 11v21H2
             win-target-build-ver: 22000
             npm-org: nodert-win11
+            npm-win-major: 11
+            npm-win-minor: 21H2
+            npm-win-desc: Original Release
           - win-target-ver: 11v22H2
             win-target-build-ver: 22621
             npm-org: nodert-win11-22h2
+            npm-win-major: 11
+            npm-win-minor: 22H2
+            npm-win-desc: September 2022 Update
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -120,29 +132,13 @@ jobs:
         win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
         include:
           - win-target-ver: 10v1903
-            win-target-build-ver: 18362
             npm-org: nodert-win10-19h1
-            npm-win-major: 10
-            npm-win-minor: 1903
-            npm-win-desc: Codename 19H1 / May 2019 Update
           - win-target-ver: 10v21H1
-            win-target-build-ver: 20348
             npm-org: nodert-win10-21h1
-            npm-win-major: 10
-            npm-win-minor: 21H1
-            npm-win-desc: May 2021 Update
           - win-target-ver: 11v21H2
-            win-target-build-ver: 22000
             npm-org: nodert-win11
-            npm-win-major: 11
-            npm-win-minor: 21H2
-            npm-win-desc: Original Release
           - win-target-ver: 11v22H2
-            win-target-build-ver: 22621
             npm-org: nodert-win11-22h2
-            npm-win-major: 11
-            npm-win-minor: 22H2
-            npm-win-desc: September 2022 Update
     runs-on: ubuntu-latest
     steps:
       - uses: step-security/harden-runner@v1.4.5
