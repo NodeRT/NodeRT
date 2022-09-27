@@ -61,8 +61,7 @@ foreach ($d in $unionMetadataDirs) {
 
 	if ($namespace -eq "") {
 		Write-Host "Found SDK folder $d, but it's unknown. We won't use it.";
-	}
- else {
+	} else {
 		Write-Host "Will generate NodeRT modules using metadata found in $d (as $namespace)"
 
 		$sdks[$namespace] = $d.FullName;
