@@ -109,8 +109,6 @@ jobs:
         env:
           SEARCH: ":::win-desc:::"
           REPLACE: ${{ matrix.npm-win-desc }}
-      - run: cat src/NodeRTLib/JsPackageFiles/README.*.md
-        shell: bash
 
       - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.7
         with:
