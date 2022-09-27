@@ -39,8 +39,14 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
+        win-target-ver: [10v1809, 10v1903, 10v21H1, 11v21H2, 11v22H2]
         include:
+          - win-target-ver: 10v1809
+            win-target-build-ver: 17763
+            npm-org: nodert-win10-rs5
+            npm-win-major: 10
+            npm-win-minor: 18H2
+            npm-win-desc: Codename Redstone 5 / October 2018 Update
           - win-target-ver: 10v1903
             win-target-build-ver: 18362
             npm-org: nodert-win10-19h1
