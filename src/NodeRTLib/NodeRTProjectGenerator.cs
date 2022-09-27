@@ -48,7 +48,6 @@ namespace NodeRTLib
         public NodeRTProjectGenerator(WinVersions winVersion, VsVersions vsVersion, bool isGenerateDef)
         {
             _winVersion = winVersion;
-			Console.WriteLine($"Detected vs version: {vsVersion}");
             _vsVersion = vsVersion;
             _isGenerateDef = isGenerateDef;
         }
