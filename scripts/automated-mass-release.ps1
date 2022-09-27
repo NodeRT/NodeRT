@@ -20,7 +20,7 @@ if (-Not (Test-Path -Path $dir)) {
 	return
 }
 
-$dirs = Get-ChildItem $dir
+$dirs = dir $dir
 
 foreach ($d in $dirs) {
 	Write-Host "Publishing $d"
