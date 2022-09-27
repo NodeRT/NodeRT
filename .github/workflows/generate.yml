@@ -85,7 +85,7 @@ jobs:
       - run: dotnet build NodeRTCmd --configuration Debug
         working-directory: ./src
         
-      - run: ls -la "../src/NodeRTCmd/bin/Debug"
+      - run: ls -la ../src/NodeRTCmd/bin/Debug
         shell: bash
         working-directory: ./scripts
 
