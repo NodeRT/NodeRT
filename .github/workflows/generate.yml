@@ -140,7 +140,6 @@ jobs:
 
       - run: .\automated-mass-creation.ps1  
         shell: pwsh
-        working-directory: ./scripts
         env:
           npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
           desiredSdk: ${{ matrix.npm-org }}
