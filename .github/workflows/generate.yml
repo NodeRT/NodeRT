@@ -57,7 +57,8 @@ jobs:
         with:
           sdk-version: ${{ matrix.win-target-build-ver }}
       
-      - run: ls -lA "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
+      - name: Debug
+        run: ls -lA "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
         shell: bash
 
       - uses: actions/setup-node@v3
