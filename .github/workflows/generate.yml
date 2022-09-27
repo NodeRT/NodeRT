@@ -129,10 +129,13 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v1.1
         with:
+          # 17.x = 2022
           vs-version: '[17,18)'
+          # Available only on 17 and later
           msbuild-architecture: x64
 
       - run: dotnet build NodeRTCmd --configuration Debug
+        # working directory has to be where *.sln is located
         working-directory: ./src
 
       - run: .\automated-mass-creation.ps1  
