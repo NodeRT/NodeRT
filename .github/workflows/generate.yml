@@ -62,7 +62,6 @@ jobs:
         with:
           node-version: lts/*
           check-latest: true
-          cache: 'npm'
       - run: npm install --global node-gyp
   generate-release:
     needs: generate-tag
