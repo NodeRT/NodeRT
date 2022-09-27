@@ -103,6 +103,11 @@ jobs:
 
       - run: ls -la ./NodeRT-Bindings
         shell: bash
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.npm-org }}
+          path: ./NodeRT-Bindings/${{ matrix.npm-org }}
   generate-release:
     needs: generate-tag
     permissions:
@@ -157,3 +162,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
+          path: ./NodeRT-Bindings
+      
+      - run: ls -la ./NodeRT-Bindings
