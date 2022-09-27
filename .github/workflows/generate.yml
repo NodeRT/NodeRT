@@ -62,7 +62,7 @@ jobs:
           sdk-version: ${{ matrix.win-target-build-ver }}
       
       - name: Debug
-        run: ls -lA "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
+        run: ls -la "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
         shell: bash
 
       # .NET 4.x is already installed in windows image
