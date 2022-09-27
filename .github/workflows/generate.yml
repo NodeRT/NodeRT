@@ -74,6 +74,36 @@ jobs:
       - uses: actions/checkout@v3
 
       # Replace text in files before compiling
+      - uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: (?!`@)nodert-win\d{2}(-\d{2}[H\d]{2})?(?=`)
+          replace: ${{ matrix.npm-org }}
+          include: src/NodeRTLib/JsPackageFiles/README.*.md
+      - uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: (?!\*\*Windows\s)\d{2,}(?=\sSDK)
+          replace: ${{ matrix.npm-win-major }}
+          include: src/NodeRTLib/JsPackageFiles/README.*.md
+      - uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: (?!SDK,\sversion\s)\d{2}[H\d]{2}(?=\s\(\d+\.)
+          replace: ${{ matrix.npm-win-minor }}
+          include: src/NodeRTLib/JsPackageFiles/README.*.md
+      - uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: (?!\(\d+.\d+\.)\d+(?=\.\d+\)\*\*)
+          replace: ${{ matrix.win-target-build-ver }}
+          include: src/NodeRTLib/JsPackageFiles/README.*.md
+      - uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: (?!corresponding\sto\sWindows\s)\d+\sVersion\s(\d{2}[H\d]{2})(?=\s\()
+          replace: ${{ matrix.win-target-ver }}
+          include: src/NodeRTLib/JsPackageFiles/README.*.md
+      - uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: (?!\d+\sVersion\s(\d{2}[H\d]{2})\s\()[\w\/\s]+(?=\)\.\n)
+          replace: ${{ matrix.npm-win-desc }}
+          include: src/NodeRTLib/JsPackageFiles/README.*.md
       - run: cat src/NodeRTLib/JsPackageFiles/README.*.md
         shell: bash
 
