@@ -32,7 +32,6 @@ foreach ($d in $dirs) {
 		$dryRun = "true"
 	}
 
-	# npm publish . --access public --dry-run $dryRun
-	Write-Host "npm publish . --access public --dry-run $dryRun"
+	npm publish . --access public --dry-run $dryRun
 	cd $dir
 }
