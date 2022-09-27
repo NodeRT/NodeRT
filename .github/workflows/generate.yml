@@ -86,6 +86,11 @@ jobs:
       - name: Build
         run: dotnet build NodeRTCmd --configuration Debug
         working-directory: ./src
+
+      - name: Debug
+        run: ls -la "../src/NodeRTCmd/bin/Debug"
+        shell: bash
+        working-directory: ./scripts
   generate-release:
     needs: generate-tag
     permissions:
