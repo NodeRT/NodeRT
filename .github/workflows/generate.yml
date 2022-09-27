@@ -88,6 +88,10 @@ jobs:
       - run: ls -la "../src/NodeRTCmd/bin/Debug"
         shell: bash
         working-directory: ./scripts
+
+      - run: .\automated-mass-creation.ps1  
+        shell: pwsh
+        working-directory: ./scripts
   generate-release:
     needs: generate-tag
     permissions:
