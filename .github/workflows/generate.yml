@@ -73,9 +73,6 @@ jobs:
             npm-win-major: 11
             npm-win-minor: 22H2
             npm-win-desc: September 2022 Update
-    env:
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
