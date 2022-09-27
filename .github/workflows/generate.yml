@@ -191,8 +191,6 @@ jobs:
           name: ${{ matrix.npm-org }}
           path: ./NodeRT-Bindings/${{ matrix.npm-org }}
       
-      - run: ls -la ./NodeRT-Bindings
-      
       - run: .\scripts\automated-mass-release.ps1
         shell: pwsh
         env:
