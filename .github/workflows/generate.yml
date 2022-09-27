@@ -198,6 +198,7 @@ jobs:
         with:
           node-version: lts/*
           check-latest: true
+          registry-url: 'https://registry.npmjs.org'
       # Download compiled npm package set
       - uses: actions/download-artifact@v3
         with:
