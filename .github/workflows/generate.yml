@@ -84,7 +84,7 @@ jobs:
           msbuild-architecture: x64
 
       - name: Build
-        run: dotnet build NodeRTCmd --configuration Debug --framework net48
+        run: dotnet build NodeRTCmd --configuration Debug
         working-directory: ./src
   generate-release:
     needs: generate-tag
