@@ -99,6 +99,7 @@ jobs:
         working-directory: ./scripts
         env:
           npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
+          desiredSdk: ${{ matrix.npm-org }}
 
       - run: ls -la ./NodeRT-Bindings
         shell: bash
