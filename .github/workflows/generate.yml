@@ -80,6 +80,7 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v1.1
         with:
+          vs-version: '[17,18)'
           msbuild-architecture: x64
 
       - name: Build
