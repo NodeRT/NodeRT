@@ -186,6 +186,7 @@ jobs:
       - uses: step-security/harden-runner@v1.4.5
         with:
           egress-policy: audit
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
