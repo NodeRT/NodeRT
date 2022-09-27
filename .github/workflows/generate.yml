@@ -77,6 +77,9 @@ jobs:
           node-version: lts/*
           check-latest: true
       - run: npm install --global node-gyp
+
+      - name: Build
+        run: dotnet build NodeRTCmd --configuration Release
   generate-release:
     needs: generate-tag
     permissions:
