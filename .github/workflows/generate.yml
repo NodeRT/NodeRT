@@ -61,8 +61,7 @@ jobs:
         with:
           sdk-version: ${{ matrix.win-target-build-ver }}
       
-      - name: Debug
-        run: ls -la "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
+      - run: ls -la "C:/Program Files (x86)/Windows Kits/10/UnionMetadata"
         shell: bash
 
       # .NET 4.x is already installed in windows image
@@ -83,12 +82,10 @@ jobs:
           vs-version: '[17,18)'
           msbuild-architecture: x64
 
-      - name: Build
-        run: dotnet build NodeRTCmd --configuration Debug
+      - run: dotnet build NodeRTCmd --configuration Debug
         working-directory: ./src
-
-      - name: Debug
-        run: ls -la "../src/NodeRTCmd/bin/Debug"
+        
+      - run: ls -la "../src/NodeRTCmd/bin/Debug"
         shell: bash
         working-directory: ./scripts
   generate-release:
