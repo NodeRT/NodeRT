@@ -50,9 +50,9 @@ jobs:
             win-target-build-ver: 22000
           - win-target-ver: 11v22H2
             win-target-build-ver: 22621
-    env:
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    # env:
+    #   DOTNET_NOLOGO: true
+    #   DOTNET_CLI_TELEMETRY_OPTOUT: true
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
