@@ -13,6 +13,6 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
-      - uses: softprops/action-gh-release@v0.1.14
+      - uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
