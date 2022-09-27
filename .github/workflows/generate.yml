@@ -25,6 +25,7 @@ jobs:
           egress-policy: audit
       - uses: actions/checkout@v3
         with:
+          # Set to 0 so that we can get tags
           fetch-depth: 0
       - name: Bump version and push tag
         id: tagGen
@@ -38,7 +39,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        # What to actually run
         win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
+        # Details about each run
         include:
           # - win-target-ver: 10v1809
           #   win-target-build-ver: 17763
@@ -109,6 +112,7 @@ jobs:
           SEARCH: ":::win-desc:::"
           REPLACE: ${{ matrix.npm-win-desc }}
 
+      # Download SDK to compile against
       - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.7
         with:
           sdk-version: ${{ matrix.win-target-build-ver }}
@@ -126,6 +130,7 @@ jobs:
           check-latest: true
       - run: npm install --global --fund=false node-gyp
 
+      # Needed to setup visual studio builder
       - uses: microsoft/setup-msbuild@v1.1
         with:
           # 17.x = 2022
@@ -133,16 +138,19 @@ jobs:
           # Available only on 17 and later
           msbuild-architecture: x64
 
+      # Actually build generator
       - run: dotnet build NodeRTCmd --configuration Debug
         # working directory has to be where *.sln is located
         working-directory: ./src
 
+      # Run script to mass create modules
       - run: .\scripts\automated-mass-creation.ps1
         shell: pwsh
         env:
           npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
           desiredSdk: ${{ matrix.npm-org }}
 
+      # Upload to artifact to download in other workflow job or manually
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
@@ -158,6 +166,7 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
+      # Create GitHub Release matching npm release
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.generate-tag.outputs.tagVersion }}
@@ -168,7 +177,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        # What to actually run
         win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
+        # Details about each run
         include:
           # - win-target-ver: 10v1809
           #   npm-org: nodert-win10-rs5
@@ -190,11 +201,13 @@ jobs:
         with:
           node-version: lts/*
           check-latest: true
+      # Download compiled npm package set
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
           path: ./NodeRT-Bindings/${{ matrix.npm-org }}
       
+      # Run script to mass upload modules
       - run: .\scripts\automated-mass-release.ps1
         shell: pwsh
         env:
