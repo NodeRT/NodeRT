@@ -64,10 +64,6 @@ jobs:
       - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.7
         with:
           sdk-version: ${{ matrix.win-target-build-ver }}
-      
-      - run: find . -maxdepth 1 -type d -exec ls -la {} \;
-        shell: bash
-        working-directory: C:/Program Files (x86)/Windows Kits/10/UnionMetadata
 
       # .NET 4.x is already installed in windows image
       # https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md#net-framework
@@ -89,10 +85,6 @@ jobs:
 
       - run: dotnet build NodeRTCmd --configuration Debug
         working-directory: ./src
-        
-      - run: ls -la ../src/NodeRTCmd/bin/Debug
-        shell: bash
-        working-directory: ./scripts
 
       - run: .\automated-mass-creation.ps1  
         shell: pwsh
@@ -100,9 +92,6 @@ jobs:
         env:
           npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
           desiredSdk: ${{ matrix.npm-org }}
-
-      - run: ls -la ./NodeRT-Bindings
-        shell: bash
 
       - uses: actions/upload-artifact@v3
         with:
