@@ -39,6 +39,9 @@ $unionMetadataDir = "${Env:ProgramFiles(x86)}\Windows Kits\10\UnionMetadata";
 # if ($unionMetadataDir -eq $null) {
 #   return;
 # }
+if (-Not (Test-Path -Path $unionMetadataDir)) {
+	return
+}
 
 $unionMetadataDirs = Get-ChildItem -dir $unionMetadataDir -Filter "10.*"
 $sdks = @{};
