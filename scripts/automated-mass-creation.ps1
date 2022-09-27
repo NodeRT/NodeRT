@@ -3,27 +3,27 @@
 #   [string]$npmVersion
 # )
 
-Function Get-Folder {
-	$description = $args[0]
-	$initialPath = $args[1]
+# Function Get-Folder {
+# 	$description = $args[0]
+# 	$initialPath = $args[1]
 
-	[System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null;
-	[System.Windows.Forms.Application]::EnableVisualStyles();
+# 	[System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null;
+# 	[System.Windows.Forms.Application]::EnableVisualStyles();
 
-	$foldername = New-Object System.Windows.Forms.FolderBrowserDialog;
-	$foldername.Description = $description;
-	#$foldername.rootfolder = "MyComputer";
+# 	$foldername = New-Object System.Windows.Forms.FolderBrowserDialog;
+# 	$foldername.Description = $description;
+# 	#$foldername.rootfolder = "MyComputer";
 
-	if (Test-Path $initialPath) {
-		$foldername.SelectedPath = $initialPath;
-	}
+# 	if (Test-Path $initialPath) {
+# 		$foldername.SelectedPath = $initialPath;
+# 	}
 
-	if ($foldername.ShowDialog() -eq "OK") {
-		$folder += $foldername.SelectedPath;
-	}
+# 	if ($foldername.ShowDialog() -eq "OK") {
+# 		$folder += $foldername.SelectedPath;
+# 	}
 
-	return $folder;
-}
+# 	return $folder;
+# }
 
 $nodertCmd = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("$PSScriptRoot\..\src\NodeRTCmd\bin\Debug\NodeRTCmd.exe");
 
