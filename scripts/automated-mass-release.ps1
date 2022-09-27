@@ -11,7 +11,7 @@
 # 	return $folder
 # }
 
-$dir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("$PSScriptRoot\..\NodeRT-Bindings\")
+$dir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("$PSScriptRoot\..\NodeRT-Bindings")
 
 # if ($dir -eq $null) {
 # 	return
