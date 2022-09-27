@@ -147,6 +147,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.npm-org }}
-          path: ./NodeRT-Bindings
+          path: ./NodeRT-Bindings/${{ matrix.npm-org }}
       
       - run: ls -la ./NodeRT-Bindings
