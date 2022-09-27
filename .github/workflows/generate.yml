@@ -94,6 +94,9 @@ jobs:
         working-directory: ./scripts
         env:
           npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
+
+      - run: ls -la ./NodeRT-Bindings
+        shell: bash
   generate-release:
     needs: generate-tag
     permissions:
