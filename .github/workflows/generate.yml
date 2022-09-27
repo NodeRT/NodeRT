@@ -192,3 +192,9 @@ jobs:
           path: ./NodeRT-Bindings/${{ matrix.npm-org }}
       
       - run: ls -la ./NodeRT-Bindings
+      
+      - run: .\scripts\automated-mass-release.ps1
+        shell: pwsh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npmDryRun: true
