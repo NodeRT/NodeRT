@@ -110,7 +110,7 @@ jobs:
           REPLACE: ${{ matrix.npm-win-desc }}
 
       # Download SDK to compile against
-      - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.7
+      - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.8
         with:
           sdk-version: ${{ matrix.win-target-build-ver }}
 
