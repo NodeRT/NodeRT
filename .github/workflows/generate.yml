@@ -20,7 +20,7 @@ jobs:
       tagVersion: ${{ steps.tagGen.outputs.new_tag }}
       npmVersion: ${{ steps.tagGen.outputs.new_version }}
     steps:
-      - uses: step-security/harden-runner@v2.1.0
+      - uses: step-security/harden-runner@v2.3.1
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
@@ -159,7 +159,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: step-security/harden-runner@v2.1.0
+      - uses: step-security/harden-runner@v2.3.1
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
@@ -190,7 +190,7 @@ jobs:
             npm-org: nodert-win11-22h2
     runs-on: ubuntu-latest
     steps:
-      - uses: step-security/harden-runner@v2.1.0
+      - uses: step-security/harden-runner@v2.3.1
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
