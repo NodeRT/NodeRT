@@ -200,7 +200,7 @@ jobs:
           check-latest: true
           registry-url: 'https://registry.npmjs.org'
       # Download compiled npm package set
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.npm-org }}
           path: NodeRT-Bindings
