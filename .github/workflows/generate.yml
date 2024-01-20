@@ -23,7 +23,7 @@ jobs:
       - uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # Set to 0 so that we can get tags
           fetch-depth: 0
@@ -75,7 +75,7 @@ jobs:
             npm-win-desc: September 2022 Update
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Replace text in files before compiling
       - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
@@ -162,7 +162,7 @@ jobs:
       - uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Create GitHub Release matching npm release
       - uses: softprops/action-gh-release@v1
         with:
@@ -193,7 +193,7 @@ jobs:
       - uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
