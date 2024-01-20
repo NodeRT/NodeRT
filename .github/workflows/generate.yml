@@ -148,7 +148,7 @@ jobs:
           desiredSdk: ${{ matrix.npm-org }}
 
       # Upload to artifact to download in other workflow job or manually
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.npm-org }}
           path: NodeRT-Bindings/${{ matrix.npm-org }}
