@@ -11,7 +11,7 @@
     <AssemblyName>WinRTReflect</AssemblyName>
     <RootNamespace>NodeRTCmd</RootNamespace>
     <AssemblyName>NodeRTCmd</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetPlatformVersion>8.0</TargetPlatformVersion>
   </PropertyGroup>

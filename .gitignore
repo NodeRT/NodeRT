@@ -150,8 +150,14 @@ $RECYCLE.BIN/
 # Mac crap
 .DS_Store
 
+# Output folder
+NodeRT-Bindings/
+
 # VS2017
 src/.vs/NodeRT/v15
 
 # VS2019
 src/.vs/NodeRT/v16
+
+# VS2022
+src/.vs/NodeRT/v17

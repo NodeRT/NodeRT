@@ -1,0 +1,212 @@
+name: Generate new version
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        description: "Version increment"
+        required: true
+        default: patch
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+
+jobs:
+  generate-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tagVersion: ${{ steps.tagGen.outputs.new_tag }}
+      npmVersion: ${{ steps.tagGen.outputs.new_version }}
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v4
+        with:
+          # Set to 0 so that we can get tags
+          fetch-depth: 0
+      - name: Bump version and push tag
+        id: tagGen
+        uses: hennejg/github-tag-action@v4.4.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: ${{ inputs.semver }}
+          release_branches: ${{ github.ref_name }}
+  build-bindings:
+    needs: generate-tag
+    strategy:
+      fail-fast: true
+      matrix:
+        # What to actually run
+        win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
+        # Details about each run
+        include:
+          # - win-target-ver: 10v1809
+          #   win-target-build-ver: 17763
+          #   npm-org: nodert-win10-rs5
+          #   npm-win-major: 10
+          #   npm-win-minor: 18H2
+          #   npm-win-desc: Codename Redstone 5 / October 2018 Update
+          - win-target-ver: 10v1903
+            win-target-build-ver: 18362
+            npm-org: nodert-win10-19h1
+            npm-win-major: 10
+            npm-win-minor: 1903
+            npm-win-desc: Codename 19H1 / May 2019 Update
+          - win-target-ver: 10v21H1
+            win-target-build-ver: 20348
+            npm-org: nodert-win10-21h1
+            npm-win-major: 10
+            npm-win-minor: 21H1
+            npm-win-desc: May 2021 Update
+          - win-target-ver: 11v21H2
+            win-target-build-ver: 22000
+            npm-org: nodert-win11
+            npm-win-major: 11
+            npm-win-minor: 21H2
+            npm-win-desc: Original Release
+          - win-target-ver: 11v22H2
+            win-target-build-ver: 22621
+            npm-org: nodert-win11-22h2
+            npm-win-major: 11
+            npm-win-minor: 22H2
+            npm-win-desc: September 2022 Update
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Replace text in files before compiling
+      - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
+        shell: bash
+        env:
+          SEARCH: ":::org:::"
+          REPLACE: ${{ matrix.npm-org }}
+      - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
+        shell: bash
+        env:
+          SEARCH: ":::win-major:::"
+          REPLACE: ${{ matrix.npm-win-major }}
+      - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
+        shell: bash
+        env:
+          SEARCH: ":::win-minor:::"
+          REPLACE: ${{ matrix.npm-win-minor }}
+      - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
+        shell: bash
+        env:
+          SEARCH: ":::target-build-ver:::"
+          REPLACE: ${{ matrix.win-target-build-ver }}
+      - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
+        shell: bash
+        env:
+          SEARCH: ":::target-ver:::"
+          REPLACE: ${{ matrix.win-target-ver }}
+      - run: sed -i "s~$SEARCH~$REPLACE~g" src/NodeRTLib/JsPackageFiles/README.*.md
+        shell: bash
+        env:
+          SEARCH: ":::win-desc:::"
+          REPLACE: ${{ matrix.npm-win-desc }}
+
+      # Download SDK to compile against
+      - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.11
+        with:
+          sdk-version: ${{ matrix.win-target-build-ver }}
+
+      # .NET 4.x is already installed in windows image
+      # https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md#net-framework
+      # https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md#net-framework
+      # - uses: actions/setup-dotnet@v2
+      #   with:
+      #     dotnet-version: '4.5.x'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          check-latest: true
+      - run: npm install --global --fund=false node-gyp
+
+      # Needed to setup visual studio builder
+      - uses: microsoft/setup-msbuild@v1.3
+        with:
+          # 17.x = 2022
+          vs-version: '[17,18)'
+          # Available only on 17 and later
+          msbuild-architecture: x64
+
+      # Actually build generator
+      - run: dotnet build NodeRTCmd --configuration Debug
+        # working directory has to be where *.sln is located
+        working-directory: ./src
+
+      # Run script to mass create modules
+      - run: .\scripts\automated-mass-creation.ps1
+        shell: pwsh
+        env:
+          npmVersion: ${{ needs.generate-tag.outputs.npmVersion }}
+          desiredSdk: ${{ matrix.npm-org }}
+
+      # Upload to artifact to download in other workflow job or manually
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.npm-org }}
+          path: NodeRT-Bindings/${{ matrix.npm-org }}
+          if-no-files-found: error
+  generate-release:
+    needs: generate-tag
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v4
+      # Create GitHub Release matching npm release
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.generate-tag.outputs.tagVersion }}
+          fail_on_unmatched_files: false
+          generate_release_notes: true
+  publish-bindings:
+    needs: [build-bindings, generate-release]
+    strategy:
+      fail-fast: true
+      matrix:
+        # What to actually run
+        win-target-ver: [10v1903, 10v21H1, 11v21H2, 11v22H2]
+        # Details about each run
+        include:
+          # - win-target-ver: 10v1809
+          #   npm-org: nodert-win10-rs5
+          - win-target-ver: 10v1903
+            npm-org: nodert-win10-19h1
+          - win-target-ver: 10v21H1
+            npm-org: nodert-win10-21h1
+          - win-target-ver: 11v21H2
+            npm-org: nodert-win11
+          - win-target-ver: 11v22H2
+            npm-org: nodert-win11-22h2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          check-latest: true
+          registry-url: 'https://registry.npmjs.org'
+      # Download compiled npm package set
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.npm-org }}
+          path: NodeRT-Bindings
+      
+      # Run script to mass upload modules
+      - run: .\scripts\automated-mass-release.ps1
+        shell: pwsh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

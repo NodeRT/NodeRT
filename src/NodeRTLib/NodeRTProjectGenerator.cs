@@ -27,14 +27,16 @@ namespace NodeRTLib
         Vs2013,
         Vs2015,
         Vs2017,
-        Vs2019
+        Vs2019,
+		Vs2022
     }
 
     public enum WinVersions
     {
         v8,
         v8_1,
-        v10
+        v10,
+		v11
     }
 
     public class NodeRTProjectGenerator
@@ -62,6 +64,9 @@ namespace NodeRTLib
                     return true;
                 case "10":
                     winVer = WinVersions.v10;
+                    return true;
+				case "11":
+                    winVer = WinVersions.v11;
                     return true;
                 default:
                     // set to some default value
@@ -101,8 +106,10 @@ namespace NodeRTLib
                     return "2015";
                 case VsVersions.Vs2017:
                     return "2017";
-                default:
+				case VsVersions.Vs2019:
                     return "2019";
+                default:
+                    return "2022";
             }
         }
 
@@ -114,8 +121,10 @@ namespace NodeRTLib
                     return "8";
                 case WinVersions.v8_1:
                     return "8.1";
-                default:
+				case WinVersions.v10:
                     return "10";
+                default:
+                    return "11";
             }
         }
 
@@ -204,6 +213,10 @@ namespace NodeRTLib
             {
                 bindingFileText.Replace("{WinVer}", "v10");
             }
+			else if (_winVersion == WinVersions.v11)
+            {
+                bindingFileText.Replace("{WinVer}", "v11");
+            }
 
             // We need to find the _actual_ directory.
             if (!directoryName.EndsWith(@"windows kits\8.1\references\commonconfiguration\neutral") &&
@@ -271,7 +284,15 @@ namespace NodeRTLib
             File.WriteAllText(Path.Combine(libDirPath, "main.js"), mainJsFileText.ToString());
 
             // write the README.md file
-            StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md")));
+            string readmeTemplatePath;
+			if (_vsVersion == VsVersions.Vs2022)
+				readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2022.md");
+            else if (_vsVersion == VsVersions.Vs2019)
+                readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.vs2019.md");
+            else
+                readmeTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\README.md");
+
+            StringBuilder readmeFileText = new StringBuilder(File.ReadAllText(readmeTemplatePath));
             readmeFileText.Replace("{Namespace}", winRTNamespace);
             readmeFileText.Replace("{ModuleName}", winRTNamespace.ToLowerInvariant());
             readmeFileText.Replace("{PackageName}", npmPackageName);
@@ -281,7 +302,15 @@ namespace NodeRTLib
             File.WriteAllText(Path.Combine(destinationFolder, "README.md"), readmeFileText.ToString());
 
             // write the package.json file:
-            StringBuilder packageJsonFileText = new StringBuilder(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json")));
+            string packageJsonTemplatePath;
+			if (_vsVersion == VsVersions.Vs2022)
+				packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.vs2022.json");
+            else if (_vsVersion == VsVersions.Vs2019)
+                packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.vs2019.json");
+            else
+                packageJsonTemplatePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, @"JsPackageFiles\package.json");
+
+            StringBuilder packageJsonFileText = new StringBuilder(File.ReadAllText(packageJsonTemplatePath));
             packageJsonFileText.Replace("{Namespace}", winRTNamespace);
             packageJsonFileText.Replace("{PackageName}", npmPackageName);
             packageJsonFileText.Replace("{PackageVersion}", npmPackageVersion);
@@ -296,8 +325,10 @@ namespace NodeRTLib
                 packageJsonFileText.Replace("{VSVersion}", "2015");
             else if (_vsVersion == VsVersions.Vs2017)
                 packageJsonFileText.Replace("{VSVersion}", "2017");
-            else
+			else if (_vsVersion == VsVersions.Vs2019)
                 packageJsonFileText.Replace("{VSVersion}", "2019");
+            else
+                packageJsonFileText.Replace("{VSVersion}", "2022");
 
             File.WriteAllText(Path.Combine(destinationFolder, "package.json"), packageJsonFileText.ToString());
 

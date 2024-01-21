@@ -50,6 +50,9 @@ namespace NodeRTLib
                 case VsVersions.Vs2019:
                     versionString = "2019";
                     break;
+				case VsVersions.Vs2022:
+                    versionString = "2022";
+                    break;
                 default:
                     throw new Exception("Unknown VS Version");
             }
