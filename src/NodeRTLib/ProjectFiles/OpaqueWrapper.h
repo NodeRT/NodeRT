@@ -18,7 +18,7 @@
 #include <node.h>
 #include <v8.h>
 #include <string>
-#include "NodeRTUtils.h"
+#include "NodeRtUtils.h"
 #include "WrapperBase.h"
 #include "nan.h"
 #include "nan_object_wrap.h"
